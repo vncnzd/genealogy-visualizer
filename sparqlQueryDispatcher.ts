@@ -1,5 +1,3 @@
-import { LanguageIdentifier } from "./languageIdentifier";
-
 export class SPARQLQueryDispatcher {
 	private endpoint: string;
 	private numberOfConcurrentRequests: number;
