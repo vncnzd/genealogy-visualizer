@@ -47,7 +47,7 @@ export class QueryBuilder {
     public buildGetParentsQuery(personId: string): string {
         let query = `${this.getSelect()} WHERE
         {
-            ?item wd:${personId} wdt:P25.
+            ?item wdt:P40 wd:${personId} .
             ${this.getTriples()}
             ${this.getLabelService()}
         }`;

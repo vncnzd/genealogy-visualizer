@@ -16,6 +16,8 @@ export class SPARQLQueryDispatcher {
 	query(sparqlQuery): Promise<string> {
 		this.waitIfMaxNumberOfConcurrentRequestsIsReached();
 
+		console.log(sparqlQuery);
+
 		const fullUrl: string = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
 		const headers: HeadersInit = { 'Accept': 'application/sparql-results+json' };
 		this.numberOfConcurrentRequests++;
