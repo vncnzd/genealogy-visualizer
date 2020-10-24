@@ -1,5 +1,7 @@
 import { LanguageIdentifier } from "./languageIdentifier";
 
+// this is not really a "builder" class
+// TODO refactor or rename this
 export class QueryBuilder {
     private selectVariables: string[];
     private languageIdentifier: LanguageIdentifier;
@@ -20,7 +22,40 @@ export class QueryBuilder {
         return query;
     }
 
-    public buildEntitySearchQuery(searchValue: string): string {
+    public buildGetFatherQuery(personId: string): string {
+        let query = `${this.getSelect()} WHERE
+        {
+            wd:${personId} wdt:P22 ?item.
+            ${this.getTriples()}
+            ${this.getLabelService()}
+        }`;
+
+        return query;
+    }
+
+    public buildGetMotherQuery(personId: string): string {
+        let query = `${this.getSelect()} WHERE
+        {
+            wd:${personId} wdt:P25 ?item.
+            ${this.getTriples()}
+            ${this.getLabelService()}
+        }`;
+
+        return query;
+    }
+
+    public buildGetParentsQuery(personId: string): string {
+        let query = `${this.getSelect()} WHERE
+        {
+            ?item wd:${personId} wdt:P25.
+            ${this.getTriples()}
+            ${this.getLabelService()}
+        }`;
+
+        return query;
+    }
+
+    public buildEntitySearchQuery(searchValue: string, limit: number = 15): string {
         let query =
         `${this.getSelect()} WHERE {
             ${this.getTriples()}
@@ -34,13 +69,14 @@ export class QueryBuilder {
             }
             ${this.getLabelService()}
         }
-        LIMIT 15`;
+        LIMIT ${limit}`;
 
         return query;
     }
 
     private getSelect(): string {
         let select = "SELECT";
+
         for (const selectVariable of this.selectVariables) {
             select += " ?" + selectVariable;
         }
