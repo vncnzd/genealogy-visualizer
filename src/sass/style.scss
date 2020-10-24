@@ -1,0 +1,23 @@
+#jsplumb-container {
+    width: 800px;
+    height: 600px;
+    border: black 3px solid;
+    position: relative;
+    overflow: scroll;
+}
+
+.square {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    background-color: gray;
+}
+
+.person-name {
+    font-weight: bold;
+    text-align: center;
+}
+
+.search-row:hover {
+    background-color: grey;
+}
