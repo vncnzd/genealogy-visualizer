@@ -10,15 +10,15 @@ const sleepTimeForConcurrentRequestsInMilliseconds = 100;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
 const queryBuilder: QueryBuilder = new QueryBuilder(languageIdentifier);
 
-let personID = "Q3044";
-let entitySearchQuery = queryBuilder.buildEntitySearchQuery("Charlemagne");
-let childrenQuery = queryBuilder.buildGetChildrenQuery(personID);
-let fatherQuery = queryBuilder.buildGetFatherQuery(personID);
-let motherQuery = queryBuilder.buildGetMotherQuery(personID);
-let parentsQuery = queryBuilder.buildGetParentsQuery(personID);
+// let personID = "Q3044";
+// let entitySearchQuery = queryBuilder.buildEntitySearchQuery("Charlemagne");
+// let childrenQuery = queryBuilder.buildGetChildrenQuery(personID);
+// let fatherQuery = queryBuilder.buildGetFatherQuery(personID);
+// let motherQuery = queryBuilder.buildGetMotherQuery(personID);
+// let parentsQuery = queryBuilder.buildGetParentsQuery(personID);
 
 // sparqlQueryDispatcher.query(entitySearchQuery).then(response => { console.log(response) });
-sparqlQueryDispatcher.query(childrenQuery).then(response => { console.log(response) });
+// sparqlQueryDispatcher.query(childrenQuery).then(response => { console.log(response) });
 // sparqlQueryDispatcher.query(fatherQuery).then(response => { console.log(response) });
 // sparqlQueryDispatcher.query(motherQuery).then(response => { console.log(response) });
 // sparqlQueryDispatcher.query(parentsQuery).then(response => { console.log(response) });

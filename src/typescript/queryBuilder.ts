@@ -8,7 +8,7 @@ export class QueryBuilder {
 
     constructor(languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN) {
         this.languageIdentifier = languageIdentifier;
-        this.selectVariables = ["item", "itemLabel", "itemDescription", "sexOrGender", "dateOfBirth", "dateOfDeath"];
+        this.selectVariables = ["item", "itemLabel", "itemDescription", "sexOrGender", "sexOrGenderLabel", "dateOfBirth", "dateOfDeath"];
     }
 
     public buildGetChildrenQuery(fatherId: string): string {
