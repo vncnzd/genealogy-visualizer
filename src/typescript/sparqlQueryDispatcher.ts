@@ -31,8 +31,6 @@ export class SPARQLQueryDispatcher {
 		});
 	}
 
-	// getters and setters
-
 	public setMaxNumberOfConcurrentRequests(maxNumberOfConcurrentRequests: number): void {
 		if (maxNumberOfConcurrentRequests < 1) {
 			console.info("There is an attempt to set the max number of concurrent requests below 1")
