@@ -1,5 +1,6 @@
 import { Person } from "../models/person";
 import { SearchList } from "../models/searchList";
+import { SearchListView } from "../views/searchListView";
 
 export class SearchListController {
     private searchList: SearchList;
