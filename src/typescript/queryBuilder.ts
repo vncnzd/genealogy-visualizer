@@ -55,6 +55,7 @@ export class QueryBuilder {
         return query;
     }
 
+    // TODO: Maybe add dynasty as optional to this query or add dynastay as a second query and unify both result lists
     public buildEntitySearchQuery(searchValue: string, limit: number = 15): string {
         let query =
         `${this.getSelect()} WHERE {
