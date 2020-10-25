@@ -36,16 +36,17 @@ export class Person {
         let results = responseObject["results"]["bindings"];
         let people: Person[] = [];
 
-        for (const result of Object.values(results)) { // don't forget to add babel to webpack
+        for (const result of Object.values(results)) { // TODO: don't forget to add babel to webpack
             if (result.hasOwnProperty("item")) {
                 const id: string = (result.hasOwnProperty("item")) ? result["item"]["value"].split("/").pop() : ""; // because item returns a string of format {endpoint}/entity/{id}
                 const name: string = (result.hasOwnProperty("itemLabel")) ? result["itemLabel"]["value"] : "";
                 const description: string = (result.hasOwnProperty("itemDescription")) ? result["itemDescription"]["value"] : "";
-                const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
-                const dateOfDeath: Date = (result.hasOwnProperty("dateOfDeath")) ? new Date(result["dateOfDeath"]["value"]) : null;
                 const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? SexOrGender.buildBySexOrGenderId(result["sexOrGender"]["value"].split("/").pop(), result["sexOrGenderLabel"]["value"]) : null;
 
-                console.log(sexOrGender);
+                // TODO: deal with dates
+                const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
+                const dateOfDeath: Date = (result.hasOwnProperty("dateOfDeath")) ? new Date(result["dateOfDeath"]["value"]) : null;
+                
 
                 if (!people.find(element => element.getId() === id)) {
                     let person: Person = new Person(id);
