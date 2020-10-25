@@ -6,6 +6,10 @@
     overflow: scroll;
 }
 
+#search-results {
+    border-collapse: collapse;
+}
+
 .square {
     width: 100px;
     height: 100px;
@@ -20,4 +24,8 @@
 
 .search-row:hover {
     background-color: grey;
+}
+
+.selected-row {
+    border: 1px solid black;
 }

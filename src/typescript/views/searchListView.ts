@@ -4,6 +4,7 @@ export class SearchListView {
     private searchInputElement: HTMLInputElement;
     private searchButtonElement: HTMLElement;
     private searchResultTableElement: HTMLElement;
+    private currentSelectedRowElement: HTMLElement;
 
     constructor(searchInputElement: HTMLInputElement, searchButtonElement: HTMLElement, searchResultTable: HTMLElement) {
         this.searchInputElement = searchInputElement;
@@ -12,7 +13,7 @@ export class SearchListView {
     }
 
     public updateList(searchPeople: Array<Person>) {
-        this.searchResultTableElement.innerHTML = '';
+        this.searchResultTableElement.innerHTML = ''; // empties the html list
 
         for (const person of searchPeople) {
             let rowElement: HTMLElement = document.createElement("tr");
@@ -30,6 +31,15 @@ export class SearchListView {
             descriptionDataElement.appendChild(descriptionDataTextNode);
             rowElement.appendChild(descriptionDataElement);
         }
+    }
+
+    public markListElementAsSelected(element: HTMLElement) {
+        if (this.currentSelectedRowElement != null) {
+            this.currentSelectedRowElement.classList.remove("selected-row");
+        }
+
+        this.currentSelectedRowElement = element;
+        this.currentSelectedRowElement.classList.add("selected-row");
     }
 
     // getters and setters

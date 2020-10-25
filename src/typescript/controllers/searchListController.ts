@@ -44,11 +44,12 @@ export class SearchListController {
 
             if (selectedPerson != undefined) {
                 this.searchList.setSelectedPerson(selectedPerson);
+                this.searchListView.markListElementAsSelected(rowElement);
+                console.log(selectedPerson);
+                // this.genealogyController.getChildrenOfPerson(selectedPerson, 10);
             } else {
                 console.error("Selected Person was not found in memory");
             }
-
-            // this.genealogyController.getChildrenOfPerson(selectedPerson, 10);
         });
     }
 }
