@@ -23,18 +23,8 @@ export class Person {
         this.children = [];
     }
 
-    public static retrievePersonFromSessionStorage(id: string): Person {
-        let objectString: string = sessionStorage.getItem(id);
-
-        if (objectString != null) {
-            return <Person> JSON.parse(objectString);
-        } else {
-            return null;
-        }
-    }
-
     public static findHumansByEntitySearch(searchValue: string): Promise<Array<Person>> {
-        let query = Person.queryBuilder.buildEntitySearchQuery(searchValue);
+        let query: string = Person.queryBuilder.buildEntitySearchQuery(searchValue);
         console.log(query);
 
         return this.sparqlQueryDispatcher.query(query).then(response => {
@@ -80,7 +70,7 @@ export class Person {
     }
 
     public getChildrenFromDatabase(): Promise<Array<Person>> {
-        let query = Person.queryBuilder.buildGetChildrenQuery(this.getId());
+        let query: string = Person.queryBuilder.buildGetChildrenQuery(this.getId());
         
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -88,13 +78,7 @@ export class Person {
     }
 
     public getFatherFromDatabase(): Promise<Array<Person>> {
-        let query = `
-        SELECT ?item ?itemLabel ?itemDescription
-        WHERE
-        {
-            wd:${this.id} wdt:P22 ?item.
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "". }
-        }`;
+        let query: string = Person.queryBuilder.buildGetFatherQuery(this.getId());
 
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -102,13 +86,15 @@ export class Person {
     }
 
     public getMotherFromDatabase(): Promise<Array<Person>> {
-        let query = `
-        SELECT ?item ?itemLabel ?itemDescription
-        WHERE
-        {
-            wd:${this.id} wdt:P25 ?item.
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "". }
-        }`;
+        let query: string = Person.queryBuilder.buildGetMotherQuery(this.getId());
+
+        return Person.sparqlQueryDispatcher.query(query).then(response => {
+            return Person.getListOfPeopleFromResponse(response);
+        });
+    }
+
+    public getParentsFromDatabase(): Promise<Array<Person>> {
+        let query: string = Person.queryBuilder.buildGetParentsQuery(this.getId());
 
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -117,6 +103,16 @@ export class Person {
 
     public storeInSessionStorage(): void {
         sessionStorage.setItem(this.id, JSON.stringify(this));
+    }
+
+    public static retrievePersonFromSessionStorage(id: string): Person {
+        let objectString: string = sessionStorage.getItem(id);
+
+        if (objectString != null) {
+            return <Person> JSON.parse(objectString);
+        } else {
+            return null;
+        }
     }
 
     // getters and setters
