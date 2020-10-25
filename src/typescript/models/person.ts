@@ -1,5 +1,5 @@
 import { QueryBuilder } from "../queryBuilder";
-import { SexOrGender } from "../sexOrGender";
+import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { SPARQLQueryDispatcher } from "../sparqlQueryDispatcher";
 
 export class Person {
@@ -14,7 +14,7 @@ export class Person {
     private children: Person[];
     private datesOfBirth: Date[];
     private datesOfDeath: Date[];
-    private sexOrGender: SexOrGender;
+    private sexOrGender: SexOrGenderIdentifier;
 
     constructor(id: string) {
         this.id = id;
@@ -25,7 +25,6 @@ export class Person {
 
     public static findHumansByEntitySearch(searchValue: string): Promise<Array<Person>> {
         let query: string = Person.queryBuilder.buildEntitySearchQuery(searchValue);
-        console.log(query);
 
         return this.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -43,6 +42,10 @@ export class Person {
                 const description: string = (result.hasOwnProperty("itemDescription")) ? result["itemDescription"]["value"] : "";
                 const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
                 const dateOfDeath: Date = (result.hasOwnProperty("dateOfDeath")) ? new Date(result["dateOfDeath"]["value"]) : null;
+                const sexOrGender: string = (result.hasOwnProperty("sexOrGender")) ? result["sexOrGender"]["value"] : "";
+                const sexOrGenderLabel: string = (result.hasOwnProperty("sexOrGender")) ? result["sexOrGenderLabel"]["value"] : "";
+
+                console.log(sexOrGenderLabel);
 
                 if (!people.find(element => element.getId() === id)) {
                     let person: Person = new Person(id);
@@ -67,6 +70,16 @@ export class Person {
         }
 
         return people;
+    }
+
+    public static retrievePersonFromSessionStorage(id: string): Person {
+        let objectString: string = sessionStorage.getItem(id);
+
+        if (objectString != null) {
+            return <Person> JSON.parse(objectString);
+        } else {
+            return null;
+        }
     }
 
     public getChildrenFromDatabase(): Promise<Array<Person>> {
@@ -103,16 +116,6 @@ export class Person {
 
     public storeInSessionStorage(): void {
         sessionStorage.setItem(this.id, JSON.stringify(this));
-    }
-
-    public static retrievePersonFromSessionStorage(id: string): Person {
-        let objectString: string = sessionStorage.getItem(id);
-
-        if (objectString != null) {
-            return <Person> JSON.parse(objectString);
-        } else {
-            return null;
-        }
     }
 
     // getters and setters
@@ -169,11 +172,11 @@ export class Person {
         return this.datesOfDeath;
     }
 
-    public setSexOrGender(sexOrGender: SexOrGender): void {
+    public setSexOrGender(sexOrGender: SexOrGenderIdentifier): void {
         this.sexOrGender = sexOrGender;
     }
 
-    public getSexOrGender(): SexOrGender {
+    public getSexOrGender(): SexOrGenderIdentifier {
         return this.sexOrGender;
     }
 }
