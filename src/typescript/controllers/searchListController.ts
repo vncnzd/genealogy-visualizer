@@ -5,13 +5,10 @@ import { SearchListView } from "../views/searchListView";
 export class SearchListController {
     private searchList: SearchList;
     private searchListView: SearchListView;
-    // private genealogyController: GenealogyController;
 
-    // constructor(searchList: SearchList, searchListView: SearchListView, genealogyController: GenealogyController) {
     constructor(searchList: SearchList, searchListView: SearchListView) {
         this.searchList = searchList;
         this.searchListView = searchListView;
-        // this.genealogyController = genealogyController;
         this.addSearchEventListener();
     }
 
@@ -32,11 +29,11 @@ export class SearchListController {
 
         for (let index: number = 0; index < tableChildNodes.length; index++) {
             const rowElement: HTMLElement = <HTMLElement> tableChildNodes[index];
-            this.addSelectEventListener(rowElement);
+            this.addSelectionEventListener(rowElement);
         }
     }
 
-    private addSelectEventListener(element: HTMLElement): void {
+    private addSelectionEventListener(element: HTMLElement): void {
         element.addEventListener("click", (event: Event) => {
             let rowElement: HTMLElement = <HTMLElement> event.currentTarget;
             let id: string = rowElement.dataset.id;
@@ -46,7 +43,6 @@ export class SearchListController {
                 this.searchList.setSelectedPerson(selectedPerson);
                 this.searchListView.markListElementAsSelected(rowElement);
                 console.log(selectedPerson);
-                // this.genealogyController.getChildrenOfPerson(selectedPerson, 10);
             } else {
                 console.error("Selected Person was not found in memory");
             }
