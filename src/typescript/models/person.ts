@@ -1,4 +1,5 @@
 import { QueryBuilder } from "../queryBuilder";
+import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { SPARQLQueryDispatcher } from "../sparqlQueryDispatcher";
 
@@ -14,7 +15,7 @@ export class Person {
     private children: Person[];
     private datesOfBirth: Date[];
     private datesOfDeath: Date[];
-    private sexOrGender: SexOrGenderIdentifier;
+    private sexOrGender: SexOrGender;
 
     constructor(id: string) {
         this.id = id;
@@ -42,10 +43,9 @@ export class Person {
                 const description: string = (result.hasOwnProperty("itemDescription")) ? result["itemDescription"]["value"] : "";
                 const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
                 const dateOfDeath: Date = (result.hasOwnProperty("dateOfDeath")) ? new Date(result["dateOfDeath"]["value"]) : null;
-                const sexOrGender: string = (result.hasOwnProperty("sexOrGender")) ? result["sexOrGender"]["value"] : "";
-                const sexOrGenderLabel: string = (result.hasOwnProperty("sexOrGender")) ? result["sexOrGenderLabel"]["value"] : "";
+                const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? SexOrGender.buildBySexOrGenderId(result["sexOrGender"]["value"].split("/").pop(), result["sexOrGenderLabel"]["value"]) : null;
 
-                console.log(sexOrGenderLabel);
+                console.log(sexOrGender);
 
                 if (!people.find(element => element.getId() === id)) {
                     let person: Person = new Person(id);
@@ -54,6 +54,7 @@ export class Person {
                     person.setDescription(description);
                     person.getDatesOfBirth().push(dateOfBirth);
                     person.getDatesOfDeath().push(dateOfDeath);
+                    person.setSexOrGender(sexOrGender);
                     people.push(person);
                 } else {
                     let person: Person = people.find(element => element.getId() === id);
@@ -172,11 +173,11 @@ export class Person {
         return this.datesOfDeath;
     }
 
-    public setSexOrGender(sexOrGender: SexOrGenderIdentifier): void {
+    public setSexOrGender(sexOrGender: SexOrGender): void {
         this.sexOrGender = sexOrGender;
     }
 
-    public getSexOrGender(): SexOrGenderIdentifier {
+    public getSexOrGender(): SexOrGender {
         return this.sexOrGender;
     }
 }

@@ -1,5 +1,6 @@
 import '../sass/style.scss';
 import { LanguageIdentifier } from './languageIdentifier';
+import { Person } from './models/person';
 import { QueryBuilder } from './queryBuilder';
 import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 
@@ -9,6 +10,11 @@ const maxNumberOfConcurrentRequests = 5;
 const sleepTimeForConcurrentRequestsInMilliseconds = 100;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
 const queryBuilder: QueryBuilder = new QueryBuilder(languageIdentifier);
+
+Person.setQueryBuilder(queryBuilder);
+Person.setSparqlQueryDispatcher(sparqlQueryDispatcher);
+
+Person.findHumansByEntitySearch("cleopatra").then((person: Person[]) => console.log(person));
 
 // let personID = "Q3044";
 // let entitySearchQuery = queryBuilder.buildEntitySearchQuery("Charlemagne");
