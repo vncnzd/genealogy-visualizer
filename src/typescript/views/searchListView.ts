@@ -33,7 +33,7 @@ export class SearchListView {
         }
     }
 
-    public markListElementAsSelected(element: HTMLElement) {
+    public markElementAsSelected(element: HTMLElement) {
         if (this.currentSelectedRowElement != null) {
             this.currentSelectedRowElement.classList.remove("selected-row");
         }
