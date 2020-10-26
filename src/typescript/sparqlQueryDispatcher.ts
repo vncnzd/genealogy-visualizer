@@ -13,16 +13,14 @@ export class SPARQLQueryDispatcher {
 		this.sleepTimeoutInMilliSeconds = sleepTimeoutInMilliseconds;
 	}
 
-	query(sparqlQuery): Promise<string> {
-		this.waitIfMaxNumberOfConcurrentRequestsIsReached();
-
-		console.log(sparqlQuery);
+	async query(sparqlQuery): Promise<string> {
+		await this.waitIfMaxNumberOfConcurrentRequestsIsReached();
 
 		const fullUrl: string = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
 		const headers: HeadersInit = { 'Accept': 'application/sparql-results+json' };
 		this.numberOfConcurrentRequests++;
 		
-		return fetch(fullUrl, {headers}).then(response => { 
+		return fetch(fullUrl, {headers}).then(response => {
 			this.numberOfConcurrentRequests--;
 			return response.json(); 
 		}).catch((error) => {
