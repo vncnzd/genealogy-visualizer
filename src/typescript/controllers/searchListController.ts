@@ -1,3 +1,4 @@
+import { Genealogy } from "../models/genealogy";
 import { Person } from "../models/person";
 import { SearchList } from "../models/searchList";
 import { SearchListView } from "../views/searchListView";
@@ -42,7 +43,13 @@ export class SearchListController {
             if (selectedPerson != undefined) {
                 this.searchList.setSelectedPerson(selectedPerson);
                 this.searchListView.markElementAsSelected(rowElement);
+                console.log("Selected Person:")
                 console.log(selectedPerson);
+
+                // Test
+                let genealogy: Genealogy = new Genealogy();
+                genealogy.getChildrenOfPerson(selectedPerson, new Map<string, Person>(), 1).then((result) => console.log(result));
+                
             } else {
                 console.error("Selected Person was not found in memory");
             }

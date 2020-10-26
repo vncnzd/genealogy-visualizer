@@ -53,8 +53,8 @@ export class Person {
 
                     person.setName(name);
                     person.setDescription(description);
-                    person.getDatesOfBirth().push(dateOfBirth);
-                    person.getDatesOfDeath().push(dateOfDeath);
+                    if (dateOfBirth != null) person.getDatesOfBirth().push(dateOfBirth);
+                    if (dateOfDeath != null) person.getDatesOfDeath().push(dateOfDeath);
                     person.setSexOrGender(sexOrGender);
                     people.push(person);
                 } else {
