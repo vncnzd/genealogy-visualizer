@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
-      "lib": [ "ESNext", "dom" ]
-    }
+      "lib": [ "ESNext", "dom" ],
+      "sourceMap": true,
+    },
 }
