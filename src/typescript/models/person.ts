@@ -158,8 +158,16 @@ export class Person {
         return this.father;
     }
 
+    public setFather(father: Person): void {
+        this.father = father;
+    }
+
     public getMother(): Person {
         return this.mother;
+    }
+
+    public setMother(mother: Person): void {
+        this.mother = mother;
     }
 
     public getChildren(): Person[] {
