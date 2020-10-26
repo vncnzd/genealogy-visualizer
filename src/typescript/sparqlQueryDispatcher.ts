@@ -14,7 +14,10 @@ export class SPARQLQueryDispatcher {
 	}
 
 	async query(sparqlQuery): Promise<string> {
-		await this.waitIfMaxNumberOfConcurrentRequestsIsReached();
+		// makes sure, that only maxNumberOfConcurrentRequests are done at the same time
+		while (this.numberOfConcurrentRequests >= this.maxNumberOfConcurrentRequests) {
+			await new Promise(r => setTimeout(r, this.sleepTimeoutInMilliSeconds));
+		}
 
 		const fullUrl: string = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
 		const headers: HeadersInit = { 'Accept': 'application/sparql-results+json' };
@@ -22,25 +25,20 @@ export class SPARQLQueryDispatcher {
 		
 		return fetch(fullUrl, {headers}).then(response => {
 			this.numberOfConcurrentRequests--;
+			console.log(this.numberOfConcurrentRequests);
 			return response.json(); 
 		}).catch((error) => {
 			this.numberOfConcurrentRequests--;
+			console.log(this.numberOfConcurrentRequests);
 			console.error(error);
 		});
 	}
 
 	public setMaxNumberOfConcurrentRequests(maxNumberOfConcurrentRequests: number): void {
 		if (maxNumberOfConcurrentRequests < 1) {
-			console.info("There was an attempt to set the max number of concurrent requests below 1")
+			console.info("There is an attempt to set the max number of concurrent requests below 1")
 		} else {
 			this.maxNumberOfConcurrentRequests = maxNumberOfConcurrentRequests;
-		}
-	}
-
-	private async waitIfMaxNumberOfConcurrentRequestsIsReached(): Promise<void> {
-		// makes sure, that only maxNumberOfConcurrentRequests are done at the same time
-		while (this.numberOfConcurrentRequests >= this.maxNumberOfConcurrentRequests) {
-			await new Promise(r => setTimeout(r, this.sleepTimeoutInMilliSeconds));
 		}
 	}
 }

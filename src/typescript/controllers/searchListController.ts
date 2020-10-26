@@ -48,7 +48,10 @@ export class SearchListController {
 
                 // Test
                 let genealogy: Genealogy = new Genealogy();
-                genealogy.getChildrenOfPerson(selectedPerson, new Map<string, Person>(), 1).then((result) => console.log(result));
+                genealogy.getChildrenOfPerson(selectedPerson, new Map<string, Person>(), 5).then((result) => {
+                    console.log("Finished");
+                    console.log(result);
+                });
                 
             } else {
                 console.error("Selected Person was not found in memory");
