@@ -10,7 +10,7 @@ import { SearchListView } from './views/searchListView';
 const languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN;
 const endpointUrl: string = 'https://query.wikidata.org/sparql';
 const maxNumberOfConcurrentRequests = 5;
-const sleepTimeForConcurrentRequestsInMilliseconds = 100;
+const sleepTimeForConcurrentRequestsInMilliseconds = 50;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
 const queryBuilder: QueryBuilder = new QueryBuilder(languageIdentifier);
 
