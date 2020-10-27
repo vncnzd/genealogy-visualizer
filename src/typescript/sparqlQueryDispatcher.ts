@@ -24,13 +24,12 @@ export class SPARQLQueryDispatcher {
 		this.numberOfConcurrentRequests++;
 		
 		return fetch(fullUrl, {headers}).then(response => {
-			this.numberOfConcurrentRequests--;
-			console.log(this.numberOfConcurrentRequests);
 			return response.json(); 
 		}).catch((error) => {
+			console.error(error);
+		}).finally(() => {
 			this.numberOfConcurrentRequests--;
 			console.log(this.numberOfConcurrentRequests);
-			console.error(error);
 		});
 	}
 
