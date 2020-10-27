@@ -2,30 +2,28 @@ import { ConnectParams, jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
 
 export class PersonView {
+    static width = 100;
+    static height = 100;
+
     private rootElement: HTMLElement;
     private divContainerElement: HTMLElement;
     private deleteButtonElement: HTMLElement;
 
     private jsPlumbInst: jsPlumbInstance;
-    private connectionParameters: ConnectParams;
+    // private connectionParameters: ConnectParams;
 
-    constructor(rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
+    constructor(person: Person, rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
         this.rootElement = rootElement;
         this.jsPlumbInst = jsPlumbInst;
-
-        this.connectionParameters = {
-            anchors: ["Bottom", "Top"],
-            connector: [ "Flowchart", {}],
-            endpoint: "Dot",
-            deleteEndpointsOnDetach: false,
-            detachable: false
-        }
+        this.createPersonNode(person);
     }
 
     public createPersonNode(person: Person): void {
         this.divContainerElement = document.createElement("div");
         this.divContainerElement.classList.add("square");
         this.divContainerElement.id = person.getId();
+        this.divContainerElement.style.width = PersonView.width + "px";
+        this.divContainerElement.style.height = PersonView.height + "px";
 
         let paragraphElement: HTMLElement = document.createElement("p");
         let nameTextNode: Text = document.createTextNode(person.getName());
@@ -44,10 +42,26 @@ export class PersonView {
         this.jsPlumbInst.draggable(this.divContainerElement.id);
     }
 
-    // this should probably be in the treeView
-    // public connect(source: Person, target: Person): void {
-    //     //     jsPlumbInst.connect({ source: 'div-one', target: 'div-two' }, connectionParameters);
-    // }
+    public moveToPositionInPx(left: number, top: number) {
+        this.divContainerElement.style.left = left + "px";
+        this.divContainerElement.style.top = top + "px";
+    }
+
+    public getViewWidthInPx(): number {
+        return this.divContainerElement.offsetWidth;
+    }
+
+    public getViewHeightInPx(): number {
+        return this.divContainerElement.offsetHeight;
+    }
+
+    public getPositionLeft(): number {
+        return this.divContainerElement.offsetLeft;
+    }
+
+    public getPositionTop(): number {
+        return this.divContainerElement.offsetTop;
+    }
 
     public getDeleteButtonElement(): HTMLElement {
         return this.deleteButtonElement;
