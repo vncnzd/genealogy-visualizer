@@ -22,4 +22,8 @@ export class GenealogyView {
     public getDepthInput(): HTMLInputElement {
         return this.depthInput;
     }
+
+    public getDepth(): number {
+        return parseInt(this.depthInput.value);
+    }
 }

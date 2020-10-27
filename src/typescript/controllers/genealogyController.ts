@@ -9,21 +9,14 @@ export class GenealogyController {
     constructor(genealogy: Genealogy, genealogyView: GenealogyView) {
         this.genealogy = genealogy;
         this.genealogyView = genealogyView;
-        this.addEventListenersToButtonsAndInput();
+        // this.addEventListenersToButtonsAndInput();
     }
 
-    private addEventListenersToButtonsAndInput(): void {
-        this.genealogyView.getAscendantsButton().addEventListener("click", () => {
-            // this.genealogy.getChildrenOfPerson();
-        });
-
-        this.genealogyView.getDescendantsButton().addEventListener("click", () => {
-            console.log("descendantsButton");
-        });
+    public getDescendants(): Promise<Map<string, Person>> {
+        return this.genealogy.getDescendants(this.genealogyView.getDepth());
     }
 
-    // this should be somewhere else really... 
-    public getChildrenOfPerson(person: Person, depth: number): void {
-        this.genealogy.getChildrenOfPerson(person, depth);
+    public setRootPerson(person: Person): void {
+        this.genealogy.setRootPerson(person);
     }
 }

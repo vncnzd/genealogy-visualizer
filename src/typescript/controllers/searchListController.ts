@@ -1,15 +1,19 @@
 import { Genealogy } from "../models/genealogy";
 import { Person } from "../models/person";
 import { SearchList } from "../models/searchList";
+import { GenealogyView } from "../views/genealogyView";
 import { SearchListView } from "../views/searchListView";
+import { GenealogyController } from "./genealogyController";
 
 export class SearchListController {
     private searchList: SearchList;
     private searchListView: SearchListView;
+    private genealogyController: GenealogyController;
 
-    constructor(searchList: SearchList, searchListView: SearchListView) {
+    constructor(searchList: SearchList, searchListView: SearchListView, genealogyController: GenealogyController) {
         this.searchList = searchList;
         this.searchListView = searchListView;
+        this.genealogyController = genealogyController;
         this.addSearchEventListener();
     }
 
@@ -45,15 +49,9 @@ export class SearchListController {
                 this.searchListView.markElementAsSelected(rowElement);
                 console.log("Selected Person:")
                 console.log(selectedPerson);
-
-                // Test
-                let genealogy: Genealogy = new Genealogy();
-                let peopleMap: Map<string, Person> = new Map<string, Person>();
-                genealogy.getChildrenOfPerson(selectedPerson, new Map<string, Person>(), 4).then((result) => {
-                    console.log("Finished");
-                    console.log(result);
-                });
-                
+              
+                this.genealogyController.setRootPerson(selectedPerson);
+                this.genealogyController.getDescendants().then(descendants => console.log(descendants));              
             } else {
                 console.error("Selected Person was not found in memory");
             }
