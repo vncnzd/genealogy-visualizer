@@ -24,12 +24,13 @@ const searchInput: HTMLInputElement = document.querySelector("#search-input");
 const searchResultTable: HTMLElement = document.querySelector("#search-results");
 const jsPlumbContainer: HTMLElement = document.querySelector("#jsplumb-container");
 const depthInput: HTMLInputElement = document.querySelector("#depth-input");
+const descendantsButton: HTMLElement = document.querySelector("#descendants-button");
 
 const jsPlumbInst: jsPlumbInstance = jsPlumb.getInstance();
 jsPlumbInst.setContainer(jsPlumbContainer);
 
 const genealogy: Genealogy = new Genealogy();
-const genealogyView: GenealogyView = new GenealogyView(jsPlumbContainer, jsPlumbInst, depthInput);
+const genealogyView: GenealogyView = new GenealogyView(jsPlumbContainer, jsPlumbInst, depthInput, descendantsButton);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
