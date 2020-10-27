@@ -50,8 +50,7 @@ export class SearchListController {
                 console.log("Selected Person:")
                 console.log(selectedPerson);
               
-                this.genealogyController.setRootPerson(selectedPerson);
-                this.genealogyController.getDescendants().then(descendants => console.log(descendants));              
+                this.genealogyController.setRootPerson(selectedPerson);              
             } else {
                 console.error("Selected Person was not found in memory");
             }

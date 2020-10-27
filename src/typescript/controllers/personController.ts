@@ -6,6 +6,7 @@ export class PersonController {
     private personView: PersonView;
 
     constructor(person: Person, personView: PersonView) {
-        
+        this.person = person;
+        this.personView = personView;
     };
 }

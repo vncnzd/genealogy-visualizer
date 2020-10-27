@@ -9,11 +9,17 @@ export class GenealogyController {
     constructor(genealogy: Genealogy, genealogyView: GenealogyView) {
         this.genealogy = genealogy;
         this.genealogyView = genealogyView;
-        // this.addEventListenersToButtonsAndInput();
+        this.addEventListenersToButtonsAndInput();
     }
 
-    public getDescendants(): Promise<Map<string, Person>> {
-        return this.genealogy.getDescendants(this.genealogyView.getDepth());
+    private addEventListenersToButtonsAndInput(): void {
+        this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent) => {
+            console.log("create event listner");
+            this.genealogy.getDescendants(this.genealogyView.getDepth()).then(() => {
+                console.log("descendants");
+                this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
+            });
+        });
     }
 
     public setRootPerson(person: Person): void {
