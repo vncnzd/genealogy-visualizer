@@ -48,7 +48,8 @@ export class SearchListController {
 
                 // Test
                 let genealogy: Genealogy = new Genealogy();
-                genealogy.getChildrenOfPerson(selectedPerson, new Map<string, Person>(), 5).then((result) => {
+                let peopleMap: Map<string, Person> = new Map<string, Person>();
+                genealogy.getChildrenOfPerson(selectedPerson, new Map<string, Person>(), 4).then((result) => {
                     console.log("Finished");
                     console.log(result);
                 });

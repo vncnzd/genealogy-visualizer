@@ -8,31 +8,29 @@ export class Genealogy {
     }
 
     // TODO Refactor this
-    public async getChildrenOfPerson(currentPerson: Person, people: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+    public async getChildrenOfPerson(currentPerson: Person, descendants: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
             let children: Person[] = await currentPerson.getChildrenFromDatabase();
 
             for (const child of children) {
-                if (people.has(child.getId())) {
-                    // this person was already visited, because the id is already in the map
-                    // there is no need to continue the recursion with this node, because it should have already been done
-                    let existingChild: Person = people.get(child.getId());
+                if (descendants.has(child.getId())) {
+                    // child already in descendants map, thus already visited
+                    let existingChild: Person = descendants.get(child.getId());
                     currentPerson.getChildren().push(existingChild);
                 } else {
-                    // this person was not visited before
-                    // continue with the recursion
+                    // child is not in descendants map, thus not visited before
+                    descendants.set(child.getId(), child);
                     currentPerson.getChildren().push(child);
-                    people.set(child.getId(), child);
-                    this.getChildrenOfPerson(child, people, depth - 1);                     
+                    
+                    // Remove the awaits to make this method faster, but then the map gets immediately returned,
+                    // so that you don't know when it ended.
+                    await this.getChildrenOfPerson(child, descendants, depth - 1);
+                    await this.addParentsToChild(currentPerson, child, descendants);
                 }
-
-                this.addParentsToChild(currentPerson, child, people);
             }
-
-            return Promise.resolve(people);
-        } else {
-            return Promise.resolve(people);
         }
+
+        return descendants;
     }
 
     private addParentsToChild(parent: Person, child: Person, peopleMap: Map<string, Person>) {
