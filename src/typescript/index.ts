@@ -23,7 +23,7 @@ const searchButton: HTMLElement = document.querySelector('#search-button');
 const searchInput: HTMLInputElement = document.querySelector("#search-input");
 const searchResultTable: HTMLElement = document.querySelector("#search-results");
 const jsPlumbContainer: HTMLElement = document.querySelector("#jsplumb-container");
-const jsPlumbContainerContainer: HTMLElement = document.querySelector("#jsplumb-container-container");
+const jsPlumbContainerWrapper: HTMLElement = document.querySelector("#jsplumb-container-wrapper");
 const depthInput: HTMLInputElement = document.querySelector("#depth-input");
 const descendantsButton: HTMLElement = document.querySelector("#descendants-button");
 const zoomInButton: HTMLElement = document.querySelector("#zoom-in");
@@ -34,7 +34,7 @@ jsPlumbInst.setZoom(0.5);
 jsPlumbInst.setContainer(jsPlumbContainer);
 
 const genealogy: Genealogy = new Genealogy();
-const genealogyView: GenealogyView = new GenealogyView(jsPlumbContainer, jsPlumbInst, depthInput, descendantsButton);
+const genealogyView: GenealogyView = new GenealogyView(jsPlumbContainer, jsPlumbInst, depthInput, descendantsButton, jsPlumbContainerWrapper, zoomInButton, zoomOutButton);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
@@ -43,59 +43,3 @@ const searchListController = new SearchListController(searchList, searchListView
 
 Person.setQueryBuilder(queryBuilder);
 Person.setSparqlQueryDispatcher(sparqlQueryDispatcher);
-
-// tests
-
-let scale = 1;
-let isPaning: boolean = false;
-let lastX: number = 0;
-let lastY: number = 0;
-let transformX: number = 0;
-let transformY: number = 0
-
-zoomOutButton.addEventListener("click", (event: MouseEvent) => {
-    scale -= 0.1;
-    if (scale < 0.1) {
-        scale = 0.1;
-    }
-    jsPlumbInst.setZoom(scale);
-    jsPlumbContainer.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${transformX}, ${transformY})`;
-});
-
-zoomInButton.addEventListener("click", (event: MouseEvent) => {
-    scale += 0.1;
-    jsPlumbInst.setZoom(scale);
-    jsPlumbContainer.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${transformX}, ${transformY})`;
-});
-
-jsPlumbContainerContainer.addEventListener("mousedown", (event: MouseEvent) => {
-    lastX = event.offsetX;
-    lastY = event.offsetY;
-    console.log(lastX);
-    console.log(lastY);
-    isPaning = true;
-});
-
-jsPlumbContainerContainer.addEventListener("mousemove", (event: MouseEvent) => {
-    if (isPaning) {
-        console.log("Paning");
-
-        let xDifference = event.offsetX - lastX;
-        let yDifference = event.offsetY - lastY;
-
-        lastX = event.offsetX;
-        lastY = event.offsetY;
-
-        console.log(`Last X: ${xDifference}, Last Y: ${yDifference}`);
-
-        transformX += xDifference;
-        transformY += yDifference;
-        
-        jsPlumbContainer.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${transformX}, ${transformY})`;
-        jsPlumbInst.repaintEverything();
-    }
-});
-
-jsPlumbContainerContainer.addEventListener("mouseup", (event: MouseEvent) => {
-    isPaning = false;
-});

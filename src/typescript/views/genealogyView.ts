@@ -5,16 +5,29 @@ import { PersonView } from "./personView";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
+    private containerElementWrapper: HTMLElement;
     private jsPlumbInst: jsPlumbInstance;
     private depthInput: HTMLInputElement;
     private descendantsButton: HTMLElement;
+    private zoomInButton: HTMLElement;
+    private zoomOutButton: HTMLElement;
     private connectionParameters: ConnectParams;
 
-    constructor(containerElement: HTMLElement, jsPlumbInst: jsPlumbInstance, depthInput: HTMLInputElement, descendantsButton: HTMLElement) {
+    private scale = 1;
+    private isPaning: boolean = false;
+    private lastX: number = 0;
+    private lastY: number = 0;
+    private transformX: number = 0;
+    private transformY: number = 0
+
+    constructor(containerElement: HTMLElement, jsPlumbInst: jsPlumbInstance, depthInput: HTMLInputElement, descendantsButton: HTMLElement, containerElementWrapper: HTMLElement, zoomInButton: HTMLElement, zoomOutButton: HTMLElement) {
         this.containerElement = containerElement;
         this.jsPlumbInst = jsPlumbInst;
         this.depthInput = depthInput;
         this.descendantsButton = descendantsButton;
+        this.containerElementWrapper = containerElementWrapper;
+        this.zoomInButton = zoomInButton;
+        this.zoomOutButton = zoomOutButton;
 
         this.connectionParameters = {
             anchors: ["Bottom", "Top"],
@@ -23,6 +36,9 @@ export class GenealogyView {
             deleteEndpointsOnDetach: false,
             detachable: false
         }
+
+        this.addZoomEventListeners();
+        this.addPanningEventListeners();
     }
 
     public displayPersonWithDescendants(person: Person) {
@@ -58,6 +74,51 @@ export class GenealogyView {
     
     public connect(source: Person, target: Person): void {
         this.jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, this.connectionParameters);
+    }
+
+    private addZoomEventListeners() {
+        this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {
+            this.scale -= 0.1;
+            if (this.scale < 0.1) {
+                this.scale = 0.1;
+            }
+            // jsPlumbInst.setZoom(scale);
+            this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        });
+
+        this.zoomInButton.addEventListener("click", (event: MouseEvent) => {
+            this.scale += 0.1;
+            // jsPlumbInst.setZoom(scale);
+            this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        });    
+    }
+
+    private addPanningEventListeners() {
+        this.containerElementWrapper.addEventListener("mousedown", (event: MouseEvent) => {
+            this.lastX = event.offsetX;
+            this.lastY = event.offsetY;
+            this.isPaning = true;
+        });
+    
+        this.containerElementWrapper.addEventListener("mousemove", (event: MouseEvent) => {
+            if (this.isPaning) {
+                let xDifference = event.offsetX - this.lastX;
+                let yDifference = event.offsetY - this.lastY;
+    
+                this.transformX += xDifference;
+                this.transformY += yDifference;
+                
+                this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+                this.jsPlumbInst.repaintEverything();
+    
+                this.lastX = event.offsetX;
+                this.lastY = event.offsetY;
+            }
+        });
+    
+        this.containerElementWrapper.addEventListener("mouseup", (event: MouseEvent) => {
+            this.isPaning = false;
+        });
     }
 
     // getters and setters

@@ -1,6 +1,7 @@
-#jsplumb-container-container {
+#jsplumb-container-wrapper {
     border: black 3px solid;
     overflow: hidden;
+    cursor: move;
 }
 
 #jsplumb-container {
