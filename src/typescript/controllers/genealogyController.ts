@@ -14,9 +14,7 @@ export class GenealogyController {
 
     private addEventListenersToButtonsAndInput(): void {
         this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent) => {
-            console.log("create event listner");
             this.genealogy.getDescendants(this.genealogyView.getDepth()).then(() => {
-                console.log("descendants");
                 this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
             });
         });
