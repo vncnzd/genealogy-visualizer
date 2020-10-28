@@ -1,9 +1,12 @@
+#jsplumb-container-container {
+    border: black 3px solid;
+    overflow: hidden;
+}
+
 #jsplumb-container {
     width: 100%;
     height: 600px;
-    border: black 3px solid;
     position: relative;
-    overflow: scroll;
 }
 
 #search-results {
