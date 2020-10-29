@@ -15,30 +15,25 @@ export class Genealogy {
         return this.getChildrenOfPersonRecursively(this.rootPerson, this.people, depth);
     }
 
-    // TODO Refactor this
     private async getChildrenOfPersonRecursively(currentPerson: Person, descendants: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
             let children: Person[] = await currentPerson.getChildrenFromDatabase();
+            let promises: Promise<Map<string, Person>>[] = [];
 
             for (const child of children) {
                 if (descendants.has(child.getId())) {
-                    // child already in descendants map, thus already visited
-                    let existingChild: Person = descendants.get(child.getId());
-                    currentPerson.getChildren().push(existingChild);
+                    // this child has already been fetched, thus we don't have to deal with this branch anymore
+                    let alreadyFetchedChild = descendants.get(child.getId());
+                    currentPerson.getChildren().push(alreadyFetchedChild);
                 } else {
-                    // child is not in descendants map, thus not visited before
-                    descendants.set(child.getId(), child);
                     currentPerson.getChildren().push(child);
-                    
-                    // Remove the awaits to make this method faster, but then the map gets immediately returned,
-                    // so that you don't know when it ended.
-                    await this.getChildrenOfPersonRecursively(child, descendants, depth - 1);
-                    await this.addParentsToChild(currentPerson, child, descendants);
+                    descendants.set(child.getId(), child);
+                    promises.push(this.getChildrenOfPersonRecursively(child, descendants, depth - 1));
                 }
             }
-        }
 
-        return descendants;
+            return Promise.all(promises).then(() => { return descendants });
+        }
     }
 
     private addParentsToChild(parent: Person, child: Person, peopleMap: Map<string, Person>) {

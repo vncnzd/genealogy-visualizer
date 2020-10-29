@@ -14,7 +14,10 @@ export class GenealogyController {
 
     private addEventListenersToButtonsAndInput(): void {
         this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent) => {
-            this.genealogy.getDescendants(this.genealogyView.getDepth()).then(() => {
+            let depth = this.genealogyView.getDepth();
+
+            this.genealogy.getDescendants(depth).then((descendants: Map<string, Person>) => {
+                console.log(descendants.size + " descendants found");
                 this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
             });
         });
