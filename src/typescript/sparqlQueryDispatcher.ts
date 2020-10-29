@@ -14,10 +14,7 @@ export class SPARQLQueryDispatcher {
 	}
 
 	async query(sparqlQuery): Promise<string> {
-		// makes sure, that only maxNumberOfConcurrentRequests are done at the same time
-		while (this.numberOfConcurrentRequests >= this.maxNumberOfConcurrentRequests) {
-			await new Promise(r => setTimeout(r, this.sleepTimeoutInMilliSeconds));
-		}
+		await this.waitIfThereAreTooManyConcurrentRequests();
 
 		const fullUrl: string = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
 		const headers: HeadersInit = { 'Accept': 'application/sparql-results+json' };
@@ -38,6 +35,13 @@ export class SPARQLQueryDispatcher {
 			console.info("There is an attempt to set the max number of concurrent requests below 1")
 		} else {
 			this.maxNumberOfConcurrentRequests = maxNumberOfConcurrentRequests;
+		}
+	}
+
+	private async waitIfThereAreTooManyConcurrentRequests() {
+		// makes sure, that only maxNumberOfConcurrentRequests are done at the same time
+		while (this.numberOfConcurrentRequests >= this.maxNumberOfConcurrentRequests) {
+			await new Promise(r => setTimeout(r, this.sleepTimeoutInMilliSeconds));
 		}
 	}
 }
