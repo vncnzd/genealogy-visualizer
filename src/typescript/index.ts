@@ -14,7 +14,7 @@ import { SearchListView } from './views/searchListView';
 const languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN;
 const endpointUrl: string = 'https://query.wikidata.org/sparql';
 const maxNumberOfConcurrentRequests = 5;
-const sleepTimeForConcurrentRequestsInMilliseconds = 50;
+const sleepTimeForConcurrentRequestsInMilliseconds = 10;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
 const queryBuilder: QueryBuilder = new QueryBuilder(languageIdentifier);
 
@@ -30,7 +30,6 @@ const zoomInButton: HTMLElement = document.querySelector("#zoom-in");
 const zoomOutButton: HTMLElement = document.querySelector("#zoom-out");
 
 const jsPlumbInst: jsPlumbInstance = jsPlumb.getInstance();
-jsPlumbInst.setZoom(0.5);
 jsPlumbInst.setContainer(jsPlumbContainer);
 
 const genealogy: Genealogy = new Genealogy();
