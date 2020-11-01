@@ -1,45 +1,36 @@
 import { SexOrGenderIdentifier } from "./sexOrGenderIdentifier";
 
 export class SexOrGender {
-    private sexOrGenderIdentifier: SexOrGenderIdentifier;
+    private sexOrGenderId: SexOrGenderIdentifier;
     private sexOrGenderLabel: string;
 
-    constructor(sexOrGenderIdentifier: SexOrGenderIdentifier, sexOrGenderLabel: string) {
-        this.sexOrGenderIdentifier = sexOrGenderIdentifier;
-        this.sexOrGenderLabel = sexOrGenderLabel;
-    }
-
-    public static buildBySexOrGenderId(id: string, label: string): SexOrGender {
-        let sexOrGenderIdentifier: SexOrGenderIdentifier;
-
-        switch (id) {
+    constructor(sexOrGenderId: string, sexOrGenderLabel: string) {
+        switch (sexOrGenderId) {
             case "Q6581097":
-                sexOrGenderIdentifier = SexOrGenderIdentifier.male;
+                this.sexOrGenderId = SexOrGenderIdentifier.male;
                 break;
             case "Q6581072":
-                sexOrGenderIdentifier = SexOrGenderIdentifier.female;
+                this.sexOrGenderId = SexOrGenderIdentifier.female;
                 break;
             case "Q1097630":
-                sexOrGenderIdentifier = SexOrGenderIdentifier.intersex;
+                this.sexOrGenderId = SexOrGenderIdentifier.intersex;
                 break;
             case "Q1052281":
-                sexOrGenderIdentifier = SexOrGenderIdentifier.transgenderFemale;
+                this.sexOrGenderId = SexOrGenderIdentifier.transgenderFemale;
                 break;
             case "Q2449503":
-                sexOrGenderIdentifier = SexOrGenderIdentifier.transgenderMale;
+                this.sexOrGenderId = SexOrGenderIdentifier.transgenderMale;
                 break;
             default:
-                sexOrGenderIdentifier = null;
+                this.sexOrGenderId = null;
                 break;
         }
-
-        return new SexOrGender(sexOrGenderIdentifier, label);
     }
 
     // getters and setters
 
     public getSexOrGenderIdentifier(): SexOrGenderIdentifier {
-        return this.sexOrGenderIdentifier;
+        return this.sexOrGenderId;
     }
 
     public getSexOrGenderLabel(): string {

@@ -41,7 +41,7 @@ export class Person {
                 const id: string = (result.hasOwnProperty("item")) ? result["item"]["value"].split("/").pop() : ""; // because item returns a string of format {endpoint}/entity/{id}
                 const name: string = (result.hasOwnProperty("itemLabel")) ? result["itemLabel"]["value"] : "";
                 const description: string = (result.hasOwnProperty("itemDescription")) ? result["itemDescription"]["value"] : "";
-                const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? SexOrGender.buildBySexOrGenderId(result["sexOrGender"]["value"].split("/").pop(), result["sexOrGenderLabel"]["value"]) : null;
+                const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? new SexOrGender(result["sexOrGender"]["value"].split("/").pop(), result["sexOrGenderLabel"]["value"]) : null;
 
                 // TODO: deal with dates
                 const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
