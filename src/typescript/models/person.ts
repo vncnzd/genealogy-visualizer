@@ -1,11 +1,11 @@
-import { QueryBuilder } from "../queryBuilder";
+import { QueryHelper } from "../queryHelper";
 import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { SPARQLQueryDispatcher } from "../sparqlQueryDispatcher";
 
 export class Person {
     private static sparqlQueryDispatcher: SPARQLQueryDispatcher;
-    private static queryBuilder: QueryBuilder;
+    private static queryHelper: QueryHelper;
     
     private id: string;
     private name: string;
@@ -25,7 +25,7 @@ export class Person {
     }
 
     public static findHumansByEntitySearch(searchValue: string): Promise<Array<Person>> {
-        let query: string = Person.queryBuilder.buildEntitySearchQuery(searchValue);
+        let query: string = Person.queryHelper.getEntitySearchQuery(searchValue);
 
         return this.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -85,7 +85,7 @@ export class Person {
     }
 
     public getChildrenFromDatabase(): Promise<Array<Person>> {
-        let query: string = Person.queryBuilder.buildGetChildrenQuery(this.getId());
+        let query: string = Person.queryHelper.getChildrenQuery(this.getId());
         
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -93,7 +93,7 @@ export class Person {
     }
 
     public getFatherFromDatabase(): Promise<Array<Person>> {
-        let query: string = Person.queryBuilder.buildGetFatherQuery(this.getId());
+        let query: string = Person.queryHelper.getFatherQuery(this.getId());
 
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -101,7 +101,7 @@ export class Person {
     }
 
     public getMotherFromDatabase(): Promise<Array<Person>> {
-        let query: string = Person.queryBuilder.buildGetMotherQuery(this.getId());
+        let query: string = Person.queryHelper.getMotherQuery(this.getId());
 
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -109,7 +109,7 @@ export class Person {
     }
 
     public getParentsFromDatabase(): Promise<Array<Person>> {
-        let query: string = Person.queryBuilder.buildGetParentsQuery(this.getId());
+        let query: string = Person.queryHelper.getParentsQuery(this.getId());
 
         return Person.sparqlQueryDispatcher.query(query).then(response => {
             return Person.getListOfPeopleFromResponse(response);
@@ -126,8 +126,8 @@ export class Person {
         this.sparqlQueryDispatcher = sparqlQueryDispatcher;
     }
 
-    public static setQueryBuilder(queryBuilder: QueryBuilder): void {
-        this.queryBuilder = queryBuilder;
+    public static setQueryBuilder(queryBuilder: QueryHelper): void {
+        this.queryHelper = queryBuilder;
     }
 
     public setId(id: string): void {

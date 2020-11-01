@@ -6,7 +6,7 @@ import { LanguageIdentifier } from './languageIdentifier';
 import { Genealogy } from './models/genealogy';
 import { Person } from './models/person';
 import { SearchList } from './models/searchList';
-import { QueryBuilder } from './queryBuilder';
+import { QueryHelper } from './queryHelper';
 import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
@@ -16,7 +16,7 @@ const endpointUrl: string = 'https://query.wikidata.org/sparql';
 const maxNumberOfConcurrentRequests: number = 5;
 const sleepTimeForConcurrentRequestsInMilliseconds: number = 10;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
-const queryBuilder: QueryBuilder = new QueryBuilder(languageIdentifier);
+const queryHelper: QueryHelper = new QueryHelper(languageIdentifier);
 
 // html elements
 const searchButton: HTMLElement = document.querySelector('#search-button');
@@ -40,5 +40,5 @@ const searchList: SearchList = new SearchList();
 const searchListView: SearchListView = new SearchListView(searchInput, searchButton, searchResultTable);
 const searchListController = new SearchListController(searchList, searchListView, genealogyController);
 
-Person.setQueryBuilder(queryBuilder);
+Person.setQueryBuilder(queryHelper);
 Person.setSparqlQueryDispatcher(sparqlQueryDispatcher);
