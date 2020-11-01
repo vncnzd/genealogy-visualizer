@@ -1,16 +1,20 @@
 import { LanguageIdentifier } from "./languageIdentifier";
 
 export class SPARQLQueryDispatcher {
-	private endpoint: string;
+	private endpointUrl: string;
 	private numberOfConcurrentRequests: number;
 	private maxNumberOfConcurrentRequests: number;
 	private sleepTimeoutInMilliSeconds: number;
+	private requestInit: RequestInit;
 
-	constructor(endpoint: string, maxNumberOfConcurrentRequests: number, sleepTimeoutInMilliseconds: number = 100) {
+	constructor(endpoint: string, maxNumberOfConcurrentRequests: number = 5, sleepTimeoutInMilliseconds: number = 100) {
 		this.numberOfConcurrentRequests = 0;
-		this.endpoint = endpoint;
+		this.endpointUrl = endpoint;
 		this.maxNumberOfConcurrentRequests = maxNumberOfConcurrentRequests;
 		this.sleepTimeoutInMilliSeconds = sleepTimeoutInMilliseconds;
+		this.requestInit = { 
+			headers: { 'Accept': 'application/sparql-results+json' } 
+		};
 	}
 
 	async query(sparqlQuery): Promise<string> {
@@ -19,13 +23,12 @@ export class SPARQLQueryDispatcher {
 			await new Promise(r => setTimeout(r, this.sleepTimeoutInMilliSeconds));
 		}
 
-		const fullUrl: string = this.endpoint + '?query=' + encodeURIComponent(sparqlQuery);
-		const headers: HeadersInit = { 'Accept': 'application/sparql-results+json' };
+		const fullUrl: string = this.endpointUrl + '?query=' + encodeURIComponent(sparqlQuery);
 		
 		this.numberOfConcurrentRequests++;
 		console.log("Number of concurrent Requests: " + this.numberOfConcurrentRequests);
 		
-		return fetch(fullUrl, {headers}).then(response => {
+		return fetch(fullUrl, this.requestInit).then(response => {
 			return response.json(); 
 		}).catch((error) => {
 			console.error(error);
