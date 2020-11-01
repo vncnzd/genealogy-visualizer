@@ -5,6 +5,8 @@ export class SexOrGender {
     private sexOrGenderLabel: string;
 
     constructor(sexOrGenderId: string, sexOrGenderLabel: string) {
+        this.sexOrGenderLabel = sexOrGenderLabel;
+
         switch (sexOrGenderId) {
             case "Q6581097":
                 this.sexOrGenderId = SexOrGenderIdentifier.male;
@@ -29,7 +31,7 @@ export class SexOrGender {
 
     // getters and setters
 
-    public getSexOrGenderIdentifier(): SexOrGenderIdentifier {
+    public getSexOrGenderId(): SexOrGenderIdentifier {
         return this.sexOrGenderId;
     }
 

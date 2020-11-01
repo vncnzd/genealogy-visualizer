@@ -21,7 +21,7 @@ export class SearchListController {
         this.searchListView.getSearchButtonElement().addEventListener("click", () => {
             Person.findHumansByEntitySearch(this.searchListView.getSearchInputElement().value).then((people: Array<Person>) => {
                 this.searchList.clearResultPeople();
-                this.searchList.getResultPeople().push.apply(this.searchList.getResultPeople(), people);
+                this.searchList.getSearchResultPeople().push.apply(this.searchList.getSearchResultPeople(), people);
 
                 this.searchListView.updateList(people);
                 this.addEventListenersToResultTableRows();

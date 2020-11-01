@@ -12,7 +12,7 @@ export class QueryHelper {
     }
 
     public getChildrenQuery(fatherId: string): string {
-        let query = `${this.getSelectVariables()} WHERE {`;
+        let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `wd:${fatherId} wdt:P40 ?${this.itemVariable}.`;
         query +=        this.getTriples();
         query +=        this.getLabelService();
@@ -22,7 +22,7 @@ export class QueryHelper {
     }
 
     public getFatherQuery(personId: string): string {
-        let query = `${this.getSelectVariables()} WHERE {`;
+        let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `wd:${personId} wdt:P22 ?${this.itemVariable}.`;
         query +=        this.getTriples();
         query +=        this.getLabelService();
@@ -32,7 +32,7 @@ export class QueryHelper {
     }
 
     public getMotherQuery(personId: string): string {
-        let query = `${this.getSelectVariables()} WHERE {`;
+        let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `wd:${personId} wdt:P25 ?${this.itemVariable}.`;
         query +=        this.getTriples();
         query +=        this.getLabelService();
@@ -42,7 +42,7 @@ export class QueryHelper {
     }
 
     public getParentsQuery(personId: string): string {
-        let query = `${this.getSelectVariables()} WHERE {`;
+        let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `?${this.itemVariable} wdt:P40 wd:${personId}.`;
         query +=        this.getTriples();
         query +=        this.getLabelService();
@@ -51,9 +51,8 @@ export class QueryHelper {
         return query;
     }
 
-    // TODO: Maybe add dynasty as optional to this query or add dynastay as a second query and unify both result lists
     public getEntitySearchQuery(searchValue: string, limit: number = 15): string {
-        let query = `${this.getSelectVariables()} WHERE { `;
+        let query: string = `${this.getSelectVariables()} WHERE { `;
         query +=        this.getTriples();
         query +=        `SERVICE wikibase:mwapi {`;
         query +=            `bd:serviceParam wikibase:endpoint "www.wikidata.org";`;
@@ -69,7 +68,7 @@ export class QueryHelper {
     }
 
     private getSelectVariables(): string {
-        let select = "SELECT";
+        let select: string = "SELECT";
 
         for (const selectVariable of this.selectVariables) {
             select += " ?" + selectVariable;

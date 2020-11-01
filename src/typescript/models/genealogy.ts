@@ -37,7 +37,7 @@ export class Genealogy {
     }
 
     private addParentsToChild(parent: Person, child: Person, peopleMap: Map<string, Person>) {
-        switch (parent.getSexOrGender().getSexOrGenderIdentifier()) {
+        switch (parent.getSexOrGender().getSexOrGenderId()) {
             case SexOrGenderIdentifier.male:
                 child.setFather(parent);
 

@@ -1,27 +1,27 @@
 import { Person } from "./person";
 
 export class SearchList {
-    private resultPeople: Person[];
+    private searchResultPeople: Person[];
     private selectedPerson: Person;
 
     constructor() {
-        this.resultPeople = [];
+        this.searchResultPeople = [];
     }
 
     public clearResultPeople(): void {
-        this.resultPeople.length = 0;
+        this.searchResultPeople.length = 0;
     }
 
     public findPersonInResultPeople(id: string): Person {
-        return this.resultPeople.find(element => {
+        return this.searchResultPeople.find((element: Person): boolean => {
             return element.getId() === id;
         });
     }
 
     // getters and setters
 
-    public getResultPeople(): Person[] {
-        return this.resultPeople;
+    public getSearchResultPeople(): Person[] {
+        return this.searchResultPeople;
     }
 
     public getSelectedPerson(): Person {
