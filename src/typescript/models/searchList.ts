@@ -6,13 +6,14 @@ export class SearchList {
 
     constructor() {
         this.searchResultPeople = [];
+        this.selectedPerson = null;
     }
 
-    public clearResultPeople(): void {
+    public clearSearchResultPeople(): void {
         this.searchResultPeople.length = 0;
     }
 
-    public findPersonInResultPeople(id: string): Person {
+    public findPersonInSearchResultPeople(id: string): Person {
         return this.searchResultPeople.find((element: Person): boolean => {
             return element.getId() === id;
         });

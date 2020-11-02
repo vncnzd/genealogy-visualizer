@@ -20,7 +20,7 @@ export class SearchListController {
     private addSearchEventListener(): void {
         this.searchListView.getSearchButtonElement().addEventListener("click", () => {
             Person.findHumansByEntitySearch(this.searchListView.getSearchInputElement().value).then((people: Array<Person>) => {
-                this.searchList.clearResultPeople();
+                this.searchList.clearSearchResultPeople();
                 this.searchList.getSearchResultPeople().push.apply(this.searchList.getSearchResultPeople(), people);
 
                 this.searchListView.updateList(people);
@@ -42,7 +42,7 @@ export class SearchListController {
         element.addEventListener("click", (event: Event) => {
             let rowElement: HTMLElement = <HTMLElement> event.currentTarget;
             let id: string = rowElement.dataset.id;
-            let selectedPerson: Person = this.searchList.findPersonInResultPeople(id);
+            let selectedPerson: Person = this.searchList.findPersonInSearchResultPeople(id);
 
             if (selectedPerson != undefined) {
                 this.searchList.setSelectedPerson(selectedPerson);
