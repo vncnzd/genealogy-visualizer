@@ -1,7 +1,5 @@
-import { Genealogy } from "../models/genealogy";
 import { Person } from "../models/person";
 import { SearchList } from "../models/searchList";
-import { GenealogyView } from "../views/genealogyView";
 import { SearchListView } from "../views/searchListView";
 import { GenealogyController } from "./genealogyController";
 

@@ -127,19 +127,37 @@ export class GenealogyView {
 
     private addZoomEventListeners() {
         this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {
-            this.scale -= 0.1;
-            if (this.scale < 0.1) {
-                this.scale = 0.1;
-            }
-            // jsPlumbInst.setZoom(scale);
-            this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+            this.zoomOut();
         });
 
         this.zoomInButton.addEventListener("click", (event: MouseEvent) => {
-            this.scale += 0.1;
-            // jsPlumbInst.setZoom(scale);
-            this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-        });    
+            this.zoomIn();
+        });
+        
+        window.addEventListener("wheel", (event: WheelEvent) => {
+            const delta = Math.sign(event.deltaY);
+            
+            if (delta > 0) {
+                this.zoomOut();
+            } else {
+                this.zoomIn();
+            }
+        });
+    }
+
+    private zoomIn(): void {
+        this.scale += 0.1;
+        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        this.jsPlumbInst.setZoom(this.scale);
+    }
+
+    private zoomOut(): void {
+        this.scale -= 0.1;
+        if (this.scale < 0.1) {
+            this.scale = 0.1;
+        }
+        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        this.jsPlumbInst.setZoom(this.scale);
     }
 
     private addPanningEventListeners() {

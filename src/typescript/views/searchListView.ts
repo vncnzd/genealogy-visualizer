@@ -16,6 +16,7 @@ export class SearchListView {
         this.searchButtonElement.innerHTML = "Search";
 
         this.searchResultTableElement = document.createElement("table");
+        this.searchResultTableElement.id = "search-results-table";
         parentElement.appendChild(this.searchResultTableElement);
     }
 
