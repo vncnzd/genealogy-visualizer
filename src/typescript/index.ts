@@ -20,18 +20,10 @@ const queryHelper: QueryHelper = new QueryHelper(languageIdentifier);
 
 // html elements
 const searchContainer: HTMLElement = document.querySelector("#search-container");
-const jsPlumbContainer: HTMLElement = document.querySelector("#jsplumb-container");
-const jsPlumbContainerWrapper: HTMLElement = document.querySelector("#jsplumb-container-wrapper");
-const depthInput: HTMLInputElement = document.querySelector("#depth-input");
-const descendantsButton: HTMLElement = document.querySelector("#descendants-button");
-const zoomInButton: HTMLElement = document.querySelector("#zoom-in");
-const zoomOutButton: HTMLElement = document.querySelector("#zoom-out");
-
-const jsPlumbInst: jsPlumbInstance = jsPlumb.getInstance();
-jsPlumbInst.setContainer(jsPlumbContainer);
+const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
 const genealogy: Genealogy = new Genealogy();
-const genealogyView: GenealogyView = new GenealogyView(jsPlumbContainer, jsPlumbInst, depthInput, descendantsButton, jsPlumbContainerWrapper, zoomInButton, zoomOutButton);
+const genealogyView: GenealogyView = new GenealogyView(genealogyContainer);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();

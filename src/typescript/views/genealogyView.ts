@@ -1,5 +1,4 @@
-import { ConnectParams, jsPlumbInstance } from "jsplumb";
-import { PersonController } from "../controllers/personController";
+import { ConnectParams, jsPlumb, jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
 import { PersonView } from "./personView";
 
@@ -9,6 +8,7 @@ export class GenealogyView {
     private jsPlumbInst: jsPlumbInstance;
     private depthInput: HTMLInputElement;
     private descendantsButton: HTMLElement;
+    private ascendantsButton: HTMLElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
     private connectionParameters: ConnectParams;
@@ -20,14 +20,54 @@ export class GenealogyView {
     private transformX: number = 0;
     private transformY: number = 0
 
-    constructor(containerElement: HTMLElement, jsPlumbInst: jsPlumbInstance, depthInput: HTMLInputElement, descendantsButton: HTMLElement, containerElementWrapper: HTMLElement, zoomInButton: HTMLElement, zoomOutButton: HTMLElement) {
-        this.containerElement = containerElement;
-        this.jsPlumbInst = jsPlumbInst;
-        this.depthInput = depthInput;
-        this.descendantsButton = descendantsButton;
-        this.containerElementWrapper = containerElementWrapper;
-        this.zoomInButton = zoomInButton;
-        this.zoomOutButton = zoomOutButton;
+    constructor(parentElement: HTMLElement) {
+        const optionsContainer: HTMLElement = document.createElement("div");
+        parentElement.appendChild(optionsContainer);
+
+        this.ascendantsButton = document.createElement("button");
+        this.ascendantsButton.innerHTML = "Ascendants";
+        this.ascendantsButton.id = "ascendants-button";
+        optionsContainer.appendChild(this.ascendantsButton);
+
+        this.descendantsButton = document.createElement("button");
+        this.descendantsButton.innerHTML = "Descendants";
+        this.descendantsButton.id = "descendants-button";
+        optionsContainer.appendChild(this.descendantsButton);
+
+        const depthInputLabel = document.createElement("label");
+        depthInputLabel.innerHTML = "Depth";
+        depthInputLabel.setAttribute("for", "depth-input");
+        optionsContainer.appendChild(depthInputLabel);
+
+        this.depthInput = document.createElement("input");
+        this.depthInput.type = "number";
+        this.depthInput.name = "depth-input";
+        this.depthInput.id = "depth-input";
+        this.depthInput.max = "50";
+        this.depthInput.min = "1";
+        this.depthInput.value = "4";
+        optionsContainer.appendChild(this.depthInput);
+
+        this.containerElementWrapper = document.createElement("div");
+        this.containerElementWrapper.id = "jsplumb-container-wrapper";
+        parentElement.appendChild(this.containerElementWrapper);
+        
+        this.containerElement = document.createElement("div");
+        this.containerElement.id = "jsplumb-container";
+        this.containerElementWrapper.appendChild(this.containerElement);
+
+        this.jsPlumbInst = jsPlumb.getInstance();
+        this.jsPlumbInst.setContainer(this.containerElement);
+
+        this.zoomInButton = document.createElement("button");
+        this.zoomInButton.id = "zoom-in-button";
+        this.zoomInButton.innerHTML = "Zoom in";
+        parentElement.appendChild(this.zoomInButton);
+
+        this.zoomOutButton = document.createElement("button");
+        this.zoomOutButton.id = "zoom-out-button";
+        this.zoomOutButton.innerHTML = "Zoom out";
+        parentElement.appendChild(this.zoomOutButton);
 
         this.connectionParameters = {
             anchors: ["Bottom", "Top"],
