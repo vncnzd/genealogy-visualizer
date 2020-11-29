@@ -31,11 +31,11 @@ export class PersonView {
         paragraphElement.appendChild(nameTextNode);
         this.divContainerElement.appendChild(paragraphElement);
 
-        let buttonElement: HTMLElement = document.createElement("button");
-        let buttonTextNode: Text = document.createTextNode("Delete");
-        buttonElement.appendChild(buttonTextNode);
-        this.divContainerElement.appendChild(buttonElement);
-        this.deleteButtonElement = buttonElement;
+        // let buttonElement: HTMLElement = document.createElement("button");
+        // let buttonTextNode: Text = document.createTextNode("Delete");
+        // buttonElement.appendChild(buttonTextNode);
+        // this.divContainerElement.appendChild(buttonElement);
+        // this.deleteButtonElement = buttonElement;
         
         this.rootElement.appendChild(this.divContainerElement);
 

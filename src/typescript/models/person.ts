@@ -1,6 +1,5 @@
 import { QueryHelper } from "../queryHelper";
 import { SexOrGender } from "../sexOrGender";
-import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { SPARQLQueryDispatcher } from "../sparqlQueryDispatcher";
 
 export class Person {
@@ -24,11 +23,11 @@ export class Person {
         this.children = [];
     }
 
-    public static findHumansByEntitySearch(searchValue: string): Promise<Array<Person>> {
+    public static findHumansByEntitySearch(searchValue: string): Promise<Person[]> {
         let query: string = Person.queryHelper.getEntitySearchQuery(searchValue);
 
-        return this.sparqlQueryDispatcher.query(query).then(response => {
-            return Person.getListOfPeopleFromResponse(response);
+        return this.sparqlQueryDispatcher.query(query).then((response: string): Promise<Person[]> => {
+            return Promise.resolve(Person.getListOfPeopleFromResponse(response));
         });
     }
 
