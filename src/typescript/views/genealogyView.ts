@@ -136,7 +136,7 @@ export class GenealogyView {
         
         window.addEventListener("wheel", (event: WheelEvent) => {
             const delta = Math.sign(event.deltaY);
-            
+
             if (delta > 0) {
                 this.zoomOut();
             } else {
@@ -176,7 +176,7 @@ export class GenealogyView {
                 this.transformY += yDifference;
                 
                 this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-                this.jsPlumbInst.repaintEverything();
+                // this.jsPlumbInst.repaintEverything();
     
                 this.lastX = event.offsetX;
                 this.lastY = event.offsetY;

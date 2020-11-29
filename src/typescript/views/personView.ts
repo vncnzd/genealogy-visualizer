@@ -30,16 +30,10 @@ export class PersonView {
         paragraphElement.classList.add("person-name");
         paragraphElement.appendChild(nameTextNode);
         this.divContainerElement.appendChild(paragraphElement);
-
-        // let buttonElement: HTMLElement = document.createElement("button");
-        // let buttonTextNode: Text = document.createTextNode("Delete");
-        // buttonElement.appendChild(buttonTextNode);
-        // this.divContainerElement.appendChild(buttonElement);
-        // this.deleteButtonElement = buttonElement;
         
         this.rootElement.appendChild(this.divContainerElement);
 
-        this.jsPlumbInst.draggable(this.divContainerElement.id);
+        this.jsPlumbInst.draggable(this.divContainerElement);
     }
 
     public moveToPositionInPx(left: number, top: number) {
