@@ -1,4 +1,3 @@
-import { jsPlumb, jsPlumbInstance } from 'jsplumb';
 import '../sass/style.scss';
 import { GenealogyController } from './controllers/genealogyController';
 import { SearchListController } from './controllers/searchListController';
@@ -11,7 +10,23 @@ import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
 
-const languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN;
+let languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN;
+
+const urlParameters: URLSearchParams = new URLSearchParams(window.location.search);
+const languageParemeter: string = urlParameters.get("lang");
+
+if (languageParemeter !== null) {
+    switch (languageParemeter) {
+        case "de":
+            languageIdentifier = LanguageIdentifier.DE;
+            break;
+        case "en":
+        default:
+            languageIdentifier = LanguageIdentifier.EN;
+            break;
+    }
+}
+
 const endpointUrl: string = 'https://query.wikidata.org/sparql';
 const maxNumberOfConcurrentRequests: number = 5;
 const sleepTimeForConcurrentRequestsInMilliseconds: number = 10;
