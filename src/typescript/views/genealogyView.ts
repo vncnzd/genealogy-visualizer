@@ -1,4 +1,4 @@
-import { ConnectParams, jsPlumb, jsPlumbInstance } from "jsplumb";
+import { ConnectParams, EndpointOptions, jsPlumb, jsPlumbInstance, jsPlumbUtil } from "jsplumb";
 import { Person } from "../models/person";
 import { PersonView } from "./personView";
 
@@ -74,7 +74,16 @@ export class GenealogyView {
             connector: [ "Flowchart", {}],
             endpoint: "Dot",
             deleteEndpointsOnDetach: false,
-            detachable: false
+            detachable: false,
+            // @ts-ignore
+            paintStyle:{ 
+                stroke: "black", 
+                strokeWidth: 5 
+            },
+            endpointStyles: [
+                { fill:"black"},
+                { fill:"grey" }
+            ]
         }
 
         this.addZoomEventListeners();
