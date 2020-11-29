@@ -2,8 +2,8 @@ import { ConnectParams, jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
 
 export class PersonView {
-    static width = 100;
-    static height = 100;
+    static width = 150;
+    static height = 150;
 
     private rootElement: HTMLElement;
     private divContainerElement: HTMLElement;
@@ -24,14 +24,20 @@ export class PersonView {
         this.divContainerElement.id = person.getId();
         this.divContainerElement.style.width = PersonView.width + "px";
         this.divContainerElement.style.height = PersonView.height + "px";
+        this.rootElement.appendChild(this.divContainerElement);
 
         let paragraphElement: HTMLElement = document.createElement("p");
-        let nameTextNode: Text = document.createTextNode(person.getName());
         paragraphElement.classList.add("person-name");
-        paragraphElement.appendChild(nameTextNode);
         this.divContainerElement.appendChild(paragraphElement);
-        
-        this.rootElement.appendChild(this.divContainerElement);
+
+        let nameTextNode: Text = document.createTextNode(person.getName());
+        paragraphElement.appendChild(nameTextNode);
+
+        let birthAndDeathParagraph: HTMLElement = document.createElement("p");
+        this.divContainerElement.appendChild(birthAndDeathParagraph);
+
+        let birthAndDeathTextNode: Text = document.createTextNode(person.getDatesOfBirth()[0]?.getFullYear() + " - " + person.getDatesOfDeath()[0]?.getFullYear());
+        birthAndDeathParagraph.appendChild(birthAndDeathTextNode);
 
         this.jsPlumbInst.draggable(this.divContainerElement);
     }
