@@ -19,9 +19,7 @@ const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(e
 const queryHelper: QueryHelper = new QueryHelper(languageIdentifier);
 
 // html elements
-const searchButton: HTMLElement = document.querySelector('#search-button');
-const searchInput: HTMLInputElement = document.querySelector("#search-input");
-const searchResultTable: HTMLElement = document.querySelector("#search-results");
+const searchContainer: HTMLElement = document.querySelector("#search-container");
 const jsPlumbContainer: HTMLElement = document.querySelector("#jsplumb-container");
 const jsPlumbContainerWrapper: HTMLElement = document.querySelector("#jsplumb-container-wrapper");
 const depthInput: HTMLInputElement = document.querySelector("#depth-input");
@@ -37,7 +35,7 @@ const genealogyView: GenealogyView = new GenealogyView(jsPlumbContainer, jsPlumb
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
-const searchListView: SearchListView = new SearchListView(searchInput, searchButton, searchResultTable);
+const searchListView: SearchListView = new SearchListView(searchContainer);
 const searchListController = new SearchListController(searchList, searchListView, genealogyController);
 
 Person.setQueryBuilder(queryHelper);

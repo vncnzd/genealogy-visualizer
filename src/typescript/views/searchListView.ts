@@ -6,10 +6,17 @@ export class SearchListView {
     private searchResultTableElement: HTMLElement;
     private currentSelectedRowElement: HTMLElement;
 
-    constructor(searchInputElement: HTMLInputElement, searchButtonElement: HTMLElement, searchResultTable: HTMLElement) {
-        this.searchInputElement = searchInputElement;
-        this.searchButtonElement = searchButtonElement;
-        this.searchResultTableElement = searchResultTable;
+    constructor(parentElement: HTMLElement) {
+        this.searchInputElement = document.createElement("input");
+        parentElement.appendChild(this.searchInputElement);
+        this.searchInputElement.setAttribute("type", "search");
+
+        this.searchButtonElement = document.createElement("button");
+        parentElement.appendChild(this.searchButtonElement);
+        this.searchButtonElement.innerHTML = "Search";
+
+        this.searchResultTableElement = document.createElement("table");
+        parentElement.appendChild(this.searchResultTableElement);
     }
 
     public updateList(searchPeople: Array<Person>) {
