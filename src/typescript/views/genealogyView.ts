@@ -8,7 +8,7 @@ export class GenealogyView {
     private jsPlumbInst: jsPlumbInstance;
     private depthInput: HTMLInputElement;
     private descendantsButton: HTMLElement;
-    private ascendantsButton: HTMLElement;
+    private ancestorsButton: HTMLElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
     private connectionParameters: ConnectParams;
@@ -24,10 +24,10 @@ export class GenealogyView {
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
-        this.ascendantsButton = document.createElement("button");
-        this.ascendantsButton.innerHTML = "Ascendants";
-        this.ascendantsButton.id = "ascendants-button";
-        optionsContainer.appendChild(this.ascendantsButton);
+        this.ancestorsButton = document.createElement("button");
+        this.ancestorsButton.innerHTML = "Ancestors";
+        this.ancestorsButton.id = "ancestors-button";
+        optionsContainer.appendChild(this.ancestorsButton);
 
         this.descendantsButton = document.createElement("button");
         this.descendantsButton.innerHTML = "Descendants";
@@ -200,5 +200,9 @@ export class GenealogyView {
 
     public getDescendantsButton(): HTMLElement {
         return this.descendantsButton;
+    }
+
+    public getAncestorsButton(): HTMLElement {
+        return this.ancestorsButton;
     }
 }

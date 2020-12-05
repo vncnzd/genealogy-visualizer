@@ -11,12 +11,11 @@ import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
 
 let languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN;
-
 const urlParameters: URLSearchParams = new URLSearchParams(window.location.search);
-const languageParemeter: string = urlParameters.get("lang");
+const languageParameter: string = urlParameters.get("lang");
 
-if (languageParemeter !== null) {
-    switch (languageParemeter) {
+if (languageParameter !== null) {
+    switch (languageParameter) {
         case "de":
             languageIdentifier = LanguageIdentifier.DE;
             break;
@@ -37,6 +36,8 @@ const queryHelper: QueryHelper = new QueryHelper(languageIdentifier);
 const searchContainer: HTMLElement = document.querySelector("#search-container");
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
+
+// models, views, controllers
 const genealogy: Genealogy = new Genealogy();
 const genealogyView: GenealogyView = new GenealogyView(genealogyContainer);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
@@ -45,5 +46,6 @@ const searchList: SearchList = new SearchList();
 const searchListView: SearchListView = new SearchListView(searchContainer);
 const searchListController = new SearchListController(searchList, searchListView, genealogyController);
 
+// setting static attributes
 Person.setQueryBuilder(queryHelper);
 Person.setSparqlQueryDispatcher(sparqlQueryDispatcher);

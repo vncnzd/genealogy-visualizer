@@ -16,9 +16,18 @@ export class GenealogyController {
         this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent) => {
             let depth = this.genealogyView.getDepth();
 
-            this.genealogy.getDescendants(depth).then((descendants: Map<string, Person>) => {
+            this.genealogy.getDescendantsOfRootPerson(depth).then((descendants: Map<string, Person>) => {
                 console.log(descendants.size + " descendants found");
                 this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
+            });
+        });
+
+        this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent) => {
+            let depth = this.genealogyView.getDepth();
+
+            this.genealogy.getAncestorsOfRootPerson(depth).then((ancestors: Map<string, Person>) => {
+                console.log(ancestors.size + " ancestors found");
+                console.log(this.genealogy.getRootPerson());
             });
         });
     }
