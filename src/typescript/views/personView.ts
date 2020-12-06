@@ -1,5 +1,6 @@
 import { ConnectParams, jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
+import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 
 export class PersonView {
     static width = 150;
@@ -25,6 +26,12 @@ export class PersonView {
         this.divContainerElement.style.width = PersonView.width + "px";
         this.divContainerElement.style.height = PersonView.height + "px";
         this.rootElement.appendChild(this.divContainerElement);
+
+        if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.male) {
+            this.divContainerElement.classList.add("male");
+        } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.female) {
+            this.divContainerElement.classList.add("female")
+        }
 
         let paragraphElement: HTMLElement = document.createElement("p");
         paragraphElement.classList.add("person-name");

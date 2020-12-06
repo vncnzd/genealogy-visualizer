@@ -1,5 +1,7 @@
-import { ConnectParams, EndpointOptions, jsPlumb, jsPlumbInstance, jsPlumbUtil } from "jsplumb";
+import { ConnectParams, jsPlumb, jsPlumbInstance, jsPlumbUtil } from "jsplumb";
+import { PersonController } from "../controllers/personController";
 import { Person } from "../models/person";
+import { SexOrGender } from "../sexOrGender";
 import { PersonView } from "./personView";
 
 export class GenealogyView {
@@ -13,6 +15,10 @@ export class GenealogyView {
     private zoomOutButton: HTMLElement;
     private connectionParameters: ConnectParams;
 
+    private timelineContainerWrapper: HTMLElement;
+    private timelineContainer: HTMLElement;
+    private timelineLineContainers: HTMLElement[];
+
     private scale = 1;
     private isPaning: boolean = false;
     private lastX: number = 0;
@@ -21,6 +27,7 @@ export class GenealogyView {
     private transformY: number = 0
 
     constructor(parentElement: HTMLElement) {
+        this.timelineLineContainers = new Array<HTMLElement>(6000);
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
@@ -88,6 +95,53 @@ export class GenealogyView {
 
         this.addZoomEventListeners();
         this.addPanningEventListeners();
+        this.addTestPerson();
+        this.addTimeline();
+    }
+
+    private addTimeline() {
+        this.timelineContainerWrapper = document.createElement("div");
+        this.timelineContainerWrapper.id = "timeline-container-wrapper";
+        this.containerElementWrapper.appendChild(this.timelineContainerWrapper);
+
+        this.timelineContainer = document.createElement("div");
+        this.timelineContainer.id = "timeline-container";
+        this.timelineContainerWrapper.appendChild(this.timelineContainer);
+
+        for (let index = 0; index < 6000; index+= 10) {
+            let position: number = index - 3000;
+            const lineContainer: HTMLElement = document.createElement("div");
+            this.timelineContainer.appendChild(lineContainer);
+            lineContainer.style.top = `${position * 10}px`
+            lineContainer.classList.add("timeline-line-container");
+            this.timelineLineContainers.push(lineContainer);
+
+            const line: HTMLElement = document.createElement("div");
+            line.classList.add("timeline-line");
+            lineContainer.appendChild(line);
+
+            const number: HTMLElement = document.createElement("div");
+            const numberText: Text = document.createTextNode("" + position)
+            number.appendChild(numberText);
+
+            lineContainer.appendChild(number);
+        }
+    }
+
+    private addTestPerson() {
+        // put this into the genealogy controller
+        let person: Person = new Person("testid");
+        person.setName("testperson");
+        person.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        let birthDate = new Date();
+        birthDate.setFullYear(900);
+        person.getDatesOfBirth().push(birthDate);
+
+        let deathDate = new Date();
+        deathDate.setFullYear(950);
+        person.getDatesOfDeath().push(deathDate);
+        let personView: PersonView = new PersonView(person, this.containerElement, this.jsPlumbInst);
+        let personController: PersonController = new PersonController(person, personView);
     }
 
     public displayPersonWithDescendants(person: Person) {
@@ -147,16 +201,37 @@ export class GenealogyView {
 
     private zoomIn(): void {
         this.scale += 0.1;
-        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-        this.jsPlumbInst.setZoom(this.scale);
+        this.adjustElementsToScale(this.scale);
     }
 
     private zoomOut(): void {
         this.scale -= 0.1;
+
         if (this.scale < 0.1) {
             this.scale = 0.1;
         }
-        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+
+        this.adjustElementsToScale(this.scale);        
+    }
+
+    private adjustElementsToScale(scale: number): void {
+        this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        
+        this.timelineContainerWrapper.style.transform = `scale(${scale})`;
+        document.querySelectorAll(".timeline-line-container").forEach((element: Element, index: number) => {
+            const htmlElement: HTMLElement = (element as HTMLElement);
+
+            if (index % 10 !== 0) {
+                if (scale < 0.25) {
+                    htmlElement.style.visibility = "hidden";
+                } else {
+                    htmlElement.style.visibility = "visible";
+                }
+            }
+
+            (element as HTMLElement).style.transform = `scale(${1 / this.scale})`;
+        });
+
         this.jsPlumbInst.setZoom(this.scale);
     }
 
@@ -176,6 +251,7 @@ export class GenealogyView {
                 this.transformY += yDifference;
                 
                 this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+                this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
                 // this.jsPlumbInst.repaintEverything();
     
                 this.lastX = event.offsetX;

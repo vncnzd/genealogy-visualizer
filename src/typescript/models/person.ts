@@ -58,11 +58,11 @@ export class Person {
                 } else {
                     let person: Person = people.find(element => element.getId() === id);
 
-                    if (person.getDatesOfBirth().find(e => e.getTime() !== dateOfBirth.getTime())) {
+                    if (person.getDatesOfBirth().find(element => element.getTime() !== dateOfBirth.getTime())) {
                         person.getDatesOfBirth().push(dateOfBirth);
                     }
 
-                    if (person.getDatesOfDeath().find(e => e.getTime() !== dateOfDeath.getTime())) {
+                    if (person.getDatesOfDeath().find(element => element.getTime() !== dateOfDeath.getTime())) {
                         person.getDatesOfDeath().push(dateOfDeath);
                     }
                 }
