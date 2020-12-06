@@ -4,7 +4,7 @@ import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 
 export class PersonView {
     static boxWidth = 150;
-    static boxHeight = 150;
+    static boxHeight = 100;
 
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
