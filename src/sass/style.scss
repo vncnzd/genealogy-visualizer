@@ -1,3 +1,6 @@
+$male-color: #77bc65;
+$female-color: #729fcf;
+
 #jsplumb-container-wrapper {
     position: relative;
     border: black 3px solid;
@@ -15,9 +18,32 @@
     border-collapse: collapse;
 }
 
-.square {
+.person-container {
     position: absolute;
-    background-color: gray;
+    display: flex;
+    flex-direction: column;
+}
+
+.person-box {
+    border-style: solid;
+    border-radius: 2px;
+}
+
+.male {
+    background-color: $male-color;
+    border-color: darken($male-color, 30%);
+}
+
+.female {
+    background-color: $female-color;
+    border-color: darken($female-color, 30%);
+}
+
+.lifeline {
+    background-color: $female-color;
+    opacity: 0.3;
+    margin: 0 33%;
+    flex-grow: 1;
 }
 
 .person-name {

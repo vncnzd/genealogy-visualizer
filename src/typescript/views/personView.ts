@@ -1,17 +1,19 @@
-import { ConnectParams, jsPlumbInstance } from "jsplumb";
+import { jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 
 export class PersonView {
-    static width = 150;
-    static height = 150;
+    static boxWidth = 150;
+    static boxHeight = 150;
 
     private rootElement: HTMLElement;
-    private divContainerElement: HTMLElement;
+    private containerElement: HTMLElement;
+    private boxElement: HTMLElement;
+    private lifeLineTop: HTMLElement;
+    private lifeLineBottom: HTMLElement;
     private deleteButtonElement: HTMLElement;
 
     private jsPlumbInst: jsPlumbInstance;
-    // private connectionParameters: ConnectParams;
 
     constructor(person: Person, rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
         this.rootElement = rootElement;
@@ -20,54 +22,68 @@ export class PersonView {
     }
 
     public createPersonNode(person: Person): void {
-        this.divContainerElement = document.createElement("div");
-        this.divContainerElement.classList.add("square");
-        this.divContainerElement.id = person.getId();
-        this.divContainerElement.style.width = PersonView.width + "px";
-        this.divContainerElement.style.height = PersonView.height + "px";
-        this.rootElement.appendChild(this.divContainerElement);
+        this.containerElement = document.createElement("div");
+        this.containerElement.classList.add("person-container")
+        this.rootElement.appendChild(this.containerElement);
 
+        this.lifeLineTop = document.createElement("div");
+        this.lifeLineTop.classList.add("lifeline");
+        this.containerElement.appendChild(this.lifeLineTop);
+
+        this.boxElement = document.createElement("div");
+        this.boxElement.classList.add("person-box");
+        this.boxElement.id = person.getId();
+        this.boxElement.style.width = PersonView.boxWidth + "px";
+        this.boxElement.style.height = PersonView.boxHeight + "px";
         if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.male) {
-            this.divContainerElement.classList.add("male");
+            this.boxElement.classList.add("male");
         } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.female) {
-            this.divContainerElement.classList.add("female")
+            this.boxElement.classList.add("female")
         }
 
         let paragraphElement: HTMLElement = document.createElement("p");
         paragraphElement.classList.add("person-name");
-        this.divContainerElement.appendChild(paragraphElement);
-
         let nameTextNode: Text = document.createTextNode(person.getName());
         paragraphElement.appendChild(nameTextNode);
+        this.boxElement.appendChild(paragraphElement);
 
         let birthAndDeathParagraph: HTMLElement = document.createElement("p");
-        this.divContainerElement.appendChild(birthAndDeathParagraph);
-
         let birthAndDeathTextNode: Text = document.createTextNode(person.getDatesOfBirth()[0]?.getFullYear() + " - " + person.getDatesOfDeath()[0]?.getFullYear());
         birthAndDeathParagraph.appendChild(birthAndDeathTextNode);
+        this.boxElement.appendChild(birthAndDeathParagraph);
+        
+        this.containerElement.appendChild(this.boxElement);
 
-        this.jsPlumbInst.draggable(this.divContainerElement);
+        this.lifeLineBottom = document.createElement("div");
+        this.lifeLineBottom.classList.add("lifeline");
+        this.containerElement.appendChild(this.lifeLineBottom);
+
+        this.jsPlumbInst.draggable(this.containerElement);
+    }
+
+    public setHeightInPx(height: number) {
+        this.containerElement.style.height = `${height}px`;
     }
 
     public moveToPositionInPx(left: number, top: number) {
-        this.divContainerElement.style.left = left + "px";
-        this.divContainerElement.style.top = top + "px";
+        this.containerElement.style.left = left + "px";
+        this.containerElement.style.top = top + "px";
     }
 
     public getViewWidthInPx(): number {
-        return this.divContainerElement.offsetWidth;
+        return this.containerElement.offsetWidth;
     }
 
     public getViewHeightInPx(): number {
-        return this.divContainerElement.offsetHeight;
+        return this.containerElement.offsetHeight;
     }
 
     public getPositionLeft(): number {
-        return this.divContainerElement.offsetLeft;
+        return this.containerElement.offsetLeft;
     }
 
     public getPositionTop(): number {
-        return this.divContainerElement.offsetTop;
+        return this.containerElement.offsetTop;
     }
 
     public getDeleteButtonElement(): HTMLElement {
@@ -75,6 +91,6 @@ export class PersonView {
     }
 
     public remove() {
-        this.rootElement.removeChild(this.divContainerElement);
+        this.rootElement.removeChild(this.containerElement);
     }
 }

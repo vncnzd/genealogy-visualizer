@@ -18,6 +18,7 @@ export class GenealogyView {
     private timelineContainerWrapper: HTMLElement;
     private timelineContainer: HTMLElement;
     private timelineLineContainers: HTMLElement[];
+    private pixelPerYear: number;
 
     private scale = 1;
     private isPaning: boolean = false;
@@ -28,6 +29,8 @@ export class GenealogyView {
 
     constructor(parentElement: HTMLElement) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
+        this.pixelPerYear = 10;
+
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
@@ -108,11 +111,10 @@ export class GenealogyView {
         this.timelineContainer.id = "timeline-container";
         this.timelineContainerWrapper.appendChild(this.timelineContainer);
 
-        for (let index = 0; index < 6000; index+= 10) {
-            let position: number = index - 3000;
+        for (let year = -5000; year < 2500; year+= 10) {
             const lineContainer: HTMLElement = document.createElement("div");
             this.timelineContainer.appendChild(lineContainer);
-            lineContainer.style.top = `${position * 10}px`
+            lineContainer.style.top = `${year * this.pixelPerYear}px`
             lineContainer.classList.add("timeline-line-container");
             this.timelineLineContainers.push(lineContainer);
 
@@ -121,27 +123,34 @@ export class GenealogyView {
             lineContainer.appendChild(line);
 
             const number: HTMLElement = document.createElement("div");
-            const numberText: Text = document.createTextNode("" + position)
+            const numberText: Text = document.createTextNode("" + year)
             number.appendChild(numberText);
 
             lineContainer.appendChild(number);
         }
     }
 
-    private addTestPerson() {
+    private addTestPerson(): void {
         // put this into the genealogy controller
         let person: Person = new Person("testid");
         person.setName("testperson");
         person.setSexOrGender(new SexOrGender("Q6581097", "male"));
         let birthDate = new Date();
-        birthDate.setFullYear(900);
+        birthDate.setFullYear(0);
         person.getDatesOfBirth().push(birthDate);
 
         let deathDate = new Date();
-        deathDate.setFullYear(950);
+        deathDate.setFullYear(40);
         person.getDatesOfDeath().push(deathDate);
         let personView: PersonView = new PersonView(person, this.containerElement, this.jsPlumbInst);
+        personView.setHeightInPx((deathDate.getFullYear() - birthDate.getFullYear()) * this.pixelPerYear);
         let personController: PersonController = new PersonController(person, personView);
+        this.placePersonAccordingToYear(person, personView);
+    }
+
+    private placePersonAccordingToYear(person: Person, personView: PersonView): void {
+        const year: number = person.getDatesOfBirth()[0].getFullYear();
+        personView.moveToPositionInPx(50, year * this.pixelPerYear);
     }
 
     public displayPersonWithDescendants(person: Person) {
@@ -156,8 +165,8 @@ export class GenealogyView {
         let parentTop: number = parentPersonView.getPositionTop();
         let parentLeft: number = parentPersonView.getPositionLeft();
         let numberOfChildren: number = parent.getChildren().length;
-        let personViewHeight: number = PersonView.height;
-        let personViewWidth: number = PersonView.width;
+        let personViewHeight: number = PersonView.boxHeight;
+        let personViewWidth: number = PersonView.boxWidth;
 
         let calculatedTop = parentTop + personViewHeight + 100;
         let parentMiddleLeft = (parentLeft + personViewWidth / 2);
@@ -218,7 +227,7 @@ export class GenealogyView {
         this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
         
         this.timelineContainerWrapper.style.transform = `scale(${scale})`;
-        document.querySelectorAll(".timeline-line-container").forEach((element: Element, index: number) => {
+        this.timelineLineContainers.forEach((element: Element, index: number) => {
             const htmlElement: HTMLElement = (element as HTMLElement);
 
             if (index % 10 !== 0) {
