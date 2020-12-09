@@ -190,42 +190,98 @@ export class GenealogyView {
 
     private addZoomEventListeners() {
         this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {
-            this.zoomOut();
+            // this.zoomOut();
         });
 
         this.zoomInButton.addEventListener("click", (event: MouseEvent) => {
-            this.zoomIn();
+            // this.zoomIn();
         });
         
-        window.addEventListener("wheel", (event: WheelEvent) => {
+        this.containerElementWrapper.addEventListener("wheel", (event: WheelEvent) => {
             const delta = Math.sign(event.deltaY);
 
+            let rect = this.containerElementWrapper.getBoundingClientRect();
+            let mouseX = event.clientX - rect.left; //x position within the element.
+            let mouseY = event.clientY - rect.top;  //y position within the element.
+
+            
+
             if (delta > 0) {
-                this.zoomOut();
+                console.log("MouseX: " + mouseX + " MouseY: " + mouseY)
+                console.log("Old Scale: " + this.scale);
+                let oldScale = this.scale;
+                this.scale -= 0.1;
+                let scaleRatio = this.scale / oldScale;
+                console.log("New Scale: " + this.scale);
+                console.log("TransformX: " + this.transformX)
+                console.log("TransformY: " + this.transformY)
+                let scaledMouseX = this.transformX + (mouseX - this.transformX) * scaleRatio;
+                let scaledMouseY = this.transformY + (mouseY- this.transformY) * scaleRatio;
+
+                this.transformX += mouseX - scaledMouseX;
+                this.transformY += mouseY - scaledMouseY;
+
+                console.log("New TransformX: " + this.transformX);
+                console.log("new Transform Y: " + this.transformY);
+
+                this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+                // this.zoomOut(event);
             } else {
-                this.zoomIn();
+                // mouseX = 3;
+                // mouseY = 1.5;
+                console.log("MouseX: " + mouseX + " MouseY: " + mouseY)
+                console.log("Old Scale: " + this.scale);
+                let oldScale = this.scale;
+                this.scale += 0.1;
+                let scaleRatio = this.scale / oldScale;
+                console.log("New Scale: " + this.scale);
+                console.log("TransformX: " + this.transformX)
+                console.log("TransformY: " + this.transformY)
+                let scaledMouseX = this.transformX + (mouseX - this.transformX) * scaleRatio;
+                let scaledMouseY = this.transformY + (mouseY- this.transformY) * scaleRatio;
+
+                this.transformX += mouseX - scaledMouseX;
+                this.transformY += mouseY - scaledMouseY;
+
+                console.log("New TransformX: " + this.transformX);
+                console.log("new Transform Y: " + this.transformY);
+
+                this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+                // this.zoomIn(event);
             }
         });
     }
 
-    private zoomIn(): void {
+    private zoomIn(wheelEvent: WheelEvent): void {
+        let scaleRatio = 1 - this.scale + 0.1 / this.scale;
         this.scale += 0.1;
-        this.adjustElementsToScale(this.scale);
+        let scale = this.scale;
+        // this.transformX += (wheelEvent.offsetX - this.transformX) * scaleRatio;
+        // this.transformX += (wheelEvent.offsetX - this.transformX) * scaleRatio;
+
+        this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        // this.adjustElementsToScale(this.scale, wheelEvent);
     }
 
-    private zoomOut(): void {
+    private zoomOut(wheelEvent: WheelEvent): void {
         this.scale -= 0.1;
 
         if (this.scale < 0.1) {
             this.scale = 0.1;
         }
 
-        this.adjustElementsToScale(this.scale);        
+        // this.adjustElementsToScale(this.scale, wheelEvent);        
     }
 
-    private adjustElementsToScale(scale: number): void {
-        this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+    private adjustElementsToScale(scale: number, wheelEvent: WheelEvent): void {
+        // let xDifference = wheelEvent.offsetX * this.scale;
+        // let yDifference = wheelEvent.offsetY * this.scale;
+
+        // this.transformX += xDifference;
+        // this.transformY += yDifference;
         
+        
+        //timeline code
         this.timelineContainerWrapper.style.transform = `scale(${scale})`;
         this.timelineLineContainers.forEach((element: Element, index: number) => {
             const htmlElement: HTMLElement = (element as HTMLElement);
@@ -246,19 +302,17 @@ export class GenealogyView {
 
     private addPanningEventListeners() {
         this.containerElementWrapper.addEventListener("mousedown", (event: MouseEvent) => {
-            this.lastX = event.offsetX;
-            this.lastY = event.offsetY;
             this.isPaning = true;
         });
     
         this.containerElementWrapper.addEventListener("mousemove", (event: MouseEvent) => {
             if (this.isPaning) {
-                let xDifference = event.offsetX - this.lastX;
-                let yDifference = event.offsetY - this.lastY;
+                let xDifference = event.movementX;
+                let yDifference = event.movementY;
     
                 this.transformX += xDifference;
                 this.transformY += yDifference;
-                
+
                 this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
                 this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
                 // this.jsPlumbInst.repaintEverything();
