@@ -111,7 +111,7 @@ export class GenealogyView {
         this.timelineContainer.id = "timeline-container";
         this.timelineContainerWrapper.appendChild(this.timelineContainer);
 
-        for (let year = -5000; year < 2500; year+= 10) {
+        for (let year = -5000; year < 2500; year+= 5) {
             const lineContainer: HTMLElement = document.createElement("div");
             this.timelineContainer.appendChild(lineContainer);
             lineContainer.style.top = `${year * this.pixelPerYear}px`
@@ -201,93 +201,47 @@ export class GenealogyView {
             const delta = Math.sign(event.deltaY);
 
             let rect = this.containerElementWrapper.getBoundingClientRect();
-            let mouseX = event.clientX - rect.left; //x position within the element.
-            let mouseY = event.clientY - rect.top;  //y position within the element.
-
-            
+            let mousePositionX = event.clientX - rect.left;
+            let mousePositionY = event.clientY - rect.top;
 
             if (delta > 0) {
-                console.log("MouseX: " + mouseX + " MouseY: " + mouseY)
-                console.log("Old Scale: " + this.scale);
-                let oldScale = this.scale;
-                this.scale -= 0.1;
-                let scaleRatio = this.scale / oldScale;
-                console.log("New Scale: " + this.scale);
-                console.log("TransformX: " + this.transformX)
-                console.log("TransformY: " + this.transformY)
-                let scaledMouseX = this.transformX + (mouseX - this.transformX) * scaleRatio;
-                let scaledMouseY = this.transformY + (mouseY- this.transformY) * scaleRatio;
-
-                this.transformX += mouseX - scaledMouseX;
-                this.transformY += mouseY - scaledMouseY;
-
-                console.log("New TransformX: " + this.transformX);
-                console.log("new Transform Y: " + this.transformY);
-
-                this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-                // this.zoomOut(event);
+                let zoomFactor = 0.1;
+                let minimumScale = 0.1;
+                if ((this.scale - zoomFactor) < minimumScale) {
+                    this.scaleAndTranslateElements(this.scale, minimumScale, mousePositionX, mousePositionY);
+                    this.scale = minimumScale;
+                } else if((this.scale - zoomFactor) > minimumScale) {
+                    this.scaleAndTranslateElements(this.scale, this.scale - zoomFactor, mousePositionX, mousePositionY);
+                    this.scale -= zoomFactor;
+                }
             } else {
-                // mouseX = 3;
-                // mouseY = 1.5;
-                console.log("MouseX: " + mouseX + " MouseY: " + mouseY)
-                console.log("Old Scale: " + this.scale);
-                let oldScale = this.scale;
-                this.scale += 0.1;
-                let scaleRatio = this.scale / oldScale;
-                console.log("New Scale: " + this.scale);
-                console.log("TransformX: " + this.transformX)
-                console.log("TransformY: " + this.transformY)
-                let scaledMouseX = this.transformX + (mouseX - this.transformX) * scaleRatio;
-                let scaledMouseY = this.transformY + (mouseY- this.transformY) * scaleRatio;
-
-                this.transformX += mouseX - scaledMouseX;
-                this.transformY += mouseY - scaledMouseY;
-
-                console.log("New TransformX: " + this.transformX);
-                console.log("new Transform Y: " + this.transformY);
-
-                this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-                // this.zoomIn(event);
+                let zoomFactor = 0.1;
+                this.scaleAndTranslateElements(this.scale, this.scale + zoomFactor, mousePositionX, mousePositionY);
+                this.scale += zoomFactor;
             }
         });
     }
 
-    private zoomIn(wheelEvent: WheelEvent): void {
-        let scaleRatio = 1 - this.scale + 0.1 / this.scale;
-        this.scale += 0.1;
-        let scale = this.scale;
-        // this.transformX += (wheelEvent.offsetX - this.transformX) * scaleRatio;
-        // this.transformX += (wheelEvent.offsetX - this.transformX) * scaleRatio;
+    private scaleAndTranslateElements(currentScale: number, newScale: number, mousePositionX: number, mousePositionY: number) {
+        let scaleRatio = newScale / currentScale;
 
-        this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-        // this.adjustElementsToScale(this.scale, wheelEvent);
+        let scaledMousePositionX = this.transformX + (mousePositionX - this.transformX) * scaleRatio;
+        let scaledMousePositionY = this.transformY + (mousePositionY- this.transformY) * scaleRatio;
+
+        this.transformX += mousePositionX - scaledMousePositionX;
+        this.transformY += mousePositionY - scaledMousePositionY;
+
+        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
+        this.adjustTimelineScale(newScale);
     }
 
-    private zoomOut(wheelEvent: WheelEvent): void {
-        this.scale -= 0.1;
-
-        if (this.scale < 0.1) {
-            this.scale = 0.1;
-        }
-
-        // this.adjustElementsToScale(this.scale, wheelEvent);        
-    }
-
-    private adjustElementsToScale(scale: number, wheelEvent: WheelEvent): void {
-        // let xDifference = wheelEvent.offsetX * this.scale;
-        // let yDifference = wheelEvent.offsetY * this.scale;
-
-        // this.transformX += xDifference;
-        // this.transformY += yDifference;
-        
-        
-        //timeline code
-        this.timelineContainerWrapper.style.transform = `scale(${scale})`;
+    private adjustTimelineScale(scale: number): void {
         this.timelineLineContainers.forEach((element: Element, index: number) => {
             const htmlElement: HTMLElement = (element as HTMLElement);
 
-            if (index % 10 !== 0) {
-                if (scale < 0.25) {
+            if (index % 5 !== 0) {
+                if (scale <= 0.2) {
                     htmlElement.style.visibility = "hidden";
                 } else {
                     htmlElement.style.visibility = "visible";
@@ -297,7 +251,7 @@ export class GenealogyView {
             (element as HTMLElement).style.transform = `scale(${1 / this.scale})`;
         });
 
-        this.jsPlumbInst.setZoom(this.scale);
+        // this.jsPlumbInst.setZoom(this.scale);
     }
 
     private addPanningEventListeners() {
