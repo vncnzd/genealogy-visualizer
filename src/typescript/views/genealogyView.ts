@@ -3,6 +3,7 @@ import { PersonController } from "../controllers/personController";
 import { Person } from "../models/person";
 import { SexOrGender } from "../sexOrGender";
 import { PersonView } from "./personView";
+import { Position } from "../position"
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -22,14 +23,14 @@ export class GenealogyView {
 
     private scale = 1;
     private isPaning: boolean = false;
-    private lastX: number = 0;
-    private lastY: number = 0;
     private transformX: number = 0;
     private transformY: number = 0
+    private zoomFactor: number;
 
     constructor(parentElement: HTMLElement) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
         this.pixelPerYear = 10;
+        this.zoomFactor = 0.1;
 
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
@@ -190,39 +191,41 @@ export class GenealogyView {
 
     private addZoomEventListeners() {
         this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {
-            // this.zoomOut();
+            const relativeMousePosition: Position = this.getRelativeMousePosition(event);
+            this.zoom(relativeMousePosition, -this.zoomFactor)
         });
 
         this.zoomInButton.addEventListener("click", (event: MouseEvent) => {
-            // this.zoomIn();
+            const relativeMousePosition: Position = this.getRelativeMousePosition(event);
+            this.zoom(relativeMousePosition, this.zoomFactor);
         });
         
         this.containerElementWrapper.addEventListener("wheel", (event: WheelEvent) => {
             const delta = Math.sign(event.deltaY);
 
-            let rect = this.containerElementWrapper.getBoundingClientRect();
-            let mousePositionX = event.clientX - rect.left;
-            let mousePositionY = event.clientY - rect.top;
-
+            const relativeMousePosition: Position = this.getRelativeMousePosition(event);
             if (delta > 0) {
-                let zoomFactor = 0.1;
-                let minimumScale = 0.1;
-                if ((this.scale - zoomFactor) < minimumScale) {
-                    this.scaleAndTranslateElements(this.scale, minimumScale, mousePositionX, mousePositionY);
-                    this.scale = minimumScale;
-                } else if((this.scale - zoomFactor) > minimumScale) {
-                    this.scaleAndTranslateElements(this.scale, this.scale - zoomFactor, mousePositionX, mousePositionY);
-                    this.scale -= zoomFactor;
-                }
+                this.zoom(relativeMousePosition, -this.zoomFactor)
             } else {
-                let zoomFactor = 0.1;
-                this.scaleAndTranslateElements(this.scale, this.scale + zoomFactor, mousePositionX, mousePositionY);
-                this.scale += zoomFactor;
+                this.zoom(relativeMousePosition, this.zoomFactor);
             }
         });
     }
 
-    private scaleAndTranslateElements(currentScale: number, newScale: number, mousePositionX: number, mousePositionY: number) {
+    private zoom(mousePosition: Position, zoomFactor: number) {
+        this.scaleAndTranslateElements(this.scale, this.scale + zoomFactor, mousePosition.x, mousePosition.y);
+        this.scale += zoomFactor;
+    }
+
+    private getRelativeMousePosition(mouseEvent: MouseEvent): Position {
+        let rect = this.containerElementWrapper.getBoundingClientRect();
+        let mousePositionX = mouseEvent.clientX - rect.left;
+        let mousePositionY = mouseEvent.clientY - rect.top;
+
+        return new Position(mousePositionX, mousePositionY);
+    }
+
+    private scaleAndTranslateElements(currentScale: number, newScale: number, mousePositionX: number, mousePositionY: number): void {
         let scaleRatio = newScale / currentScale;
 
         let scaledMousePositionX = this.transformX + (mousePositionX - this.transformX) * scaleRatio;
@@ -250,8 +253,6 @@ export class GenealogyView {
 
             (element as HTMLElement).style.transform = `scale(${1 / this.scale})`;
         });
-
-        // this.jsPlumbInst.setZoom(this.scale);
     }
 
     private addPanningEventListeners() {
@@ -269,10 +270,6 @@ export class GenealogyView {
 
                 this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
                 this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
-                // this.jsPlumbInst.repaintEverything();
-    
-                this.lastX = event.offsetX;
-                this.lastY = event.offsetY;
             }
         });
     
