@@ -1,0 +1,20 @@
+{
+    "de": {
+        "title": "Genealogie",
+        "descendantsButtonText": "Nachfahren",
+        "ancestorsButtonText": "Vorfahren",
+        "searchButtonText": "Suchen",
+        "depthInputLabelText": "Tiefe",
+        "zoomInButtonText": "Reinzoomen",
+        "zoomOutButtonText": "Rauszoomen" 
+    },
+    "en": {
+        "title": "Genealogy",
+        "descendantsButtonText": "Descendants",
+        "ancestorsButtonText": "Ancestors",
+        "searchButtonText": "Search",
+        "depthInputLabelText": "Depth",
+        "zoomInButtonText": "Zoom in",
+        "zoomOutButtonText": "Zoom out" 
+    }
+}

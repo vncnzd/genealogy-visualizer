@@ -9,21 +9,23 @@ import { QueryHelper } from './queryHelper';
 import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
+import * as languageData from './languageData.json';
 
-let languageIdentifier: LanguageIdentifier = LanguageIdentifier.EN;
 const urlParameters: URLSearchParams = new URLSearchParams(window.location.search);
 const languageParameter: string = urlParameters.get("lang");
+let languageIdentifier: LanguageIdentifier;
+let currentLanguageData: Object;
 
-if (languageParameter !== null) {
-    switch (languageParameter) {
-        case "de":
-            languageIdentifier = LanguageIdentifier.DE;
-            break;
-        case "en":
-        default:
-            languageIdentifier = LanguageIdentifier.EN;
-            break;
-    }
+switch (languageParameter) {
+    case "de":
+        languageIdentifier = LanguageIdentifier.DE;
+        currentLanguageData = languageData["de"];
+        break;
+    case "en":
+    default:
+        languageIdentifier = LanguageIdentifier["en"];
+        currentLanguageData = languageData.en
+        break;
 }
 
 const endpointUrl: string = 'https://query.wikidata.org/sparql';
@@ -39,11 +41,11 @@ const genealogyContainer: HTMLElement = document.querySelector("#genealogy-conta
 
 // models, views, controllers
 const genealogy: Genealogy = new Genealogy();
-const genealogyView: GenealogyView = new GenealogyView(genealogyContainer);
+const genealogyView: GenealogyView = new GenealogyView(genealogyContainer, currentLanguageData);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
-const searchListView: SearchListView = new SearchListView(searchContainer);
+const searchListView: SearchListView = new SearchListView(searchContainer, currentLanguageData);
 const searchListController = new SearchListController(searchList, searchListView, genealogyController);
 
 // setting static attributes

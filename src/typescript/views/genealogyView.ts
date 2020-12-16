@@ -27,7 +27,7 @@ export class GenealogyView {
     private transformY: number = 0
     private zoomFactor: number;
 
-    constructor(parentElement: HTMLElement) {
+    constructor(parentElement: HTMLElement, languageData: Object) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
@@ -36,17 +36,17 @@ export class GenealogyView {
         parentElement.appendChild(optionsContainer);
 
         this.ancestorsButton = document.createElement("button");
-        this.ancestorsButton.innerHTML = "Ancestors";
+        this.ancestorsButton.innerHTML = languageData["ancestorsButtonText"];
         this.ancestorsButton.id = "ancestors-button";
         optionsContainer.appendChild(this.ancestorsButton);
 
         this.descendantsButton = document.createElement("button");
-        this.descendantsButton.innerHTML = "Descendants";
+        this.descendantsButton.innerHTML = languageData["descendantsButtonText"];
         this.descendantsButton.id = "descendants-button";
         optionsContainer.appendChild(this.descendantsButton);
 
         const depthInputLabel = document.createElement("label");
-        depthInputLabel.innerHTML = "Depth";
+        depthInputLabel.innerHTML = languageData["depthInputLabelText"];
         depthInputLabel.setAttribute("for", "depth-input");
         optionsContainer.appendChild(depthInputLabel);
 
@@ -72,12 +72,12 @@ export class GenealogyView {
 
         this.zoomInButton = document.createElement("button");
         this.zoomInButton.id = "zoom-in-button";
-        this.zoomInButton.innerHTML = "Zoom in";
+        this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
         parentElement.appendChild(this.zoomInButton);
 
         this.zoomOutButton = document.createElement("button");
         this.zoomOutButton.id = "zoom-out-button";
-        this.zoomOutButton.innerHTML = "Zoom out";
+        this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
         parentElement.appendChild(this.zoomOutButton);
 
         this.connectionParameters = {
@@ -247,7 +247,7 @@ export class GenealogyView {
             const htmlElement: HTMLElement = (element as HTMLElement);
 
             if (index % 5 !== 0) {
-                if (scale <= 0.2) {
+                if (scale <= 0.3) {
                     htmlElement.style.visibility = "hidden";
                 } else {
                     htmlElement.style.visibility = "visible";

@@ -6,14 +6,14 @@ export class SearchListView {
     private searchResultTableElement: HTMLElement;
     private currentSelectedRowElement: HTMLElement;
 
-    constructor(parentElement: HTMLElement) {
+    constructor(parentElement: HTMLElement, languageData: Object) {
         this.searchInputElement = document.createElement("input");
         parentElement.appendChild(this.searchInputElement);
         this.searchInputElement.setAttribute("type", "search");
 
         this.searchButtonElement = document.createElement("button");
         parentElement.appendChild(this.searchButtonElement);
-        this.searchButtonElement.innerHTML = "Search";
+        this.searchButtonElement.innerHTML = languageData["searchButtonText"];
 
         this.searchResultTableElement = document.createElement("table");
         this.searchResultTableElement.id = "search-results-table";
