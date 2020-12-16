@@ -202,10 +202,13 @@ export class GenealogyView {
         
         this.containerElementWrapper.addEventListener("wheel", (event: WheelEvent) => {
             const delta = Math.sign(event.deltaY);
+            const minimumScale = 0.2;
 
             const relativeMousePosition: Position = this.getRelativeMousePosition(event);
             if (delta > 0) {
-                this.zoom(relativeMousePosition, -this.zoomFactor)
+                if (this.scale > minimumScale) {
+                    this.zoom(relativeMousePosition, -this.zoomFactor);
+                }
             } else {
                 this.zoom(relativeMousePosition, this.zoomFactor);
             }
@@ -251,7 +254,7 @@ export class GenealogyView {
                 }
             }
 
-            (element as HTMLElement).style.transform = `scale(${1 / this.scale})`;
+            (element as HTMLElement).style.transform = `scale(${1 / scale})`;
         });
     }
 
