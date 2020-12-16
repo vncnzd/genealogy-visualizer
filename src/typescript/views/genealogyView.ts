@@ -234,8 +234,8 @@ export class GenealogyView {
         this.transformX += mousePositionX - scaledMousePositionX;
         this.transformY += mousePositionY - scaledMousePositionY;
 
-        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-        this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
+        this.containerElement.style.transform = `matrix(${newScale}, 0, 0, ${newScale}, ${this.transformX}, ${this.transformY})`;
+        this.timelineContainerWrapper.style.transform = `matrix(${newScale}, 0, 0, ${newScale}, 0, ${this.transformY})`;
         this.adjustTimelineScale(newScale);
     }
 
