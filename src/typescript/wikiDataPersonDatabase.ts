@@ -13,10 +13,6 @@ export class WikidataPersonDatabase implements PersonDatabase {
         this.sparqlQueryDispatcher = sparqlQueryDispatcher;
     }
 
-    public getPerson(id: string): Promise<Person> {
-        
-    }
-
     public getFatherOfPerson(id: string): Promise<Person> {
         const query = this.queryHelper.getFatherQuery(id);
 
@@ -68,12 +64,13 @@ export class WikidataPersonDatabase implements PersonDatabase {
     private getListOfPeopleFromResponse(responseObject: Object): Person[] {
         let results = responseObject["results"]["bindings"];
         let people: Person[] = [];
+        let itemVariable = this.queryHelper.getItemVariable();
 
         for (const result of Object.values(results)) { // TODO: don't forget to add babel to webpack
-            if (result.hasOwnProperty("item")) {
-                const id: string = (result.hasOwnProperty("item")) ? result["item"]["value"].split("/").pop() : ""; // because item returns a string of format {endpoint}/entity/{id}
-                const name: string = (result.hasOwnProperty("itemLabel")) ? result["itemLabel"]["value"] : "";
-                const description: string = (result.hasOwnProperty("itemDescription")) ? result["itemDescription"]["value"] : "";
+            if (result.hasOwnProperty(itemVariable)) {
+                const id: string = (result.hasOwnProperty(itemVariable)) ? result[itemVariable]["value"].split("/").pop() : ""; // because item returns a string of format {endpoint}/entity/{id}
+                const name: string = (result.hasOwnProperty(itemVariable + "Label")) ? result[itemVariable + "Label"]["value"] : "";
+                const description: string = (result.hasOwnProperty(itemVariable + "Description")) ? result[itemVariable + "Description"]["value"] : "";
                 const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? new SexOrGender(result["sexOrGender"]["value"].split("/").pop(), result["sexOrGenderLabel"]["value"]) : null;
 
                 // TODO: deal with dates

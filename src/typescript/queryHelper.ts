@@ -89,4 +89,8 @@ export class QueryHelper {
 
         return triples;
     }
+
+    public getItemVariable(): string {
+        return this.itemVariable
+    }
 }
