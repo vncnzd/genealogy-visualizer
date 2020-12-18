@@ -5,4 +5,5 @@ export interface PersonDatabase {
     getMotherOfPerson(id: string): Promise<Person>
     getFatherOfPerson(id: string): Promise<Person>
     getChildrenOfPerson(id: string): Promise<Person[]>
+    findPersonByLabel(label: string, limitForNumberOfPeople: number): Promise<Person[]>
 }
