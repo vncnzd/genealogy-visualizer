@@ -64,40 +64,6 @@ export class Genealogy {
         }
     }
 
-    private addParentsToChild(parent: Person, child: Person, peopleMap: Map<string, Person>) {
-        switch (parent.getSexOrGender().getSexOrGenderId()) {
-            case SexOrGenderIdentifier.male:
-                child.setFather(parent);
-
-                child.getMotherFromDatabase().then((mothers: Person[]) => {
-                    if (mothers.length > 0) {
-                        let mother: Person = mothers[0];
-                        if (peopleMap.has(mother.getId())) {
-                            mother = peopleMap.get(mother.getId());
-                        }
-                        child.setMother(mother);
-                    }
-                });
-                break;
-            case SexOrGenderIdentifier.female:
-                child.setMother(parent);
-
-                child.getFatherFromDatabase().then((fathers: Person[]) => {
-                    if (fathers.length > 0) {
-                        let father: Person = fathers[0];
-                        if (peopleMap.has(father.getId())) {
-                            father = peopleMap.get(father.getId());
-                        }
-                        child.setFather(father);
-                    }
-                });
-                break;
-            // TODO add switch cases for other enums
-            default:
-                break;
-        }
-    }
-
     public setRootPerson(person: Person): void {
         this.rootPerson = person;
     }
