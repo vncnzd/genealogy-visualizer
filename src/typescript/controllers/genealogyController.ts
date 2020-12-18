@@ -18,7 +18,8 @@ export class GenealogyController {
 
             this.genealogy.getDescendantsOfRootPerson(depth).then((descendants: Map<string, Person>) => {
                 console.log(descendants.size + " descendants found");
-                this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
+                console.log(this.genealogy.getRootPerson());
+                // this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
             });
         });
 

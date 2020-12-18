@@ -1,4 +1,3 @@
-import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { Person } from "./person";
 
