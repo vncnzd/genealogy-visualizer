@@ -18,7 +18,7 @@ export class SPARQLQueryDispatcher {
 	}
 
 	public async query(sparqlQuery): Promise<string> {
-		// makes sure, that only maxNumberOfConcurrentRequests are done at the same time
+		// makes sure, that only maxNumberOfConcurrentRequests requests are done at the same time
 		while (this.numberOfConcurrentRequests >= this.maxNumberOfConcurrentRequests) {
 			await new Promise(r => setTimeout(r, this.sleepTimeoutInMilliSeconds));
 		}

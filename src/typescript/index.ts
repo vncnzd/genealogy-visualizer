@@ -38,7 +38,6 @@ const queryHelper: QueryHelper = new QueryHelper(languageIdentifier);
 const searchContainer: HTMLElement = document.querySelector("#search-container");
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
-
 // models, views, controllers
 const genealogy: Genealogy = new Genealogy();
 const genealogyView: GenealogyView = new GenealogyView(genealogyContainer, currentLanguageData);

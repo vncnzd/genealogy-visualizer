@@ -29,20 +29,10 @@ export class Genealogy {
                 if (relatedPeople.has(parent.getId())) {
                     // this parent has already been fetched, thus we don't have to deal with this branch anymore
                     let alreadyFetchedParent = relatedPeople.get(parent.getId());
-                    if (alreadyFetchedParent.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.male) {
-                        currentPerson.setFather(alreadyFetchedParent);
-                    } else if (alreadyFetchedParent.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.female) {
-                        currentPerson.setMother(alreadyFetchedParent);
-                    }
-
+                    currentPerson.setParent(alreadyFetchedParent);
                     alreadyFetchedParent.getChildren().push(currentPerson);
                 } else {
-                    if (parent.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.male) {
-                        currentPerson.setFather(parent);
-                    } else if (parent.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.female) {
-                        currentPerson.setMother(parent);
-                    }
-
+                    currentPerson.setParent(parent);
                     parent.getChildren().push(currentPerson);
                     relatedPeople.set(parent.getId(), parent);
                     promises.push(this.getParentsOfPersonRecursively(parent, relatedPeople, depth - 1));

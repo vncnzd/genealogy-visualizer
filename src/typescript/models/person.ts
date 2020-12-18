@@ -1,5 +1,6 @@
 import { QueryHelper } from "../queryHelper";
 import { SexOrGender } from "../sexOrGender";
+import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { SPARQLQueryDispatcher } from "../sparqlQueryDispatcher";
 
 export class Person {
@@ -186,5 +187,13 @@ export class Person {
 
     public getSexOrGender(): SexOrGender {
         return this.sexOrGender;
+    }
+
+    public setParent(person: Person) {
+        if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.female) {
+            this.setMother(person);
+        } else if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.male) {
+            this.setFather(person);
+        }
     }
 }
