@@ -35,6 +35,15 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
+    public getParentsOfPerson(id: string): Promise<Array<Person>> {
+        let query: string = this.queryHelper.getParentsQuery(id);
+
+        return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
+            const listOfPeople = this.getListOfPeopleFromResponse(response);
+            return listOfPeople;
+        });
+    }
+
     public getChildrenOfPerson(id: string): Promise<Person[]> {
         const query = this.queryHelper.getChildrenQuery(id);
 
