@@ -1,12 +1,15 @@
+import { PersonDatabase } from "../personDatabase";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { Person } from "./person";
 
 export class Genealogy {
     private rootPerson: Person;
     private people: Map<string, Person>;
+    private personDatabase: PersonDatabase;
 
-    constructor() {
+    constructor(personDatabase: PersonDatabase) {
         this.people = new Map<string, Person>();
+        this.personDatabase = personDatabase;
     }
 
     public getAncestorsOfRootPerson(depth: number): Promise<Map<String, Person>> {
@@ -22,7 +25,7 @@ export class Genealogy {
 
     public async getParentsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
-            let parents: Person[] = await currentPerson.getParentsFromDatabase();
+            let parents: Person[] = await this.personDatabase.getParentsOfPerson(currentPerson.getId());
             let promises: Promise<Map<string, Person>>[] = [];
 
             for (const parent of parents) {
@@ -45,7 +48,7 @@ export class Genealogy {
 
     private async getChildrenOfPersonRecursively(currentPerson: Person, descendants: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
-            let children: Person[] = await currentPerson.getChildrenFromDatabase();
+            let children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getId());
             let promises: Promise<Map<string, Person>>[] = [];
 
             for (const child of children) {

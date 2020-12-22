@@ -42,14 +42,10 @@ const searchContainer: HTMLElement = document.querySelector("#search-container")
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
 // models, views, controllers
-const genealogy: Genealogy = new Genealogy();
+const genealogy: Genealogy = new Genealogy(personDatabase);
 const genealogyView: GenealogyView = new GenealogyView(genealogyContainer, currentLanguageData);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
 const searchListView: SearchListView = new SearchListView(searchContainer, currentLanguageData);
 const searchListController = new SearchListController(searchList, searchListView, genealogyController, personDatabase);
-
-// setting static attributes
-Person.setQueryBuilder(queryHelper);
-Person.setSparqlQueryDispatcher(sparqlQueryDispatcher);
