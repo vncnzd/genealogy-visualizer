@@ -10,6 +10,8 @@ import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
 import * as languageData from './languageData.json';
+import { PersonDatabase } from './personDatabase';
+import { WikidataPersonDatabase } from './wikiDataPersonDatabase';
 
 const urlParameters: URLSearchParams = new URLSearchParams(window.location.search);
 const languageParameter: string = urlParameters.get("lang");
@@ -33,6 +35,7 @@ const maxNumberOfConcurrentRequests: number = 5;
 const sleepTimeForConcurrentRequestsInMilliseconds: number = 10;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
 const queryHelper: QueryHelper = new QueryHelper(languageIdentifier);
+const personDatabase: PersonDatabase = new WikidataPersonDatabase(queryHelper, sparqlQueryDispatcher);
 
 // html elements
 const searchContainer: HTMLElement = document.querySelector("#search-container");
@@ -45,7 +48,7 @@ const genealogyController: GenealogyController = new GenealogyController(genealo
 
 const searchList: SearchList = new SearchList();
 const searchListView: SearchListView = new SearchListView(searchContainer, currentLanguageData);
-const searchListController = new SearchListController(searchList, searchListView, genealogyController);
+const searchListController = new SearchListController(searchList, searchListView, genealogyController, personDatabase);
 
 // setting static attributes
 Person.setQueryBuilder(queryHelper);

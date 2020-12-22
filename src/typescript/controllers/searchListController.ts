@@ -1,5 +1,6 @@
 import { Person } from "../models/person";
 import { SearchList } from "../models/searchList";
+import { PersonDatabase } from "../personDatabase";
 import { SearchListView } from "../views/searchListView";
 import { GenealogyController } from "./genealogyController";
 
@@ -7,17 +8,19 @@ export class SearchListController {
     private searchList: SearchList;
     private searchListView: SearchListView;
     private genealogyController: GenealogyController;
+    private personDatabase: PersonDatabase;
 
-    constructor(searchList: SearchList, searchListView: SearchListView, genealogyController: GenealogyController) {
+    constructor(searchList: SearchList, searchListView: SearchListView, genealogyController: GenealogyController, personDatabase: PersonDatabase) {
         this.searchList = searchList;
         this.searchListView = searchListView;
         this.genealogyController = genealogyController;
+        this.personDatabase = personDatabase;
         this.addSearchEventListener();
     }
 
     private addSearchEventListener(): void {
         this.searchListView.getSearchButtonElement().addEventListener("click", () => {
-            Person.findHumansByEntitySearch(this.searchListView.getSearchInputElement().value).then((people: Array<Person>) => {
+            this.personDatabase.findPersonByLabel(this.searchListView.getSearchInputElement().value, 20).then((people: Person[]) => {
                 this.searchList.clearSearchResultPeople();
                 this.searchList.getSearchResultPeople().push.apply(this.searchList.getSearchResultPeople(), people);
 

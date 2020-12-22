@@ -47,7 +47,7 @@ export class Person {
                 const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
                 const dateOfDeath: Date = (result.hasOwnProperty("dateOfDeath")) ? new Date(result["dateOfDeath"]["value"]) : null;
                 
-                if (!people.find(element => element.getId() === id)) {
+                if (!people.find((element: Person)  => element.getId() === id)) {
                     let person: Person = new Person(id);
 
                     person.setName(name);
