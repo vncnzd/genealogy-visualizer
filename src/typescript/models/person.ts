@@ -1,7 +1,5 @@
-import { QueryHelper } from "../queryHelper";
 import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
-import { SPARQLQueryDispatcher } from "../sparqlQueryDispatcher";
 
 export class Person {    
     private id: string;

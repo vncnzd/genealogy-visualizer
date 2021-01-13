@@ -124,6 +124,7 @@ export class GenealogyView {
             lineContainer.appendChild(line);
 
             const number: HTMLElement = document.createElement("div");
+            number.classList.add("timeline-number");
             const numberText: Text = document.createTextNode("" + year)
             number.appendChild(numberText);
 
@@ -205,6 +206,7 @@ export class GenealogyView {
             const minimumScale = 0.2;
 
             const relativeMousePosition: Position = this.getRelativeMousePosition(event);
+
             if (delta > 0) {
                 if (this.scale > minimumScale) {
                     this.zoom(relativeMousePosition, -this.zoomFactor);
@@ -253,8 +255,8 @@ export class GenealogyView {
                     htmlElement.style.visibility = "visible";
                 }
             }
-
-            (element as HTMLElement).style.transform = `scale(${1 / scale})`;
+            
+            // (element as HTMLElement).style.transform = `scale(${1 / scale})`;
         });
     }
 
