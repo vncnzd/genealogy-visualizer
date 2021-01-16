@@ -48,6 +48,7 @@ export class PersonView {
         this.boxElement.appendChild(paragraphElement);
 
         let birthAndDeathParagraph: HTMLElement = document.createElement("p");
+        birthAndDeathParagraph.classList.add("birth-and-death-date");
         let birthAndDeathTextNode: Text = document.createTextNode(person.getDatesOfBirth()[0]?.getFullYear() + " - " + person.getDatesOfDeath()[0]?.getFullYear());
         birthAndDeathParagraph.appendChild(birthAndDeathTextNode);
         this.boxElement.appendChild(birthAndDeathParagraph);
