@@ -53,6 +53,7 @@ export class PersonView {
         let birthInput: HTMLInputElement = document.createElement("input");
         birthInput.classList.add("birth-and-death-input");
         birthInput.type = "number";
+        birthInput.setAttribute("dir", "rtl");
         birthInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
         dateContainer.appendChild(birthInput);
 
