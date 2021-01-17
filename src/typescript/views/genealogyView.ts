@@ -4,6 +4,8 @@ import { Person } from "../models/person";
 import { SexOrGender } from "../sexOrGender";
 import { PersonView } from "./personView";
 import { Position } from "../position"
+import { AncestorsPositioner } from "../ancestorsPositioner";
+import { Positioner } from "../positioner";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -197,15 +199,20 @@ export class GenealogyView {
     // }
 
     public displayAncestors(rootPerson: Person) {
-        // TODO deal with controllers
-        let personView: PersonView = new PersonView(rootPerson, this.containerElement, this.jsPlumbInst);
-        this.personViews.set(rootPerson.getId(), personView);
+        this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
+        let positioner: Positioner = new AncestorsPositioner();
+        positioner.run(rootPerson, this.personViews);
+    }
 
-        if (rootPerson.getFather() != null) {
-            this.displayAncestors(rootPerson.getFather());
+    private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
+        let personView: PersonView = new PersonView(ancestor, this.containerElement, this.jsPlumbInst);
+        personViews.set(ancestor.getId(), personView);
+
+        if (ancestor.getFather() != null) {
+            this.instantiateViewsForAncestorsAndAddItToMap(ancestor.getFather(), personViews);
         }
-        if (rootPerson.getMother() != null) {
-            this.displayAncestors(rootPerson.getMother());
+        if (ancestor.getMother() != null) {
+            this.instantiateViewsForAncestorsAndAddItToMap(ancestor.getMother(), personViews);
         }
     }
 
