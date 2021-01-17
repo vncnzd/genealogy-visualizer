@@ -6,6 +6,7 @@ export class Genealogy {
     private rootPerson: Person;
     private people: Map<string, Person>;
     private personDatabase: PersonDatabase;
+    private depth: number;
 
     constructor(personDatabase: PersonDatabase) {
         this.people = new Map<string, Person>();
@@ -14,6 +15,7 @@ export class Genealogy {
 
     public getAncestorsOfRootPerson(depth: number): Promise<Map<String, Person>> {
         this.people = new Map<string, Person>();
+        this.people.set(this.rootPerson.getId(), this.rootPerson);
         return this.getParentsOfPersonRecursively(this.rootPerson, this.people, depth);
     }
 
@@ -73,5 +75,9 @@ export class Genealogy {
 
     public getRootPerson(): Person {
         return this.rootPerson;
+    }
+
+    public getPeople(): Map<string, Person> {
+        return this.people;
     }
 }

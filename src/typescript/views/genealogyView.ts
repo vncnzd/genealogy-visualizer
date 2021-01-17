@@ -27,11 +27,37 @@ export class GenealogyView {
     private transformY: number = 0
     private zoomFactor: number;
 
+    private personViews: Map<string, PersonView>;
+
     constructor(parentElement: HTMLElement, languageData: Object) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
+        this.personViews = new Map<string, PersonView>();
+        
+        this.connectionParameters = {
+            anchors: ["Bottom", "Top"],
+            connector: [ "Flowchart", {}],
+            endpoint: "Dot",
+            deleteEndpointsOnDetach: false,
+            detachable: false,
+            // @ts-ignore
+            paintStyle:{ 
+                stroke: "black", 
+                strokeWidth: 5 
+            },
+            endpointStyles: [
+                { fill:"black"},
+                { fill:"grey" }
+            ]
+        }
 
+        this.initializeHTMLElements(parentElement, languageData);
+        this.addZoomEventListeners();
+        this.addPanningEventListeners();
+    }
+
+    private initializeHTMLElements(parentElement: HTMLElement, languageData: Object) {
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
@@ -80,26 +106,6 @@ export class GenealogyView {
         this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
         parentElement.appendChild(this.zoomOutButton);
 
-        this.connectionParameters = {
-            anchors: ["Bottom", "Top"],
-            connector: [ "Flowchart", {}],
-            endpoint: "Dot",
-            deleteEndpointsOnDetach: false,
-            detachable: false,
-            // @ts-ignore
-            paintStyle:{ 
-                stroke: "black", 
-                strokeWidth: 5 
-            },
-            endpointStyles: [
-                { fill:"black"},
-                { fill:"grey" }
-            ]
-        }
-
-        this.addZoomEventListeners();
-        this.addPanningEventListeners();
-        this.addTestPerson();
         this.addTimeline();
     }
 
@@ -132,28 +138,28 @@ export class GenealogyView {
         }
     }
 
-    private addTestPerson(): void {
-        // put this into the genealogy controller
-        let person: Person = new Person("testid");
-        person.setName("testperson");
-        person.setSexOrGender(new SexOrGender("Q6581097", "male"));
-        let birthDate = new Date();
-        birthDate.setFullYear(0);
-        person.getDatesOfBirth().push(birthDate);
+    // private addTestPerson(): void {
+    //     // put this into the genealogy controller
+    //     let person: Person = new Person("testid");
+    //     person.setName("testperson");
+    //     person.setSexOrGender(new SexOrGender("Q6581097", "male"));
+    //     let birthDate = new Date();
+    //     birthDate.setFullYear(0);
+    //     person.getDatesOfBirth().push(birthDate);
 
-        let deathDate = new Date();
-        deathDate.setFullYear(40);
-        person.getDatesOfDeath().push(deathDate);
-        let personView: PersonView = new PersonView(person, this.containerElement, this.jsPlumbInst);
-        personView.setHeightInPx((deathDate.getFullYear() - birthDate.getFullYear()) * this.pixelPerYear);
-        let personController: PersonController = new PersonController(person, personView);
-        this.placePersonAccordingToYear(person, personView);
-    }
+    //     let deathDate = new Date();
+    //     deathDate.setFullYear(40);
+    //     person.getDatesOfDeath().push(deathDate);
+    //     let personView: PersonView = new PersonView(person, this.containerElement, this.jsPlumbInst);
+    //     personView.setHeightInPx((deathDate.getFullYear() - birthDate.getFullYear()) * this.pixelPerYear);
+    //     let personController: PersonController = new PersonController(person, personView);
+    //     this.placePersonAccordingToYear(person, personView);
+    // }
 
-    private placePersonAccordingToYear(person: Person, personView: PersonView): void {
-        const year: number = person.getDatesOfBirth()[0].getFullYear();
-        personView.moveToPositionInPx(50, year * this.pixelPerYear);
-    }
+    // private placePersonAccordingToYear(person: Person, personView: PersonView): void {
+    //     const year: number = person.getDatesOfBirth()[0].getFullYear();
+    //     personView.moveToPositionInPx(50, year * this.pixelPerYear);
+    // }
 
     // public displayPersonWithDescendants(person: Person) {
     //     let personView = new PersonView(person, this.containerElement, this.jsPlumbInst);
@@ -186,8 +192,21 @@ export class GenealogyView {
     //     }
     // }
     
-    public connect(source: Person, target: Person): void {
-        this.jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, this.connectionParameters);
+    // public connect(source: Person, target: Person): void {
+    //     this.jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, this.connectionParameters);
+    // }
+
+    public displayAncestors(rootPerson: Person) {
+        // TODO deal with controllers
+        let personView: PersonView = new PersonView(rootPerson, this.containerElement, this.jsPlumbInst);
+        this.personViews.set(rootPerson.getId(), personView);
+
+        if (rootPerson.getFather() != null) {
+            this.displayAncestors(rootPerson.getFather());
+        }
+        if (rootPerson.getMother() != null) {
+            this.displayAncestors(rootPerson.getMother());
+        }
     }
 
     private addZoomEventListeners() {
@@ -299,5 +318,9 @@ export class GenealogyView {
 
     public getAncestorsButton(): HTMLElement {
         return this.ancestorsButton;
+    }
+
+    public getPersonViews(): Map<string, PersonView> {
+        return this.personViews;
     }
 }
