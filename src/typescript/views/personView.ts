@@ -43,15 +43,28 @@ export class PersonView {
 
         let paragraphElement: HTMLElement = document.createElement("p");
         paragraphElement.classList.add("person-name");
-        let nameTextNode: Text = document.createTextNode(person.getName());
-        paragraphElement.appendChild(nameTextNode);
+        paragraphElement.appendChild(document.createTextNode(person.getName()));
         this.boxElement.appendChild(paragraphElement);
 
-        let birthAndDeathParagraph: HTMLElement = document.createElement("p");
-        birthAndDeathParagraph.classList.add("birth-and-death-date");
-        let birthAndDeathTextNode: Text = document.createTextNode(person.getDatesOfBirth()[0]?.getFullYear() + " - " + person.getDatesOfDeath()[0]?.getFullYear());
-        birthAndDeathParagraph.appendChild(birthAndDeathTextNode);
-        this.boxElement.appendChild(birthAndDeathParagraph);
+        let dateContainer: HTMLElement = document.createElement("div");
+        dateContainer.classList.add("date-container");
+        this.boxElement.appendChild(dateContainer);
+
+        let birthInput: HTMLInputElement = document.createElement("input");
+        birthInput.classList.add("birth-and-death-input");
+        birthInput.type = "number";
+        birthInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
+        dateContainer.appendChild(birthInput);
+
+        let minusDiv: HTMLElement = document.createElement("div");
+        minusDiv.appendChild(document.createTextNode("-"));
+        dateContainer.appendChild(minusDiv);
+
+        let deathInput: HTMLInputElement = document.createElement("input");
+        deathInput.classList.add("birth-and-death-input");
+        deathInput.type = "number";
+        deathInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
+        dateContainer.appendChild(deathInput);
         
         this.containerElement.appendChild(this.boxElement);
 
