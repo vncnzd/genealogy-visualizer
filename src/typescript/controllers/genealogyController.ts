@@ -23,7 +23,7 @@ export class GenealogyController {
     }
 
     private connectViewsWithPersonAndController(personViews: Map<string, PersonView>): void {
-        personViews.forEach((personView: PersonView, personId: string) => {
+        personViews.forEach((personView: PersonView, personId: string): void => {
             let person: Person = this.genealogy.getPeople().get(personId);
             if (person != null) {
                 this.personControllers.push(new PersonController(person, personView));
@@ -32,26 +32,23 @@ export class GenealogyController {
     }
 
     private addEventListenersToButtonsAndInput(): void {
-        this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent) => {
-            let depth = this.genealogyView.getDepth();
+        this.genealogyView.getDepthInput().addEventListener("change", (event: Event): void => {
+            let depth = parseInt((<HTMLInputElement> event.target).value);
+            this.genealogy.setDepth(depth);
+        });
 
-            this.genealogy.getDescendantsOfRootPerson(depth).then((descendants: Map<string, Person>) => {
+        this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent): void => {
+            this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
                 console.log(descendants.size + " descendants found");
                 console.log(this.genealogy.getRootPerson());
-                // this.genealogyView.displayPersonWithDescendants(this.genealogy.getRootPerson());
             });
         });
 
-        this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent) => {
-            let depth = this.genealogyView.getDepth(); // this should be in the model
-
-            // this.genealogyView.displayAncestors(testPerson);
-
-            // this.genealogy.getAncestorsOfRootPerson(depth).then((ancestors: Map<string, Person>) => {
-            //     console.log(ancestors.size + " ancestors found");
-            //     this.generateControllersAndViews(Array.from(ancestors.values()));
-            //     console.log(this.genealogy.getRootPerson());
-            // });
+        this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent): void => {
+            this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
+                console.log(ancestors.size + " ancestors found");
+                console.log(this.genealogy.getRootPerson());
+            });
         });
     }
 

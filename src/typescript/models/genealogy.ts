@@ -80,4 +80,12 @@ export class Genealogy {
     public getPeople(): Map<string, Person> {
         return this.people;
     }
+
+    public getDepth(): number {
+        return this.depth;
+    }
+
+    public setDepth(depth: number): void {
+        this.depth = depth;
+    }
 }

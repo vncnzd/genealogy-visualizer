@@ -315,10 +315,6 @@ export class GenealogyView {
         return this.depthInput;
     }
 
-    public getDepth(): number {
-        return parseInt(this.depthInput.value);
-    }
-
     public getDescendantsButton(): HTMLElement {
         return this.descendantsButton;
     }
