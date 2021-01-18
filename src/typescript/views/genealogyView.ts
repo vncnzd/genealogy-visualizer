@@ -1,11 +1,11 @@
 import { ConnectParams, jsPlumb, jsPlumbInstance, jsPlumbUtil } from "jsplumb";
-import { PersonController } from "../controllers/personController";
 import { Person } from "../models/person";
-import { SexOrGender } from "../sexOrGender";
 import { PersonView } from "./personView";
 import { Position } from "../position"
 import { AncestorsTreeDrawer } from "../ancestorsTreeDrawer";
 import { TreeDrawer } from "../treeDrawer";
+import { WSTreeDrawer } from "../wsTreeDrawer";
+import { PersonNode } from "../personNode";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -200,8 +200,12 @@ export class GenealogyView {
 
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
-        let positioner: TreeDrawer = new AncestorsTreeDrawer();
-        positioner.run(rootPerson, this.personViews);
+        
+        let personNodes: Map<string, PersonNode> = new Map<string, PersonNode>();
+        this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
+
+        let drawer: WSTreeDrawer = new WSTreeDrawer();
+        drawer.run(rootPerson, personNodes, this.personViews, 2);
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
@@ -213,6 +217,19 @@ export class GenealogyView {
         }
         if (ancestor.getMother() != null) {
             this.instantiateViewsForAncestorsAndAddItToMap(ancestor.getMother(), personViews);
+        }
+    }
+
+    private instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor: Person, personNodes: Map<string, PersonNode>, height: number) {
+        let personNode: PersonNode = new PersonNode(ancestor, height);
+        personNodes.set(ancestor.getId(), personNode);
+        height++;
+
+        if (ancestor.getFather() != null) {
+            this.instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor.getFather(), personNodes, height);
+        }
+        if (ancestor.getMother() != null) {
+            this.instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor.getMother(), personNodes, height);
         }
     }
 
