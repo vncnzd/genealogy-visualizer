@@ -3,8 +3,8 @@ import { Person } from "../models/person";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 
 export class PersonView {
-    static boxWidth = 150;
-    static boxHeight = 100;
+    static boxWidth: number = 150;
+    static boxHeight: number = 100;
 
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
@@ -76,11 +76,11 @@ export class PersonView {
         this.jsPlumbInst.draggable(this.containerElement);
     }
 
-    public setHeightInPx(height: number) {
+    public setHeightInPx(height: number): void {
         this.containerElement.style.height = `${height}px`;
     }
 
-    public moveToPositionInPx(left: number, top: number) {
+    public moveToPositionInPx(left: number, top: number): void {
         this.containerElement.style.left = left + "px";
         this.containerElement.style.top = top + "px";
     }
@@ -105,7 +105,7 @@ export class PersonView {
         return this.deleteButtonElement;
     }
 
-    public remove() {
+    public remove(): void {
         this.rootElement.removeChild(this.containerElement);
     }
 }

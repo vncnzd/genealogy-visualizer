@@ -4,8 +4,8 @@ import { Person } from "../models/person";
 import { SexOrGender } from "../sexOrGender";
 import { PersonView } from "./personView";
 import { Position } from "../position"
-import { AncestorsPositioner } from "../ancestorsPositioner";
-import { Positioner } from "../positioner";
+import { AncestorsTreeDrawer } from "../ancestorsTreeDrawer";
+import { TreeDrawer } from "../treeDrawer";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -200,7 +200,7 @@ export class GenealogyView {
 
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
-        let positioner: Positioner = new AncestorsPositioner();
+        let positioner: TreeDrawer = new AncestorsTreeDrawer();
         positioner.run(rootPerson, this.personViews);
     }
 

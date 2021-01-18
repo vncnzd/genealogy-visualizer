@@ -1,14 +1,12 @@
 import '../sass/style.scss';
 import { GenealogyController } from './controllers/genealogyController';
 import { SearchListController } from './controllers/searchListController';
-import { LanguageIdentifier } from './languageIdentifier';
 import { Genealogy } from './models/genealogy';
 import { SearchList } from './models/searchList';
 import { QueryHelper } from './queryHelper';
 import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
-
 import { PersonDatabase } from './personDatabase';
 import { WikidataPersonDatabase } from './wikiDataPersonDatabase';
 import { LanguageManager } from './LanguageManager';
@@ -27,7 +25,7 @@ const queryHelper: QueryHelper = new QueryHelper(languageManager.getCurrentLangu
 const personDatabase: PersonDatabase = new WikidataPersonDatabase(queryHelper, sparqlQueryDispatcher);
 
 // html elements
-const searchContainer: HTMLElement = document.querySelector("#search-container");
+const searchListContainer: HTMLElement = document.querySelector("#search-container");
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
 // models, views, controllers
@@ -36,5 +34,5 @@ const genealogyView: GenealogyView = new GenealogyView(genealogyContainer, langu
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
-const searchListView: SearchListView = new SearchListView(searchContainer, languageManager.getCurrentLanguageData());
+const searchListView: SearchListView = new SearchListView(searchListContainer, languageManager.getCurrentLanguageData());
 const searchListController = new SearchListController(searchList, searchListView, genealogyController, personDatabase);

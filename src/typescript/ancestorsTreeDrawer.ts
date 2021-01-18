@@ -1,8 +1,8 @@
 import { Person } from './models/person';
-import { Positioner } from './positioner';
+import { TreeDrawer } from './treeDrawer';
 import { PersonView } from './views/personView';
 
-export class AncestorsPositioner implements Positioner {
+export class AncestorsTreeDrawer implements TreeDrawer {
     public run (rootPerson: Person, personViewMap: Map<string, PersonView>): void {
         
     }
