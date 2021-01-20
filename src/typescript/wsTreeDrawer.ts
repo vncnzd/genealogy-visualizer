@@ -1,26 +1,32 @@
 import { Person } from "./models/person";
-import { PersonNode } from "./personNode";
+import { WSPersonNode } from "./wsPersonNode";
 import { PersonView } from "./views/personView";
 
 export class WSTreeDrawer {
-    run(rootPerson: Person, personNodes: Map<string, PersonNode>, personViews: Map<string, PersonView>, maxHeight: number): void {
+    run(rootPerson: Person, personNodes: Map<string, WSPersonNode>, personViews: Map<string, PersonView>, maxHeight: number): void {
+        console.log(rootPerson);
+        console.log(personNodes);
+        console.log(personViews);
+        
         let modifier: number[] = [];
+        let nextPosition: number[] = [];
         let modifierSum: number = 0;
-        let nexPosition: number[] = [];
-        let height: number = 0;
         let place: number = 0;
+        let height: number = 0;
 
         let currentPerson: Person;
         let currentPersonView: PersonView;
-        let currentPersonNode: PersonNode;
+        let currentPersonNode: WSPersonNode;
 
         let firstVisit: string = "firstVisit";
         let leftVisit: string = "leftVisit";
         let rightVisit: string = "rightVisit";
 
+        let multiplier: number = 100;
+
         for (let i = 0; i < maxHeight; i++) {
             modifier[i] = 0;
-            nexPosition[i] = 1;
+            nextPosition[i] = 1 * multiplier;
         }
 
         currentPerson = rootPerson;
@@ -56,28 +62,31 @@ export class WSTreeDrawer {
                     let isLeaf: boolean = currentPerson.getFather() == null && currentPerson.getMother() == null;
                     
                     if (isLeaf) {
-                        place = nexPosition[height];
+                        place = nextPosition[height];
                     } else if (currentPerson.getFather() == null) {
-                        place = personNodes.get(currentPerson.getMother().getId()).getPosition().x - 1;
+                        place = personViews.get(currentPerson.getMother().getId()).getOffsetLeftInPx() - 1 * multiplier;
                     } else if (currentPerson.getMother() == null) {
-                        place = personNodes.get(currentPerson.getFather().getId()).getPosition().x + 1;
+                        place = personViews.get(currentPerson.getFather().getId()).getOffsetLeftInPx() + 1 * multiplier;
                     } else {
-                        place = (personNodes.get(currentPerson.getFather().getId()).getPosition().x + personNodes.get(currentPerson.getMother().getId()).getPosition().x) / 2;
+                        place = (personViews.get(currentPerson.getFather().getId()).getOffsetLeftInPx() + personViews.get(currentPerson.getMother().getId()).getOffsetLeftInPx()) / 2;
                     }
 
-                    modifier[height] = Math.max(modifier[height], nexPosition[height] - place);
+                    modifier[height] = Math.max(modifier[height], nextPosition[height] - place);
 
                     if (isLeaf) {
-                        currentPersonNode.getPosition().x = place;
+                        currentPersonView.setOffsetLeftInPx(place);
                     } else {
-                        currentPersonNode.getPosition().x = place + modifier[height];
+                        currentPersonView.setOffsetLeftInPx(place + modifier[height]);
                     }
 
-                    nexPosition[height] = currentPersonNode.getPosition().x + 2;
+                    nextPosition[height] = currentPersonView.getOffsetLeftInPx() + 2 * multiplier;
                     currentPersonNode.setModifier(modifier[height]);
+
                     currentPerson = currentPerson.getChildren()[0];
-                    currentPersonView = personViews.get(currentPerson.getId());
-                    currentPersonNode = personNodes.get(currentPerson.getId());
+                    if (currentPerson != null) {
+                        currentPersonView = personViews.get(currentPerson.getId());
+                        currentPersonNode = personNodes.get(currentPerson.getId());
+                    }
 
                     break;
             }
@@ -93,9 +102,9 @@ export class WSTreeDrawer {
         while (currentPerson != null) {
             switch (currentPersonNode.getStatus()) {
                 case firstVisit:
-                    currentPersonNode.getPosition().x = currentPersonNode.getPosition().x + modifierSum;
+                    currentPersonView.setOffsetLeftInPx(currentPersonView.getOffsetLeftInPx() + modifierSum);
                     modifierSum = modifierSum + currentPersonNode.getModifier();
-                    currentPersonNode.getPosition().y = 2 * currentPersonNode.getHeight() + 1;
+                    currentPersonView.setOffsetTopInPx((2 * currentPersonNode.getHeight() + 1) * multiplier);
                     currentPersonNode.setStatus(leftVisit);
 
                     if (currentPerson.getFather() != null) {
@@ -120,12 +129,13 @@ export class WSTreeDrawer {
                 case rightVisit:
                     modifierSum = modifierSum - currentPersonNode.getModifier();
                     currentPerson = currentPerson.getChildren()[0];
-                    currentPersonView = personViews.get(currentPerson.getId());
-                    currentPersonNode = personNodes.get(currentPerson.getId());
+
+                    if (currentPerson != null) {
+                        currentPersonView = personViews.get(currentPerson.getId());
+                        currentPersonNode = personNodes.get(currentPerson.getId());
+                    }
                     break;
             }
         }
-
-        console.log(personNodes);
     }
 }

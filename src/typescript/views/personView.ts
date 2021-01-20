@@ -3,8 +3,8 @@ import { Person } from "../models/person";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 
 export class PersonView {
-    static boxWidth: number = 150;
-    static boxHeight: number = 100;
+    private static boxWidthInPx: number = 150; // TODO maybe add static getter and setter
+    private static boxHeightInPx: number = 100;
 
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
@@ -33,8 +33,8 @@ export class PersonView {
         this.boxElement = document.createElement("div");
         this.boxElement.classList.add("person-box");
         this.boxElement.id = person.getId();
-        this.boxElement.style.width = PersonView.boxWidth + "px";
-        this.boxElement.style.height = PersonView.boxHeight + "px";
+        this.boxElement.style.width = PersonView.boxWidthInPx + "px";
+        this.boxElement.style.height = PersonView.boxHeightInPx + "px";
         if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.male) {
             this.boxElement.classList.add("male");
         } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.female) {
@@ -76,29 +76,36 @@ export class PersonView {
         this.jsPlumbInst.draggable(this.containerElement);
     }
 
-    public setHeightInPx(height: number): void {
-        this.containerElement.style.height = `${height}px`;
-    }
-
-    public moveToPositionInPx(left: number, top: number): void {
-        this.containerElement.style.left = left + "px";
-        this.containerElement.style.top = top + "px";
-    }
-
-    public getViewWidthInPx(): number {
+    public getWidthInPx(): number {
         return this.containerElement.offsetWidth;
     }
 
-    public getViewHeightInPx(): number {
+    public setWidthInPx(width: number): void {
+        this.containerElement.style.width = width + "px";
+    }
+
+    public getHeightInPx(): number {
         return this.containerElement.offsetHeight;
     }
 
-    public getPositionLeft(): number {
+    public setHeightInPx(height: number): void {
+        this.containerElement.style.height = height + "px";
+    }
+
+    public getOffsetLeftInPx(): number {
         return this.containerElement.offsetLeft;
     }
 
-    public getPositionTop(): number {
+    public setOffsetLeftInPx(offsetLeft: number): void {
+        this.containerElement.style.left = offsetLeft + "px";
+    }
+
+    public getOffsetTopInPx(): number {
         return this.containerElement.offsetTop;
+    }
+
+    public setOffsetTopInPx(offsetTop: number): void {
+        this.containerElement.style.top = offsetTop + "px";
     }
 
     public getDeleteButtonElement(): HTMLElement {

@@ -2,17 +2,15 @@ import { Person } from "./models/person";
 import { Position } from "./position";
 import { PersonView } from "./views/personView";
 
-export class PersonNode {
+export class WSPersonNode {
     private person: Person;
     private status: string;
     private height: number
-    private position: Position;
     private modifier: number
 
     constructor(person: Person, height: number) {
         this.person = person;
         this.height = height
-        this.position = new Position(0,0);
         this.modifier = 0;
     }
 
@@ -26,10 +24,6 @@ export class PersonNode {
 
     public getHeight(): number {
         return this.height;
-    }
-
-    public getPosition(): Position {
-        return this.position;
     }
 
     public setModifier(modifier: number): void {

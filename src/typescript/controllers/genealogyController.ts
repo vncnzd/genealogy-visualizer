@@ -71,8 +71,6 @@ export class GenealogyController {
         father.getDatesOfDeath().push(new Date("0110-01-01"));
         father.setSexOrGender(new SexOrGender("Q6581097", "male"));
 
-        
-
         let grandFather: Person = new Person("grandfather");
         grandFather.setName("grandfather");
         grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
@@ -84,6 +82,18 @@ export class GenealogyController {
         grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
         grandMother.getDatesOfDeath().push(new Date("0090-01-01"));
         grandMother.setSexOrGender(new SexOrGender("Q6581072", "female"));
+
+        let grandFatherTwo: Person = new Person("grandfatherTwo");
+        grandFatherTwo.setName("grandfatherTwo");
+        grandFatherTwo.getDatesOfBirth().push(new Date("0030-01-01"));
+        grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
+        grandFatherTwo.setSexOrGender(new SexOrGender("Q6581097", "male"));
+
+        let grandMotherTwo: Person = new Person("grandmotherTwo");
+        grandMotherTwo.setName("grandmotherTwo");
+        grandMotherTwo.getDatesOfBirth().push(new Date("0030-01-01"));
+        grandMotherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
+        grandMotherTwo.setSexOrGender(new SexOrGender("Q6581072", "female"));
 
         root.setMother(mother);
         root.setFather(father);
@@ -97,11 +107,22 @@ export class GenealogyController {
         grandMother.getChildren().push(mother);
         grandFather.getChildren().push(mother);
 
+        // father.setFather(grandFatherTwo);
+        // father.setMother(grandMotherTwo);
+        
+        // grandFatherTwo.getChildren().push(father);
+        // grandMotherTwo.getChildren().push(father);
+
         this.genealogy.getPeople().set(root.getId(), root);
+
         this.genealogy.getPeople().set(mother.getId(), mother);
         this.genealogy.getPeople().set(father.getId(), father);
+
         this.genealogy.getPeople().set(grandFather.getId(), grandFather);
         this.genealogy.getPeople().set(grandMother.getId(), grandMother);
+
+        this.genealogy.getPeople().set(grandFatherTwo.getId(), grandFatherTwo);
+        this.genealogy.getPeople().set(grandMotherTwo.getId(), grandMotherTwo);
 
         return root;
     }

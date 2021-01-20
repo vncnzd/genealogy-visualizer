@@ -5,7 +5,7 @@ import { Position } from "../position"
 import { AncestorsTreeDrawer } from "../ancestorsTreeDrawer";
 import { TreeDrawer } from "../treeDrawer";
 import { WSTreeDrawer } from "../wsTreeDrawer";
-import { PersonNode } from "../personNode";
+import { WSPersonNode } from "../wsPersonNode";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -201,11 +201,11 @@ export class GenealogyView {
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
         
-        let personNodes: Map<string, PersonNode> = new Map<string, PersonNode>();
+        let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
         this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
 
         let drawer: WSTreeDrawer = new WSTreeDrawer();
-        drawer.run(rootPerson, personNodes, this.personViews, 2);
+        drawer.run(rootPerson, personNodes, this.personViews, 3);
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
@@ -220,8 +220,8 @@ export class GenealogyView {
         }
     }
 
-    private instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor: Person, personNodes: Map<string, PersonNode>, height: number) {
-        let personNode: PersonNode = new PersonNode(ancestor, height);
+    private instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor: Person, personNodes: Map<string, WSPersonNode>, height: number) {
+        let personNode: WSPersonNode = new WSPersonNode(ancestor, height);
         personNodes.set(ancestor.getId(), personNode);
         height++;
 
