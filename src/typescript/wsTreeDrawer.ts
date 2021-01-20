@@ -1,9 +1,13 @@
 import { Person } from "./models/person";
 import { WSPersonNode } from "./wsPersonNode";
 import { PersonView } from "./views/personView";
+import { TreeDrawer } from "./treeDrawer";
 
-export class WSTreeDrawer {
-    run(rootPerson: Person, personNodes: Map<string, WSPersonNode>, personViews: Map<string, PersonView>, maxHeight: number): void {
+export class WSTreeDrawer implements TreeDrawer {
+    run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number): void {
+        let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
+        this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
+
         console.log(rootPerson);
         console.log(personNodes);
         console.log(personViews);
@@ -104,7 +108,7 @@ export class WSTreeDrawer {
                 case firstVisit:
                     currentPersonView.setOffsetLeftInPx(currentPersonView.getOffsetLeftInPx() + modifierSum);
                     modifierSum = modifierSum + currentPersonNode.getModifier();
-                    currentPersonView.setOffsetTopInPx((2 * currentPersonNode.getHeight() + 1) * multiplier);
+                    currentPersonView.setOffsetTopInPx((2 * currentPersonNode.getHeight() + 1) * -multiplier);
                     currentPersonNode.setStatus(leftVisit);
 
                     if (currentPerson.getFather() != null) {
@@ -136,6 +140,20 @@ export class WSTreeDrawer {
                     }
                     break;
             }
+        }
+    }
+
+    
+    private instantiatePersonNodesForAncestorsAndAddThemToMap(person: Person, personNodes: Map<string, WSPersonNode>, height: number) {
+        let personNode: WSPersonNode = new WSPersonNode(person, height);
+        personNodes.set(person.getId(), personNode);
+        height++;
+
+        if (person.getFather() != null) {
+            this.instantiatePersonNodesForAncestorsAndAddThemToMap(person.getFather(), personNodes, height);
+        }
+        if (person.getMother() != null) {
+            this.instantiatePersonNodesForAncestorsAndAddThemToMap(person.getMother(), personNodes, height);
         }
     }
 }

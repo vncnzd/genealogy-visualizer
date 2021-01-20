@@ -200,12 +200,9 @@ export class GenealogyView {
 
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
-        
-        let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
-        this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
 
         let drawer: WSTreeDrawer = new WSTreeDrawer();
-        drawer.run(rootPerson, personNodes, this.personViews, 3);
+        drawer.run(rootPerson, this.personViews, 3);
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
@@ -217,19 +214,6 @@ export class GenealogyView {
         }
         if (ancestor.getMother() != null) {
             this.instantiateViewsForAncestorsAndAddItToMap(ancestor.getMother(), personViews);
-        }
-    }
-
-    private instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor: Person, personNodes: Map<string, WSPersonNode>, height: number) {
-        let personNode: WSPersonNode = new WSPersonNode(ancestor, height);
-        personNodes.set(ancestor.getId(), personNode);
-        height++;
-
-        if (ancestor.getFather() != null) {
-            this.instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor.getFather(), personNodes, height);
-        }
-        if (ancestor.getMother() != null) {
-            this.instantiatePersonNodesForAncestorsAndAddThemToMap(ancestor.getMother(), personNodes, height);
         }
     }
 

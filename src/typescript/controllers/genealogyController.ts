@@ -107,11 +107,11 @@ export class GenealogyController {
         grandMother.getChildren().push(mother);
         grandFather.getChildren().push(mother);
 
-        // father.setFather(grandFatherTwo);
-        // father.setMother(grandMotherTwo);
+        father.setFather(grandFatherTwo);
+        father.setMother(grandMotherTwo);
         
-        // grandFatherTwo.getChildren().push(father);
-        // grandMotherTwo.getChildren().push(father);
+        grandFatherTwo.getChildren().push(father);
+        grandMotherTwo.getChildren().push(father);
 
         this.genealogy.getPeople().set(root.getId(), root);
 
