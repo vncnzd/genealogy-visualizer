@@ -2,9 +2,10 @@ import { Person } from "./models/person";
 import { WSPersonNode } from "./wsPersonNode";
 import { PersonView } from "./views/personView";
 import { TreeDrawer } from "./treeDrawer";
+import { ConnectParams, jsPlumbInstance } from "jsplumb";
 
 export class WSTreeDrawer implements TreeDrawer {
-    run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number, pixelPerYear: number): void {
+    run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
         let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
         this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
 
@@ -30,6 +31,25 @@ export class WSTreeDrawer implements TreeDrawer {
         let distanceUnit: number = personViews.get(rootPerson.getId()).getBoxWidth();
         let maxBirthYearOfHeight: number[] = [];
         let minDeathYearOfHeight: number[] = [];
+        let connectionParameters: ConnectParams = {
+            anchors: ["Top", "Bottom"],
+            connector: [ "Bezier", {}],
+            endpoint: "Dot",
+            deleteEndpointsOnDetach: false,
+            detachable: false,
+            // @ts-ignore
+            paintStyle: { 
+                stroke: "black", 
+                strokeWidth: 5 
+            },
+            hoverPaintStyle: {
+                stroke: "red",
+            },
+            endpointStyles: [
+                { fill:"black"},
+                { fill:"black" }
+            ]
+        };
         // end
 
         for (let i = 0; i < maxHeight; i++) {
@@ -139,6 +159,9 @@ export class WSTreeDrawer implements TreeDrawer {
                     let middleValue: number = (minDeathYearOfHeight[height] + maxBirthYearOfHeight[height]) / 2;
                     let boundHeight: number = 10;
                     currentPersonView.setTopPositionOfPersonBox((middleValue - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear - currentPersonView.getBoxHeight() / 2 - boundHeight);
+                    if (currentPerson.getFather() != null) this.connect(jsPlumbInst, connectionParameters, currentPerson, currentPerson.getFather());
+                    if (currentPerson.getMother() != null) this.connect(jsPlumbInst, connectionParameters, currentPerson, currentPerson.getMother());
+                    jsPlumbInst.revalidate(currentPerson.getId());
                     // end
                     
                     currentPersonNode.setStatus(leftVisit);
@@ -187,5 +210,9 @@ export class WSTreeDrawer implements TreeDrawer {
         if (person.getMother() != null) {
             this.instantiatePersonNodesForAncestorsAndAddThemToMap(person.getMother(), personNodes, height);
         }
+    }
+
+    public connect(jsPlumbInst: jsPlumbInstance, connectionParameters: ConnectParams, source: Person, target: Person): void {
+        jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, connectionParameters);
     }
 }

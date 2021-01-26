@@ -140,37 +140,6 @@ export class GenealogyView {
         }
     }
 
-    // private addTestPerson(): void {
-    //     // put this into the genealogy controller
-    //     let person: Person = new Person("testid");
-    //     person.setName("testperson");
-    //     person.setSexOrGender(new SexOrGender("Q6581097", "male"));
-    //     let birthDate = new Date();
-    //     birthDate.setFullYear(0);
-    //     person.getDatesOfBirth().push(birthDate);
-
-    //     let deathDate = new Date();
-    //     deathDate.setFullYear(40);
-    //     person.getDatesOfDeath().push(deathDate);
-    //     let personView: PersonView = new PersonView(person, this.containerElement, this.jsPlumbInst);
-    //     personView.setHeightInPx((deathDate.getFullYear() - birthDate.getFullYear()) * this.pixelPerYear);
-    //     let personController: PersonController = new PersonController(person, personView);
-    //     this.placePersonAccordingToYear(person, personView);
-    // }
-
-    // private placePersonAccordingToYear(person: Person, personView: PersonView): void {
-    //     const year: number = person.getDatesOfBirth()[0].getFullYear();
-    //     personView.moveToPositionInPx(50, year * this.pixelPerYear);
-    // }
-
-    // public displayPersonWithDescendants(person: Person) {
-    //     let personView = new PersonView(person, this.containerElement, this.jsPlumbInst);
-    //     let distanceFromLeftBorder = this.containerElement.clientWidth / 2 - personView.getViewWidthInPx() / 2;
-    //     personView.moveToPositionInPx(distanceFromLeftBorder, 0);
-    //     this.jsPlumbInst.revalidate(person.getId());
-    //     this.displayDescendants(person, personView);
-    // }
-
     // public displayDescendants(parent: Person, parentPersonView: PersonView) {
     //     let parentTop: number = parentPersonView.getPositionTop();
     //     let parentLeft: number = parentPersonView.getPositionLeft();
@@ -202,7 +171,7 @@ export class GenealogyView {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
 
         let drawer: WSTreeDrawer = new WSTreeDrawer();
-        drawer.run(rootPerson, this.personViews, 300, this.pixelPerYear);
+        drawer.run(rootPerson, this.personViews, 300, this.pixelPerYear, this.jsPlumbInst);
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
