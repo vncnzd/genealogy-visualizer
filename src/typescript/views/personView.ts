@@ -3,9 +3,8 @@ import { Person } from "../models/person";
 import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 
 export class PersonView {
-    private static boxWidthInPx: number = 150; // TODO maybe add static getter and setter
-    private static boxHeightInPx: number = 100;
-
+    private boxWidthInPx: number;
+    private boxHeightInPx: number;
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
     private boxElement: HTMLElement;
@@ -20,6 +19,9 @@ export class PersonView {
     constructor(person: Person, rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
         this.rootElement = rootElement;
         this.jsPlumbInst = jsPlumbInst;
+        this.boxWidthInPx = 200;
+        this.boxHeightInPx = 125;
+
         this.createPersonNode(person);
     }
 
@@ -39,8 +41,8 @@ export class PersonView {
         this.boxElement = document.createElement("div");
         this.boxElement.classList.add("person-box");
         this.boxElement.id = person.getId();
-        this.boxElement.style.width = PersonView.boxWidthInPx + "px";
-        this.boxElement.style.height = PersonView.boxHeightInPx + "px";
+        this.boxElement.style.width = this.boxWidthInPx + "px";
+        this.boxElement.style.height = this.boxHeightInPx + "px";
         if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.male) {
             this.boxElement.classList.add("male");
         } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.female) {
@@ -131,10 +133,10 @@ export class PersonView {
     }
 
     public getBoxHeight(): number {
-        return PersonView.boxHeightInPx;
+        return this.boxHeightInPx;
     }
 
     public getBoxWidth(): number {
-        return PersonView.boxWidthInPx;
+        return this.boxWidthInPx;
     }
 }

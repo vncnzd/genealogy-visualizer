@@ -27,7 +27,7 @@ export class WSTreeDrawer implements TreeDrawer {
         let rightVisit: string = "rightVisit";
 
         // not part of the original algorithm
-        let distanceUnit: number = 150;
+        let distanceUnit: number = personViews.get(rootPerson.getId()).getBoxWidth();
         let maxBirthYearOfHeight: number[] = [];
         let minDeathYearOfHeight: number[] = [];
         // end
@@ -136,8 +136,9 @@ export class WSTreeDrawer implements TreeDrawer {
                     currentPersonView.setOffsetTopInPx(currentPerson.getDatesOfBirth()[0].getFullYear() * pixelPerYear);
                     currentPersonView.setHeightInPx((currentPerson.getDatesOfDeath()[0].getFullYear() - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear);
                     height = currentPersonNode.getHeight();
-                    let middleValue: number = (minDeathYearOfHeight[height] + maxBirthYearOfHeight[height]) / 2
-                    currentPersonView.setTopPositionOfPersonBox((middleValue - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear - currentPersonView.getBoxHeight() / 2);
+                    let middleValue: number = (minDeathYearOfHeight[height] + maxBirthYearOfHeight[height]) / 2;
+                    let boundHeight: number = 10;
+                    currentPersonView.setTopPositionOfPersonBox((middleValue - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear - currentPersonView.getBoxHeight() / 2 - boundHeight);
                     // end
                     
                     currentPersonNode.setStatus(leftVisit);
