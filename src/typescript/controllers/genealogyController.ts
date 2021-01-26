@@ -18,17 +18,6 @@ export class GenealogyController {
 
         // test code
         this.genealogyView.displayAncestors(this.getTestRootPerson());
-        let personViews: Map<string, PersonView> = genealogyView.getPersonViews();
-        this.connectViewsWithPersonAndController(personViews);
-    }
-
-    private connectViewsWithPersonAndController(personViews: Map<string, PersonView>): void {
-        personViews.forEach((personView: PersonView, personId: string): void => {
-            let person: Person = this.genealogy.getPeople().get(personId);
-            if (person != null) {
-                this.personControllers.push(new PersonController(person, personView));
-            }
-        })
     }
 
     private addEventListenersToButtonsAndInput(): void {
@@ -46,6 +35,7 @@ export class GenealogyController {
 
         this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent): void => {
             this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
+                this.genealogyView.displayAncestors(this.genealogy.getRootPerson());
                 console.log(ancestors.size + " ancestors found");
                 console.log(this.genealogy.getRootPerson());
             });
@@ -74,7 +64,7 @@ export class GenealogyController {
         let grandFather: Person = new Person("grandfather");
         grandFather.setName("grandfather");
         grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
-        grandFather.getDatesOfDeath().push(new Date("0080-01-01"));
+        grandFather.getDatesOfDeath().push(new Date("0070-01-01"));
         grandFather.setSexOrGender(new SexOrGender("Q6581097", "male"));
 
         let grandMother: Person = new Person("grandmother");
@@ -91,8 +81,8 @@ export class GenealogyController {
 
         let grandMotherTwo: Person = new Person("grandmotherTwo");
         grandMotherTwo.setName("grandmotherTwo");
-        grandMotherTwo.getDatesOfBirth().push(new Date("0030-01-01"));
-        grandMotherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
+        grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
+        grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
         grandMotherTwo.setSexOrGender(new SexOrGender("Q6581072", "female"));
 
         root.setMother(mother);
