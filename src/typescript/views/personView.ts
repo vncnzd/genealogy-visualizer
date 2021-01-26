@@ -27,7 +27,7 @@ export class PersonView {
         this.rootElement.appendChild(this.containerElement);
 
         this.lifeLineTop = document.createElement("div");
-        this.lifeLineTop.classList.add("lifeline");
+        this.lifeLineTop.classList.add("lifeline-top");
         this.containerElement.appendChild(this.lifeLineTop);
 
         this.boxElement = document.createElement("div");
@@ -70,7 +70,7 @@ export class PersonView {
         this.containerElement.appendChild(this.boxElement);
 
         this.lifeLineBottom = document.createElement("div");
-        this.lifeLineBottom.classList.add("lifeline");
+        this.lifeLineBottom.classList.add("lifeline-bottom");
         this.containerElement.appendChild(this.lifeLineBottom);
 
         this.jsPlumbInst.draggable(this.containerElement);
