@@ -9,6 +9,8 @@ export class PersonView {
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
     private boxElement: HTMLElement;
+    private lifeLineBoundTop: HTMLElement;
+    private lifeLineBoundBottom: HTMLElement;
     private lifeLineTop: HTMLElement;
     private lifeLineBottom: HTMLElement;
     private deleteButtonElement: HTMLElement;
@@ -26,8 +28,12 @@ export class PersonView {
         this.containerElement.classList.add("person-container")
         this.rootElement.appendChild(this.containerElement);
 
+        this.lifeLineBoundTop = document.createElement("div");
+        this.lifeLineBoundTop.classList.add("lifeline", "lifeline-bound");
+        this.containerElement.appendChild(this.lifeLineBoundTop);
+
         this.lifeLineTop = document.createElement("div");
-        this.lifeLineTop.classList.add("lifeline-top");
+        this.lifeLineTop.classList.add("lifeline", "lifeline-top");
         this.containerElement.appendChild(this.lifeLineTop);
 
         this.boxElement = document.createElement("div");
@@ -70,8 +76,12 @@ export class PersonView {
         this.containerElement.appendChild(this.boxElement);
 
         this.lifeLineBottom = document.createElement("div");
-        this.lifeLineBottom.classList.add("lifeline-bottom");
+        this.lifeLineBottom.classList.add("lifeline", "lifeline-bottom");
         this.containerElement.appendChild(this.lifeLineBottom);
+
+        this.lifeLineBoundBottom = document.createElement("div");
+        this.lifeLineBoundBottom.classList.add("lifeline", "lifeline-bound");
+        this.containerElement.appendChild(this.lifeLineBoundBottom);
 
         this.jsPlumbInst.draggable(this.containerElement);
     }

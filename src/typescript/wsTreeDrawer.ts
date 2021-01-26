@@ -172,9 +172,6 @@ export class WSTreeDrawer implements TreeDrawer {
                     break;
             }
         }
-
-        console.log(minDeathYearOfHeight);
-        console.log(maxBirthYearOfHeight);
     }
 
     
