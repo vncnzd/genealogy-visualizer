@@ -4,7 +4,7 @@ import { PersonView } from "./views/personView";
 import { TreeDrawer } from "./treeDrawer";
 
 export class WSTreeDrawer implements TreeDrawer {
-    run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number): void {
+    run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number, pixelPerYear: number): void {
         let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
         this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
 
@@ -26,11 +26,15 @@ export class WSTreeDrawer implements TreeDrawer {
         let leftVisit: string = "leftVisit";
         let rightVisit: string = "rightVisit";
 
-        let multiplier: number = 100;
+        // not part of the original algorithm
+        let distanceUnit: number = 150;
+        let maxBirthYearOfHeight: number[] = [];
+        let minDeathYearOfHeight: number[] = [];
+        // end
 
         for (let i = 0; i < maxHeight; i++) {
             modifier[i] = 0;
-            nextPosition[i] = 1 * multiplier;
+            nextPosition[i] = 1 * distanceUnit;
         }
 
         currentPerson = rootPerson;
@@ -68,9 +72,9 @@ export class WSTreeDrawer implements TreeDrawer {
                     if (isLeaf) {
                         place = nextPosition[height];
                     } else if (currentPerson.getFather() == null) {
-                        place = personViews.get(currentPerson.getMother().getId()).getOffsetLeftInPx() - 1 * multiplier;
+                        place = personViews.get(currentPerson.getMother().getId()).getOffsetLeftInPx() - 1 * distanceUnit;
                     } else if (currentPerson.getMother() == null) {
-                        place = personViews.get(currentPerson.getFather().getId()).getOffsetLeftInPx() + 1 * multiplier;
+                        place = personViews.get(currentPerson.getFather().getId()).getOffsetLeftInPx() + 1 * distanceUnit;
                     } else {
                         place = (personViews.get(currentPerson.getFather().getId()).getOffsetLeftInPx() + personViews.get(currentPerson.getMother().getId()).getOffsetLeftInPx()) / 2;
                     }
@@ -83,8 +87,26 @@ export class WSTreeDrawer implements TreeDrawer {
                         currentPersonView.setOffsetLeftInPx(place + modifier[height]);
                     }
 
-                    nextPosition[height] = currentPersonView.getOffsetLeftInPx() + 2 * multiplier;
+                    nextPosition[height] = currentPersonView.getOffsetLeftInPx() + 2 * distanceUnit;
                     currentPersonNode.setModifier(modifier[height]);
+
+                    // not part of the original algorithm
+                        if (maxBirthYearOfHeight[height] != null) {
+                            if (maxBirthYearOfHeight[height] < currentPerson.getDatesOfBirth()[0].getFullYear()) {
+                                maxBirthYearOfHeight[height] = currentPerson.getDatesOfBirth()[0].getFullYear();
+                            }
+                        } else {
+                            maxBirthYearOfHeight[height] = currentPerson.getDatesOfBirth()[0].getFullYear();
+                        }
+
+                        if (minDeathYearOfHeight[height] != null) {
+                            if (minDeathYearOfHeight[height] > currentPerson.getDatesOfDeath()[0].getFullYear()) {
+                                minDeathYearOfHeight[height] = currentPerson.getDatesOfDeath()[0].getFullYear();
+                            }
+                        } else {
+                            minDeathYearOfHeight[height] = currentPerson.getDatesOfDeath()[0].getFullYear();
+                        }
+                    // end
 
                     currentPerson = currentPerson.getChildren()[0];
                     if (currentPerson != null) {
@@ -108,7 +130,16 @@ export class WSTreeDrawer implements TreeDrawer {
                 case firstVisit:
                     currentPersonView.setOffsetLeftInPx(currentPersonView.getOffsetLeftInPx() + modifierSum);
                     modifierSum = modifierSum + currentPersonNode.getModifier();
-                    currentPersonView.setOffsetTopInPx((2 * currentPersonNode.getHeight() + 1) * -multiplier);
+                    // currentPersonView.setOffsetTopInPx((2 * currentPersonNode.getHeight() + 1) * -multiplier);
+                    
+                    // not part of the original algorithm
+                    currentPersonView.setOffsetTopInPx(currentPerson.getDatesOfBirth()[0].getFullYear() * pixelPerYear);
+                    currentPersonView.setHeightInPx((currentPerson.getDatesOfDeath()[0].getFullYear() - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear);
+                    height = currentPersonNode.getHeight();
+                    let middleValue: number = (minDeathYearOfHeight[height] + maxBirthYearOfHeight[height]) / 2
+                    currentPersonView.setTopPositionOfPersonBox((middleValue - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear - currentPersonView.getBoxHeight() / 2);
+                    // end
+                    
                     currentPersonNode.setStatus(leftVisit);
 
                     if (currentPerson.getFather() != null) {
@@ -141,6 +172,9 @@ export class WSTreeDrawer implements TreeDrawer {
                     break;
             }
         }
+
+        console.log(minDeathYearOfHeight);
+        console.log(maxBirthYearOfHeight);
     }
 
     

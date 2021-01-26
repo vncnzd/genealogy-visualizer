@@ -76,6 +76,10 @@ export class PersonView {
         this.jsPlumbInst.draggable(this.containerElement);
     }
 
+    public setTopPositionOfPersonBox(distanceInPx: number): void {
+        this.lifeLineTop.style.flexBasis = distanceInPx + "px";
+    }
+
     public getWidthInPx(): number {
         return this.containerElement.offsetWidth;
     }
@@ -114,5 +118,13 @@ export class PersonView {
 
     public remove(): void {
         this.rootElement.removeChild(this.containerElement);
+    }
+
+    public getBoxHeight(): number {
+        return PersonView.boxHeightInPx;
+    }
+
+    public getBoxWidth(): number {
+        return PersonView.boxWidthInPx;
     }
 }

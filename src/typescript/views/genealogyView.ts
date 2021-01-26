@@ -202,7 +202,7 @@ export class GenealogyView {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
 
         let drawer: WSTreeDrawer = new WSTreeDrawer();
-        drawer.run(rootPerson, this.personViews, 3);
+        drawer.run(rootPerson, this.personViews, 300, this.pixelPerYear);
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
