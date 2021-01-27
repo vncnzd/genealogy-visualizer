@@ -43,6 +43,10 @@ $female-color: #729fcf;
     border-color: darken($female-color, 30%);
 }
 
+.estimated-lifeline {
+    background-color: red !important;
+}
+
 .lifeline {
     background-color: $female-color;
     opacity: 0.2;

@@ -85,7 +85,34 @@ export class PersonView {
         this.lifeLineBoundBottom.classList.add("lifeline", "lifeline-bound");
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
+        if (person.getDatesOfBirth()[0] == null) {
+            this.setHasEstimatedYearOfBirth(true);
+        }
+        if (person.getDatesOfDeath()[0] == null) {
+            this.setHasEstimatedYearOfDeath(true);
+        }
+
         this.jsPlumbInst.draggable(this.containerElement);
+    }
+
+    public setHasEstimatedYearOfBirth(hasEstimatedYearOfBirth: boolean) {
+        if (hasEstimatedYearOfBirth) {
+            this.lifeLineBoundTop.classList.add("estimated-lifeline");
+            this.lifeLineTop.classList.add("estimated-lifeline");
+        } else {
+            this.lifeLineBoundTop.classList.remove("estimated-lifeline");
+            this.lifeLineTop.classList.remove("estimated-lifeline");
+        }
+    }
+
+    public setHasEstimatedYearOfDeath(hasEstimatedYearOfDeath: boolean) {
+        if (hasEstimatedYearOfDeath) {
+            this.lifeLineBoundBottom.classList.add("estimated-lifeline");
+            this.lifeLineBottom.classList.add("estimated-lifeline");
+        } else {
+            this.lifeLineBoundBottom.classList.remove("estimated-lifeline");
+            this.lifeLineBottom.classList.remove("estimated-lifeline");
+        }
     }
 
     public setTopPositionOfPersonBox(distanceInPx: number): void {
