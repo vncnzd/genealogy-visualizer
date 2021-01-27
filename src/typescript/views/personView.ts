@@ -62,7 +62,7 @@ export class PersonView {
         birthInput.classList.add("birth-and-death-input");
         birthInput.type = "number";
         birthInput.setAttribute("dir", "rtl");
-        birthInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
+        birthInput.valueAsNumber = person.getDatesOfBirth()[0] != null ? person.getDatesOfBirth()[0].getFullYear() : 0;
         dateContainer.appendChild(birthInput);
 
         let minusDiv: HTMLElement = document.createElement("div");
@@ -72,7 +72,7 @@ export class PersonView {
         let deathInput: HTMLInputElement = document.createElement("input");
         deathInput.classList.add("birth-and-death-input");
         deathInput.type = "number";
-        deathInput.valueAsNumber = person.getDatesOfDeath()[0].getFullYear();
+        deathInput.valueAsNumber = person.getDatesOfDeath()[0] != null ? person.getDatesOfDeath()[0].getFullYear() : 0;
         dateContainer.appendChild(deathInput);
         
         this.containerElement.appendChild(this.boxElement);

@@ -8,10 +8,6 @@ export class WSTreeDrawer implements TreeDrawer {
     run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
         let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
         this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
-
-        console.log(rootPerson);
-        console.log(personNodes);
-        console.log(personViews);
         
         let modifier: number[] = [];
         let nextPosition: number[] = [];
@@ -31,6 +27,8 @@ export class WSTreeDrawer implements TreeDrawer {
         let distanceUnit: number = personViews.get(rootPerson.getId()).getBoxWidth();
         let maxBirthYearOfHeight: number[] = [];
         let minDeathYearOfHeight: number[] = [];
+        let yearsOfBirth: number[][] = [];
+        let yearsOfDeath: number[][] = [];
         let connectionParameters: ConnectParams = {
             anchors: ["Top", "Bottom"],
             connector: [ "Bezier", {}],
@@ -50,6 +48,11 @@ export class WSTreeDrawer implements TreeDrawer {
                 { fill:"black" }
             ]
         };
+
+        for (let i = 0; i < maxHeight; i++) {
+            yearsOfBirth[i] = [];
+            yearsOfDeath[i] = [];
+        }
         // end
 
         for (let i = 0; i < maxHeight; i++) {
@@ -111,6 +114,10 @@ export class WSTreeDrawer implements TreeDrawer {
                     currentPersonNode.setModifier(modifier[height]);
 
                     // not part of the original algorithm
+
+                    if (currentPerson.getDatesOfBirth()[0] != null) {
+                        yearsOfBirth[height].push(currentPerson.getDatesOfBirth()[0].getFullYear());
+
                         if (maxBirthYearOfHeight[height] != null) {
                             if (maxBirthYearOfHeight[height] < currentPerson.getDatesOfBirth()[0].getFullYear()) {
                                 maxBirthYearOfHeight[height] = currentPerson.getDatesOfBirth()[0].getFullYear();
@@ -118,6 +125,9 @@ export class WSTreeDrawer implements TreeDrawer {
                         } else {
                             maxBirthYearOfHeight[height] = currentPerson.getDatesOfBirth()[0].getFullYear();
                         }
+                    }
+                    if (currentPerson.getDatesOfDeath()[0] != null) {
+                        yearsOfDeath[height].push(currentPerson.getDatesOfDeath()[0].getFullYear());
 
                         if (minDeathYearOfHeight[height] != null) {
                             if (minDeathYearOfHeight[height] > currentPerson.getDatesOfDeath()[0].getFullYear()) {
@@ -126,6 +136,7 @@ export class WSTreeDrawer implements TreeDrawer {
                         } else {
                             minDeathYearOfHeight[height] = currentPerson.getDatesOfDeath()[0].getFullYear();
                         }
+                    }
                     // end
 
                     currentPerson = currentPerson.getChildren()[0];
@@ -153,12 +164,24 @@ export class WSTreeDrawer implements TreeDrawer {
                     // currentPersonView.setOffsetTopInPx((2 * currentPersonNode.getHeight() + 1) * -multiplier);
                     
                     // not part of the original algorithm
-                    currentPersonView.setOffsetTopInPx(currentPerson.getDatesOfBirth()[0].getFullYear() * pixelPerYear);
-                    currentPersonView.setHeightInPx((currentPerson.getDatesOfDeath()[0].getFullYear() - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear);
+                    let yearOfBirthOfCurrentPerson: number = currentPerson.getDatesOfBirth()[0]?.getFullYear();
+                    let yearOfDeathOfCurrentPerson: number = currentPerson.getDatesOfDeath()[0]?.getFullYear();
+
+                    if (currentPerson.getDatesOfBirth()[0] == null) {
+                        let meanYear = yearsOfBirth[currentPersonNode.getHeight()].reduce((year1: number, year2: number) => year1 + year2) / yearsOfBirth[height].length;
+                        yearOfBirthOfCurrentPerson = Math.round(meanYear);
+                    }
+                    if (currentPerson.getDatesOfDeath()[0] == null) {
+                        let meanYear = yearsOfDeath[currentPersonNode.getHeight()].reduce((year1: number, year2: number) => year1 + year2) / yearsOfDeath[height].length;
+                        yearOfDeathOfCurrentPerson = Math.round(meanYear);
+                    }
+
+                    currentPersonView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * pixelPerYear);
+                    currentPersonView.setHeightInPx((yearOfDeathOfCurrentPerson - yearOfBirthOfCurrentPerson) * pixelPerYear);
                     height = currentPersonNode.getHeight();
                     let middleValue: number = (minDeathYearOfHeight[height] + maxBirthYearOfHeight[height]) / 2;
-                    let boundHeight: number = 10;
-                    currentPersonView.setTopPositionOfPersonBox((middleValue - currentPerson.getDatesOfBirth()[0].getFullYear()) * pixelPerYear - currentPersonView.getBoxHeight() / 2 - boundHeight);
+                    let boundHeight: number = 10; // make this dynamic
+                    currentPersonView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * pixelPerYear - currentPersonView.getBoxHeight() / 2 - boundHeight);
                     if (currentPerson.getFather() != null) this.connect(jsPlumbInst, connectionParameters, currentPerson, currentPerson.getFather());
                     if (currentPerson.getMother() != null) this.connect(jsPlumbInst, connectionParameters, currentPerson, currentPerson.getMother());
                     jsPlumbInst.revalidate(currentPerson.getId());

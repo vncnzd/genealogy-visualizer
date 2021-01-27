@@ -81,8 +81,8 @@ export class GenealogyController {
 
         let grandMotherTwo: Person = new Person("grandmotherTwo");
         grandMotherTwo.setName("grandmotherTwo");
-        grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
-        grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
+        // grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
+        // grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
         grandMotherTwo.setSexOrGender(new SexOrGender("Q6581072", "female"));
 
         root.setMother(mother);
