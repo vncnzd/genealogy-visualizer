@@ -6,6 +6,7 @@ import { AncestorsTreeDrawer } from "../ancestorsTreeDrawer";
 import { TreeDrawer } from "../treeDrawer";
 import { WSTreeDrawer } from "../wsTreeDrawer";
 import { WSPersonNode } from "../wsPersonNode";
+import { RTTreeDrawer } from "../rtTreeDrawer";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -170,7 +171,8 @@ export class GenealogyView {
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
 
-        let drawer: WSTreeDrawer = new WSTreeDrawer();
+        // let drawer: TreeDrawer = new WSTreeDrawer();
+        let drawer: TreeDrawer = new RTTreeDrawer();
         drawer.run(rootPerson, this.personViews, 300, this.pixelPerYear, this.jsPlumbInst);
     }
 

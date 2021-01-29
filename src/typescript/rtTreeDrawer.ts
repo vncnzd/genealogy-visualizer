@@ -8,118 +8,152 @@ import { PersonView } from "./views/personView";
 export class RTTreeDrawer implements TreeDrawer {
     private nodeMap: Map<string, RTNode>;
 
-    private l: RTNode;
-    private r: RTNode;
-    private lr: RTExtreme;
-    private ll: RTExtreme;
-    private rr: RTExtreme;
-    private rl: RTExtreme;
-    private cursep: number;
-    private rootsep: number;
-    private minsep: number;
-    private leftOffsetSum: number;
-    private rightOffsetSum: number;
-
-
     run(rootPerson: Person, personViewsMap: Map<string, PersonView>, height: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
         this.nodeMap = new Map<string, RTNode>();
         this.instantiateNodeAndLinkWithViews(rootPerson, personViewsMap, this.nodeMap);
-        
-        
-        let rightMost: Person;
-        let leftMost: Person;
-        let level: number;
+
+        let rootNode: RTNode = this.nodeMap.get(rootPerson.getId());
+
+        this.setup(rootNode, 0, new RTExtreme(), new RTExtreme());
+        this.petrify(rootNode, 0);
     }
 
-    private setup(currentNode: RTNode, level: number, rightMost: RTExtreme, leftMost: RTExtreme): void {
-        if (currentNode == null) {
-            leftMost.level = -1;
-            rightMost.level = -1;
+    private setup(t: RTNode, level: number, rMost: RTExtreme, lMost: RTExtreme): void {
+        let l: RTNode;
+        let r: RTNode;
+
+        let cursep: number = 0;
+        let rootsep: number = 0;
+        let minsep: number = 1;
+        let lOffSum: number = 0;
+        let rOffSum: number = 0;
+
+        let lr: RTExtreme = new RTExtreme();
+        let ll: RTExtreme = new RTExtreme();
+        let rr: RTExtreme = new RTExtreme();
+        let rl: RTExtreme = new RTExtreme();
+
+        if (t == null) { // avoid selecting as extreme
+            lMost.level = -1;
+            rMost.level = -1;
         } else {
-            currentNode.personView.setOffsetTopInPx(level);
+            t.personView.setOffsetTopInPx(level * 200);
             
-            this.l = this.nodeMap.get(currentNode.person.getFather().getId());
-            this.r= this.nodeMap.get(currentNode.person.getMother().getId());
+            l = this.nodeMap.get(t.person.getFather()?.getId()); // follows contour of tleft subtree
+            r= this.nodeMap.get(t.person.getMother()?.getId()); // follows contour of right subtree
 
-            this.setup(this.l, level++, this.lr, this.ll);
-            this.setup(this.r, level++, this.rr, this.rl);
+            // Position subtrees recursively
+            this.setup(l, level + 1, lr, ll); 
+            this.setup(r, level + 1, rr, rl);
 
-            if (this.r == null && this.l == null) {
-                rightMost.address = currentNode;
-                leftMost.address = currentNode;
+            if (r == null && l == null) { // leaf
+                rMost.address = t; // a leaf is both the leftmost and rightmost node on the lowerst level of the subtree
+                lMost.address = t; // consisting of itself.
 
-                rightMost.level = level;
-                leftMost.level = level;
+                rMost.level = level;
+                lMost.level = level;
 
-                rightMost.offset = 0;
-                leftMost.offset = 0;
-                currentNode.offset = 0;
-            } else {
-                this.cursep = this.minsep;
-                this.rootsep = this.minsep;
-                this.leftOffsetSum = 0;
-                this.rightOffsetSum = 0;
+                rMost.offset = 0;
+                lMost.offset = 0;
+                t.offset = 0;
+            } else { // t is not a leaf
+                // Set up for subtree pushing. Place Roots of subtrees minimum distance apart.
+                cursep = minsep;
+                rootsep = minsep;
+                lOffSum = 0;
+                rOffSum = 0;
 
-                while (this.l != null && this.r != null) {
-                    if (this.cursep < this.minsep) {
-                        this.rootsep = this.rootsep + (this.minsep - this.cursep);
-                        this.cursep = this.minsep;
+                // Now consider each level in turn until one subtree is exhausted, pushing the subtress apart when necessary.
+
+                while (l != null && r != null) {
+                    if (cursep < minsep) { // push?
+                        rootsep = rootsep + (minsep - cursep);
+                        cursep = minsep;
                     }
 
-                    if (this.l.person.getMother() != null) {
-                        this.leftOffsetSum = this.leftOffsetSum + this.l.offset;
-                        this.cursep = this.cursep - this.l.offset;
-                        this.l = this.nodeMap.get(this.l.person.getMother().getId());
+                    // Advance L & R.
+                    if (l.person.getMother() != null) {
+                        lOffSum = lOffSum + l.offset;
+                        cursep = cursep - l.offset;
+                        l = this.nodeMap.get(l.person.getMother().getId());
                     } else {
-                        this.leftOffsetSum = this.leftOffsetSum - this.l.offset;
-                        this.cursep = this.cursep + this.l.offset;
-                        this.l = this.nodeMap.get(this.l.person.getFather().getId());
+                        lOffSum = lOffSum - l.offset;
+                        cursep = cursep + l.offset;
+                        l = this.nodeMap.get(l.person.getFather()?.getId());
                     }
 
-                    if (this.r.person.getFather() != null) {
-                        this.rightOffsetSum = this.rightOffsetSum - this.r.offset;
-                        this.cursep = this.cursep - this.r.offset;
-                        this.r = this.nodeMap.get(this.r.person.getFather().getId());
+                    if (r.person.getFather() != null) {
+                        rOffSum = rOffSum - r.offset;
+                        cursep = cursep - r.offset;
+                        r = this.nodeMap.get(r.person.getFather().getId());
                     } else {
-                        this.rightOffsetSum = this.rightOffsetSum + this.r.offset;
-                        this.cursep = this.cursep + this.r.offset;
-                        this.r = this.nodeMap.get(this.r.person.getMother().getId());
+                        rOffSum = rOffSum + r.offset;
+                        cursep = cursep + r.offset;
+                        r = this.nodeMap.get(r.person.getMother()?.getId());
                     }
                 }
 
-                currentNode.offset = (this.rootsep + 1) / 2;
-                this.leftOffsetSum = this.leftOffsetSum - currentNode.offset;
-                this.rightOffsetSum = this.rightOffsetSum + currentNode.offset;
+                // Set the offset in node t, and include it in accumulated offsets for L and R
+
+                t.offset = (rootsep + 1) / 2;
+                lOffSum = lOffSum - t.offset;
+                rOffSum = rOffSum + t.offset;
 
                 // Update extreme descendants information
 
-                if (this.rl.level > this.ll.level || currentNode.person.getFather() == null) {
-                    leftMost = this.rl;
-                    leftMost.offset = leftMost.offset + currentNode.offset;
+                if (rl.level > ll.level || t.person.getFather() == null) {
+                    lMost = rl;
+                    lMost.offset = lMost.offset + t.offset;
                 } else {
-                    leftMost = this.ll;
-                    leftMost.offset = leftMost.offset - currentNode.offset;
+                    lMost = ll;
+                    lMost.offset = lMost.offset - t.offset;
                 }
 
-                if (this.lr.level > this.rr.level || currentNode.person.getMother() == null) {
-                    rightMost = this.lr;
-                    rightMost.offset = rightMost.offset - currentNode.offset;
+                if (lr.level > rr.level || t.person.getMother() == null) {
+                    rMost = lr;
+                    rMost.offset = rMost.offset - t.offset;
                 } else {
-                    rightMost = this.rr;
-                    rightMost.offset = rightMost.offset + currentNode.offset;
+                    rMost = rr;
+                    rMost.offset = rMost.offset + t.offset;
                 }
 
                 // If subtrees of T were of uneven height, check to see if threading is necessary.
                 // At most one thread needs to be inserted.
 
-                // if (this.l != null && this.l != this.nodeMap.get(currentNode.person.getFather().getId())) {
-                //     this.rr.address.thread = true;
-                //     this.rr.address.offset = Math.abs((this.rr.offset + currentNode.offset) - this.leftOffsetSum);
-                //     if ((this.leftOffsetSum - currentNode.offset) >= this.rr.offset) {
-                //         this.rr.address.person.get
-                //     }
-                // }
+                if (l != null && l != this.nodeMap.get(t.person.getFather().getId())) {
+                    rr.address.thread = true;
+                    rr.address.offset = Math.abs((rr.offset + t.offset) - lOffSum);
+                    if ((lOffSum - t.offset) <= rr.offset) {
+                        rr.address.person.setFather(l.person);
+                    } else {
+                        rr.address.person.setMother(l.person);
+                    }
+                } else if (r != null && r != this.nodeMap.get(t.person.getMother().getId())) {
+                    ll.address.thread = true;
+                    ll.address.offset = Math.abs((ll.offset - t.offset) - rOffSum);
+                    if (rOffSum + t.offset >= ll.offset) {
+                        ll.address.person.setMother(r.person);
+                    } else {
+                        ll.address.person.setFather(r.person)
+                    }
+                }
             }
+        }
+    }
+
+    // This procedure performs a preorder traversal of the tree, converting the relative offsets to absolute coordinates.
+    private petrify(t: RTNode, xPos: number) {
+        if (t != null) {
+            t.personView.setOffsetLeftInPx(xPos * t.personView.getBoxWidth());
+            
+            if (t.thread) {
+                t.thread = false;
+                t.person.setFather(null); 
+                t.person.setMother(null);
+            }
+
+            this.petrify(this.nodeMap.get(t.person.getFather()?.getId()), xPos - t.offset);
+            this.petrify(this.nodeMap.get(t.person.getMother()?.getId()), xPos + t.offset)
         }
     }
 
