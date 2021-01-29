@@ -1,4 +1,4 @@
-import { jsPlumbInstance } from "jsplumb";
+import { ConnectParams, jsPlumbInstance } from "jsplumb";
 import { Person } from "./models/person";
 import { RTExtreme } from "./rtExtreme";
 import { RTNode } from "./RTNode";
@@ -7,15 +7,43 @@ import { PersonView } from "./views/personView";
 
 export class RTTreeDrawer implements TreeDrawer {
     private nodeMap: Map<string, RTNode>;
+    private pixelPerYear: number;
+    private birthYearsForLevel: number[][];
+    private deathYearsOfLevel: number[][];
+    private jsPlumbInst: jsPlumbInstance;
+    private connectionParameters: ConnectParams;
 
     run(rootPerson: Person, personViewsMap: Map<string, PersonView>, height: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
         this.nodeMap = new Map<string, RTNode>();
+        this.pixelPerYear = pixelPerYear;
+        this.birthYearsForLevel = [];
+        this.deathYearsOfLevel = [];
+        this.jsPlumbInst = jsPlumbInst;
         this.instantiateNodeAndLinkWithViews(rootPerson, personViewsMap, this.nodeMap);
+        this.connectionParameters = {
+            anchors: ["Top", "Bottom"],
+            connector: [ "Bezier", {}],
+            endpoint: "Dot",
+            deleteEndpointsOnDetach: false,
+            detachable: false,
+            // @ts-ignore
+            paintStyle: { 
+                stroke: "black", 
+                strokeWidth: 5 
+            },
+            hoverPaintStyle: {
+                stroke: "red",
+            },
+            endpointStyles: [
+                { fill:"black"},
+                { fill:"black" }
+            ]
+        };
 
         let rootNode: RTNode = this.nodeMap.get(rootPerson.getId());
 
         this.setup(rootNode, 0, new RTExtreme(), new RTExtreme());
-        this.petrify(rootNode, 0);
+        this.petrify(rootNode, 0, 0);
     }
 
     private setup(t: RTNode, level: number, rMost: RTExtreme, lMost: RTExtreme): void {
@@ -37,7 +65,15 @@ export class RTTreeDrawer implements TreeDrawer {
             lMost.level = -1;
             rMost.level = -1;
         } else {
-            t.personView.setOffsetTopInPx(level * 200);
+            t.personView.setOffsetTopInPx(level * -200);
+            if (t.person.getDatesOfBirth()[0] != null) {
+                if (this.birthYearsForLevel[level] == null) this.birthYearsForLevel[level] = [];
+                this.birthYearsForLevel[level].push(t.person.getDatesOfBirth()[0].getFullYear());
+            }
+            if (t.person.getDatesOfDeath()[0] != null) {
+                if (this.deathYearsOfLevel[level] == null) this.deathYearsOfLevel[level] = [];
+                this.deathYearsOfLevel[level].push(t.person.getDatesOfDeath()[0].getFullYear());
+            }
             
             l = this.nodeMap.get(t.person.getFather()?.getId()); // follows contour of tleft subtree
             r= this.nodeMap.get(t.person.getMother()?.getId()); // follows contour of right subtree
@@ -142,18 +178,19 @@ export class RTTreeDrawer implements TreeDrawer {
     }
 
     // This procedure performs a preorder traversal of the tree, converting the relative offsets to absolute coordinates.
-    private petrify(t: RTNode, xPos: number) {
+    private petrify(t: RTNode, xPos: number, level: number) {
         if (t != null) {
             t.personView.setOffsetLeftInPx(xPos * t.personView.getBoxWidth());
-            
+            this.positionNodeVerticallyAndConnect(t, this.jsPlumbInst, level);
+
             if (t.thread) {
                 t.thread = false;
                 t.person.setFather(null); 
                 t.person.setMother(null);
             }
 
-            this.petrify(this.nodeMap.get(t.person.getFather()?.getId()), xPos - t.offset);
-            this.petrify(this.nodeMap.get(t.person.getMother()?.getId()), xPos + t.offset)
+            this.petrify(this.nodeMap.get(t.person.getFather()?.getId()), xPos - t.offset, level + 1);
+            this.petrify(this.nodeMap.get(t.person.getMother()?.getId()), xPos + t.offset, level + 1)
         }
     }
 
@@ -167,5 +204,35 @@ export class RTTreeDrawer implements TreeDrawer {
         if (currentPerson.getMother() != null) {
             this.instantiateNodeAndLinkWithViews(currentPerson.getMother(), personViewsMap, nodeMap);
         }
+    }
+
+    private positionNodeVerticallyAndConnect(node: RTNode, jsPlumbInst: jsPlumbInstance, level: number): void {
+        let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
+        if (yearOfBirthOfCurrentPerson == null) {
+            yearOfBirthOfCurrentPerson = this.birthYearsForLevel[level].reduce((a: number, b: number) => a + b) / this.birthYearsForLevel[level].length;
+        }
+        let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+        if (yearOfDeathOfCurrentPerson == null) {
+            yearOfDeathOfCurrentPerson = this.deathYearsOfLevel[level].reduce((a: number, b: number) => a + b) / this.deathYearsOfLevel[level].length;
+        }
+
+        node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);
+        node.personView.setHeightInPx((yearOfDeathOfCurrentPerson - yearOfBirthOfCurrentPerson) * this.pixelPerYear);
+
+        let middleValue: number = (Math.min(...this.deathYearsOfLevel[level]) + Math.max(...this.birthYearsForLevel[level])) / 2;
+        let boundHeight: number = 10; // TODO make this dynamic
+        node.personView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * this.pixelPerYear - node.personView.getBoxHeight() / 2 - boundHeight);
+
+        this.connectNodeWithParents(node);
+    }
+
+    private connectNodeWithParents(node: RTNode): void {
+        if (node.person.getFather() != null) this.connect(this.jsPlumbInst, this.connectionParameters, node.person, node.person.getFather());
+        if (node.person.getMother() != null) this.connect(this.jsPlumbInst, this.connectionParameters, node.person, node.person.getMother());
+        this.jsPlumbInst.revalidate(node.person.getId());
+    }
+
+    private connect(jsPlumbInst: jsPlumbInstance, connectionParameters: ConnectParams, source: Person, target: Person): void {
+        jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, connectionParameters);
     }
 }
