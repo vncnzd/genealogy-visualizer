@@ -142,33 +142,6 @@ export class GenealogyView {
         }
     }
 
-    // public displayDescendants(parent: Person, parentPersonView: PersonView) {
-    //     let parentTop: number = parentPersonView.getPositionTop();
-    //     let parentLeft: number = parentPersonView.getPositionLeft();
-    //     let numberOfChildren: number = parent.getChildren().length;
-    //     let personViewHeight: number = PersonView.boxHeight;
-    //     let personViewWidth: number = PersonView.boxWidth;
-
-    //     let calculatedTop = parentTop + personViewHeight + 100;
-    //     let parentMiddleLeft = (parentLeft + personViewWidth / 2);
-    //     let spaceBetweenEachChild = 50;
-    //     let widthOfChildren = numberOfChildren * personViewWidth + (numberOfChildren - 1) * spaceBetweenEachChild; 
-    //     let calculatedLeft = parentMiddleLeft - widthOfChildren / 2;
-
-    //     for (let index = 0; index < parent.getChildren().length; index++) {
-    //         const child = parent.getChildren()[index];
-    //         let childPersonView = new PersonView(child, this.containerElement, this.jsPlumbInst);
-    //         childPersonView.moveToPositionInPx(calculatedLeft + index * (personViewWidth + spaceBetweenEachChild), calculatedTop);
-    //         this.jsPlumbInst.revalidate(child.getId());
-    //         this.connect(parent, child);
-    //         this.displayDescendants(child, childPersonView);
-    //     }
-    // }
-    
-    // public connect(source: Person, target: Person): void {
-    //     this.jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, this.connectionParameters);
-    // }
-
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
 
