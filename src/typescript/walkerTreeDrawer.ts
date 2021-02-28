@@ -1,20 +1,23 @@
 import { jsPlumbInstance } from "jsplumb";
 import { Person } from "./models/person";
-import { SexOrGender } from "./sexOrGender";
-import { SexOrGenderIdentifier } from "./sexOrGenderIdentifier";
 import { TreeDrawer } from "./treeDrawer";
 import { PersonView } from "./views/personView";
 import { WalkerNode } from "./walkerNode";
 
 export class WalkerTreeDrawer implements TreeDrawer {
     private distance: number;
+    private pixelPerYear: number;
+    private jsPlumbInst: jsPlumbInstance;
 
     run(rootPerson: Person, personViewsMap: Map<string, PersonView>, height: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
+        this.pixelPerYear = pixelPerYear;
+        this.jsPlumbInst = jsPlumbInst;
+
         let rootNode: WalkerNode = this.initializeChildrenNodes(rootPerson, personViewsMap);
         this.distance = rootNode.personView.getWidthInPx() + 50;
+    
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.prelim, 0);
-        console.log(rootNode);
     }
 
     private initializeChildrenNodes(person, personViewMap: Map<string, PersonView>): WalkerNode {
@@ -49,7 +52,10 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
     private firstWalk(v: WalkerNode): void {
         if (v.isLeaf()) {
+            // In the algorithm described by Buchheimer et al. the preliminary x position of every leaf is just 0, 
+            // which does not make sense, since the right sibling needs to have a distance to its left sibling.
             // v.prelim = 0;
+
             if (v.leftSibling == null) {
                 v.prelim = 0;
             } else {
@@ -58,17 +64,17 @@ export class WalkerTreeDrawer implements TreeDrawer {
         } else {
             let defaultAncestor: WalkerNode = v.getLeftMostChild();
 
-            for (const child of v.children) {
-                this.firstWalk(child);
-                defaultAncestor = this.apportion(child, defaultAncestor);
+            for (const w of v.children) {
+                this.firstWalk(w);
+                defaultAncestor = this.apportion(w, defaultAncestor);
             }
 
             this.executeShifts(v);
 
             let midpoint = 0.5 * (v.getLeftMostChild().prelim + v.getRightMostChild().prelim);
 
-            if (v.leftSibling != null) {
-                let w: WalkerNode = v.leftSibling;
+            let w: WalkerNode = v.leftSibling;
+            if (w != null) {
                 v.prelim = w.prelim + this.distance;
                 v.mod = v.prelim - midpoint;
             } else {
@@ -108,6 +114,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 vOutsideRightTree = vOutsideRightTree.getNextRight();
 
                 vOutsideRightTree.ancestor = v;
+
                 let shift: number = (vInsideLeftTree.prelim + sInsideLeftTree) - (vInsideRightTree.prelim + sInsideRightTree) + this.distance;
 
                 if (shift > 0) {
@@ -124,7 +131,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
             if (vInsideLeftTree.getNextRight() != null && vOutsideRightTree.getNextRight() == null) {
                 vOutsideRightTree.thread = vInsideLeftTree.getNextRight();
-                vOutsideRightTree.mod += + sInsideLeftTree - sOutsideRightTree;
+                vOutsideRightTree.mod += sInsideLeftTree - sOutsideRightTree;
             }
 
             if (vInsideRightTree.getNextLeft() != null && vOutsideLeftTree.getNextLeft == null) {
@@ -141,7 +148,8 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let shift: number = 0;
         let change: number = 0;
 
-        for (const w of v.children) {
+        for (let i = v.children.length - 1; i >= 0; i--) {
+            const w = v.children[i];
             w.prelim += shift;
             w.mod += shift;
             change += w.change;
@@ -158,12 +166,13 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private moveSubtree(wLeft: WalkerNode, wRight: WalkerNode, shift: number): void {
-        let subtrees: number = (wRight.number - wLeft.number) * this.distance;
+        // let subtrees: number = (wRight.number - wLeft.number) * this.distance;
+        let subtrees: number = wRight.number - wLeft.number;
 
         wRight.change -= shift / subtrees;
         wRight.shift += shift;
 
-        wLeft.change = wLeft.change + shift / subtrees;
+        wLeft.change += shift / subtrees;
         wRight.prelim += shift;
 
         wRight.mod += shift;
