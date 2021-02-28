@@ -1,6 +1,7 @@
 import { Genealogy } from "../models/genealogy";
 import { Person } from "../models/person";
 import { SexOrGender } from "../sexOrGender";
+import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { GenealogyView } from "../views/genealogyView";
 import { PersonView } from "../views/personView";
 import { PersonController } from "./personController";
@@ -19,7 +20,8 @@ export class GenealogyController {
 
         // test code
         // this.genealogyView.displayAncestors(this.getTestRootPerson());
-        this.genealogyView.displayAncestors(this.generateAncestorsTree(2, "root"));
+        // this.genealogyView.displayAncestors(this.generateAncestorsTree(2, "root"));
+        this.genealogyView.displayDescendants(this.generateDescedantsTree(2, "root"));
     }
 
     private addEventListenersToButtonsAndInput(): void {
@@ -203,6 +205,38 @@ export class GenealogyController {
 
             father.getChildren().push(person);
             mother.getChildren().push(person);
+        }
+
+        return person;
+    }
+
+    public generateDescedantsTree(depth: number, id: string): Person {
+        let person: Person = new Person(id);
+        person.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        person.setName(id);
+        
+        if (depth > 0) {
+            let maxNumberOfChildren: number = 10;
+            // let numberOfChildren: number = Math.round(Math.random() * maxNumberOfChildren);
+            let numberOfChildren: number = 2;
+            
+            for (let i = 0; i < numberOfChildren; i++) {
+                let child = this.generateDescedantsTree(depth - 1, id + " " + i);
+                
+                if (Math.random() > 0.5) {
+                    child.setSexOrGender(new SexOrGender("Q6581097", "male"));
+                } else {
+                    child.setSexOrGender(new SexOrGender("Q6581072", "female"));
+                }
+                
+                person.getChildren().push(child);
+
+                if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.male) {
+                    child.setFather(person);
+                } else if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.female) {
+                    child.setMother(person);
+                }
+            }
         }
 
         return person;
