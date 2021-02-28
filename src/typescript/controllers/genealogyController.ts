@@ -15,9 +15,11 @@ export class GenealogyController {
         this.genealogyView = genealogyView;
         this.personControllers = [];
         this.addEventListenersToButtonsAndInput();
+        this.genealogy.setDepth(parseInt(genealogyView.getDepthInput().value));
 
         // test code
-        this.genealogyView.displayAncestors(this.getTestRootPerson());
+        // this.genealogyView.displayAncestors(this.getTestRootPerson());
+        this.genealogyView.displayAncestors(this.generateAncestorsTree(2, "root"));
     }
 
     private addEventListenersToButtonsAndInput(): void {
@@ -61,29 +63,29 @@ export class GenealogyController {
         father.getDatesOfDeath().push(new Date("0110-01-01"));
         father.setSexOrGender(new SexOrGender("Q6581097", "male"));
 
-        // let grandFather: Person = new Person("grandfather");
-        // grandFather.setName("grandfather");
-        // grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
-        // grandFather.getDatesOfDeath().push(new Date("0070-01-01"));
-        // grandFather.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        let grandFather: Person = new Person("grandfather");
+        grandFather.setName("grandfather");
+        grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
+        grandFather.getDatesOfDeath().push(new Date("0070-01-01"));
+        grandFather.setSexOrGender(new SexOrGender("Q6581097", "male"));
 
-        // let grandMother: Person = new Person("grandmother");
-        // grandMother.setName("grandmother");
-        // grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
-        // grandMother.getDatesOfDeath().push(new Date("0090-01-01"));
-        // grandMother.setSexOrGender(new SexOrGender("Q6581072", "female"));
+        let grandMother: Person = new Person("grandmother");
+        grandMother.setName("grandmother");
+        grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
+        grandMother.getDatesOfDeath().push(new Date("0090-01-01"));
+        grandMother.setSexOrGender(new SexOrGender("Q6581072", "female"));
 
-        // let grandFatherTwo: Person = new Person("grandfatherTwo");
-        // grandFatherTwo.setName("grandfatherTwo");
-        // grandFatherTwo.getDatesOfBirth().push(new Date("0030-01-01"));
-        // grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
-        // grandFatherTwo.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        let grandFatherTwo: Person = new Person("grandfatherTwo");
+        grandFatherTwo.setName("grandfatherTwo");
+        grandFatherTwo.getDatesOfBirth().push(new Date("0030-01-01"));
+        grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
+        grandFatherTwo.setSexOrGender(new SexOrGender("Q6581097", "male"));
 
-        // let grandMotherTwo: Person = new Person("grandmotherTwo");
-        // grandMotherTwo.setName("grandmotherTwo");
-        // // grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
-        // // grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
-        // grandMotherTwo.setSexOrGender(new SexOrGender("Q6581072", "female"));
+        let grandMotherTwo: Person = new Person("grandmotherTwo");
+        grandMotherTwo.setName("grandmotherTwo");
+        // grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
+        // grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
+        grandMotherTwo.setSexOrGender(new SexOrGender("Q6581072", "female"));
 
         root.setMother(mother);
         root.setFather(father);
@@ -91,28 +93,28 @@ export class GenealogyController {
         mother.getChildren().push(root);
         father.getChildren().push(root);
 
-        // mother.setFather(grandFather);
-        // mother.setMother(grandMother);
+        mother.setFather(grandFather);
+        mother.setMother(grandMother);
 
-        // grandMother.getChildren().push(mother);
-        // grandFather.getChildren().push(mother);
+        grandMother.getChildren().push(mother);
+        grandFather.getChildren().push(mother);
 
-        // father.setFather(grandFatherTwo);
-        // father.setMother(grandMotherTwo);
+        father.setFather(grandFatherTwo);
+        father.setMother(grandMotherTwo);
         
-        // grandFatherTwo.getChildren().push(father);
-        // grandMotherTwo.getChildren().push(father);
+        grandFatherTwo.getChildren().push(father);
+        grandMotherTwo.getChildren().push(father);
 
         this.genealogy.getPeople().set(root.getId(), root);
 
         this.genealogy.getPeople().set(mother.getId(), mother);
         this.genealogy.getPeople().set(father.getId(), father);
 
-        // this.genealogy.getPeople().set(grandFather.getId(), grandFather);
-        // this.genealogy.getPeople().set(grandMother.getId(), grandMother);
+        this.genealogy.getPeople().set(grandFather.getId(), grandFather);
+        this.genealogy.getPeople().set(grandMother.getId(), grandMother);
 
-        // this.genealogy.getPeople().set(grandFatherTwo.getId(), grandFatherTwo);
-        // this.genealogy.getPeople().set(grandMotherTwo.getId(), grandMotherTwo);
+        this.genealogy.getPeople().set(grandFatherTwo.getId(), grandFatherTwo);
+        this.genealogy.getPeople().set(grandMotherTwo.getId(), grandMotherTwo);
 
         return root;
     }
@@ -183,6 +185,27 @@ export class GenealogyController {
         this.genealogy.getPeople().set(grandMotherTwo.getId(), grandMotherTwo);
 
         return root;
+    }
+
+    public generateAncestorsTree(depth: number, id: string): Person {
+        let person: Person = new Person(id);
+        person.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        person.setName(id);
+        
+        if (depth > 0) {
+            let father = this.generateAncestorsTree(depth - 1, id + "father");
+            father.setSexOrGender(new SexOrGender("Q6581097", "male"));
+            let mother = this.generateAncestorsTree(depth - 1, id + "mother");
+            mother.setSexOrGender(new SexOrGender("Q6581072", "female"));
+
+            person.setFather(father);
+            person.setMother(mother);
+
+            father.getChildren().push(person);
+            mother.getChildren().push(person);
+        }
+
+        return person;
     }
 
     public setRootPerson(person: Person): void {
