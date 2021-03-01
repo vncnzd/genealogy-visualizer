@@ -77,8 +77,10 @@ export class TestTreeGenerator {
         for (let i = 0; i < 3; i++) {
             let child: Person = new Person("child " + i);
             child.setName(child.getId());
-            child.setSexOrGender((Math.random() > 0.5) ? new SexOrGender(SexOrGenderId.male, "male") : new SexOrGender(SexOrGenderId.female, "female"));
-            child.getDatesOfBirth().push(new Date("0050-01-01"));
+            child.setSexOrGender((Math.random() > 0.5) ? new SexOrGender(SexOrGenderId.male, "male"): new SexOrGender(SexOrGenderId.female, "female"));
+            if (i != 0) {
+                child.getDatesOfBirth().push(new Date("0050-01-01"));
+            }
             child.getDatesOfDeath().push(new Date("0100-01-01"));
             
             root.getChildren().push(child);
@@ -109,17 +111,31 @@ export class TestTreeGenerator {
         return person;
     }
 
-    public static generateRandomDescedantsTree(depth: number, id: string): Person {
+    public static generateRandomDescedantsTree(depth: number, id: string, birthDateYear: number): Person {
         let person: Person = new Person(id);
+        person.setName(person.getId());
         person.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
-        person.setName(id);
+
+        let birthDate: Date = new Date();
+        birthDate.setFullYear(birthDateYear);
+        if (Math.random() > 0.9) {
+            person.getDatesOfBirth().push(birthDate);
+        }
+
+        let deathDate: Date = new Date();
+        deathDate.setFullYear(birthDateYear + 30 + Math.round(Math.random() * 50));
+        if (Math.random() > 0.9) {
+            person.getDatesOfDeath().push(deathDate);
+        }
+
         
         if (depth > 0) {
             let maxNumberOfChildren: number = 4;
             let numberOfChildren: number = Math.round(Math.random() * maxNumberOfChildren);
             
             for (let i = 0; i < numberOfChildren; i++) {
-                let child = this.generateRandomDescedantsTree(depth - 1, id + " " + i);
+                let childBirthDateYear: number = Math.round((deathDate.getFullYear() + birthDate.getFullYear()) / 2);
+                let child = this.generateRandomDescedantsTree(depth - 1, id + " " + i, childBirthDateYear);
                 
                 if (Math.random() > 0.5) {
                     child.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
