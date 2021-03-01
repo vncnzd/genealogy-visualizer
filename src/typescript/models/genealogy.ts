@@ -1,5 +1,4 @@
 import { PersonDatabase } from "../personDatabase";
-import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
 import { Person } from "./person";
 
 export class Genealogy {
