@@ -1,4 +1,4 @@
-export enum SexOrGenderIdentifier {
+export enum SexOrGenderId {
     male,
     female,
     intersex,

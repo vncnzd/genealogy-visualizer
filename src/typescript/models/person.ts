@@ -1,5 +1,5 @@
 import { SexOrGender } from "../sexOrGender";
-import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
+import { SexOrGenderId } from "../sexOrGenderId";
 
 export class Person {    
     private id: string;
@@ -81,9 +81,9 @@ export class Person {
     }
 
     public setParent(person: Person) {
-        if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.female) {
+        if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderId.female) {
             this.setMother(person);
-        } else if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.male) {
+        } else if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderId.male) {
             this.setFather(person);
         }
     }

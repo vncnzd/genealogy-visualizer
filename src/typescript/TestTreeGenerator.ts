@@ -1,6 +1,6 @@
 import { Person } from "./models/person";
 import { SexOrGender } from "./sexOrGender";
-import { SexOrGenderIdentifier } from "./sexOrGenderIdentifier";
+import { SexOrGenderId } from "./sexOrGenderId";
 
 export class TestTreeGenerator {
     public static getTestRootPerson(): Person {
@@ -8,43 +8,43 @@ export class TestTreeGenerator {
         root.setName("Root");
         root.getDatesOfBirth().push(new Date("0100-01-01"));
         root.getDatesOfDeath().push(new Date("0150-01-01"));
-        root.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let mother: Person = new Person("mother");
         mother.setName("mother");
         mother.getDatesOfBirth().push(new Date("0075-01-01"));
         mother.getDatesOfDeath().push(new Date("0125-01-01"));
-        mother.setSexOrGender(new SexOrGender("Q6581072", "female"));
+        mother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
         let father: Person = new Person("father");
         father.setName("father");
         father.getDatesOfBirth().push(new Date("0060-01-01"));
         father.getDatesOfDeath().push(new Date("0110-01-01"));
-        father.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let grandFather: Person = new Person("grandfather");
         grandFather.setName("grandfather");
         grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
         grandFather.getDatesOfDeath().push(new Date("0070-01-01"));
-        grandFather.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        grandFather.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let grandMother: Person = new Person("grandmother");
         grandMother.setName("grandmother");
         grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
         grandMother.getDatesOfDeath().push(new Date("0090-01-01"));
-        grandMother.setSexOrGender(new SexOrGender("Q6581072", "female"));
+        grandMother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
         let grandFatherTwo: Person = new Person("grandfatherTwo");
         grandFatherTwo.setName("grandfatherTwo");
         grandFatherTwo.getDatesOfBirth().push(new Date("0030-01-01"));
         grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
-        grandFatherTwo.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        grandFatherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let grandMotherTwo: Person = new Person("grandmotherTwo");
         grandMotherTwo.setName("grandmotherTwo");
         grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
         grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
-        grandMotherTwo.setSexOrGender(new SexOrGender("Q6581072", "female"));
+        grandMotherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
         root.setMother(mother);
         root.setFather(father);
@@ -67,16 +67,21 @@ export class TestTreeGenerator {
         return root;
     }
 
+    // public static getExampleDescendantsTree(): Person {
+
+    // }
+
     public static generateAncestorsTree(depth: number, id: string): Person {
         let person: Person = new Person(id);
-        person.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        person.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
         person.setName(id);
         
         if (depth > 0) {
             let father = this.generateAncestorsTree(depth - 1, id + "father");
-            father.setSexOrGender(new SexOrGender("Q6581097", "male"));
+            father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+
             let mother = this.generateAncestorsTree(depth - 1, id + "mother");
-            mother.setSexOrGender(new SexOrGender("Q6581072", "female"));
+            mother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
             person.setFather(father);
             person.setMother(mother);
@@ -90,7 +95,7 @@ export class TestTreeGenerator {
 
     public static generateDescedantsTree(depth: number, id: string): Person {
         let person: Person = new Person(id);
-        person.setSexOrGender(new SexOrGender("Q6581097", "male"));
+        person.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
         person.setName(id);
         
         if (depth > 0) {
@@ -101,16 +106,16 @@ export class TestTreeGenerator {
                 let child = this.generateDescedantsTree(depth - 1, id + " " + i);
                 
                 if (Math.random() > 0.5) {
-                    child.setSexOrGender(new SexOrGender("Q6581097", "male"));
+                    child.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
                 } else {
-                    child.setSexOrGender(new SexOrGender("Q6581072", "female"));
+                    child.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
                 }
                 
                 person.getChildren().push(child);
 
-                if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.male) {
+                if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderId.male) {
                     child.setFather(person);
-                } else if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderIdentifier.female) {
+                } else if (person.getSexOrGender().getSexOrGenderId() == SexOrGenderId.female) {
                     child.setMother(person);
                 }
             }

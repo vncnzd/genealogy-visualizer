@@ -1,37 +1,32 @@
-import { SexOrGenderIdentifier } from "./sexOrGenderIdentifier";
+import { SexOrGenderId } from "./sexOrGenderId";
 
 export class SexOrGender {
-    private sexOrGenderId: SexOrGenderIdentifier;
+    private static sexOrGenderIds: Map<string, SexOrGenderId>;
+    
+    private sexOrGenderId: SexOrGenderId;
     private sexOrGenderLabel: string;
 
-    constructor(sexOrGenderId: string, sexOrGenderLabel: string) {
-        this.sexOrGenderLabel = sexOrGenderLabel;
+    public static initializeSexOrGenderIds(): void {
+        this.sexOrGenderIds = new Map<string, SexOrGenderId>();
+        this.sexOrGenderIds.set("Q6581097", SexOrGenderId.male);
+        this.sexOrGenderIds.set("Q6581072", SexOrGenderId.female);
+        this.sexOrGenderIds.set("Q1097630", SexOrGenderId.intersex);
+        this.sexOrGenderIds.set("Q1052281", SexOrGenderId.transgenderFemale);
+        this.sexOrGenderIds.set("Q2449503", SexOrGenderId.transgenderMale)
+    }
 
-        switch (sexOrGenderId) {
-            case "Q6581097":
-                this.sexOrGenderId = SexOrGenderIdentifier.male;
-                break;
-            case "Q6581072":
-                this.sexOrGenderId = SexOrGenderIdentifier.female;
-                break;
-            case "Q1097630":
-                this.sexOrGenderId = SexOrGenderIdentifier.intersex;
-                break;
-            case "Q1052281":
-                this.sexOrGenderId = SexOrGenderIdentifier.transgenderFemale;
-                break;
-            case "Q2449503":
-                this.sexOrGenderId = SexOrGenderIdentifier.transgenderMale;
-                break;
-            default:
-                this.sexOrGenderId = null;
-                break;
-        }
+    public static getSexOrGenderIdForWikidataId(sexOrGenderWikidataId: string): SexOrGenderId {
+        return this.sexOrGenderIds.get(sexOrGenderWikidataId);
+    }
+
+    constructor(sexOrGenderId: SexOrGenderId, sexOrGenderLabel: string) {
+        this.sexOrGenderId = sexOrGenderId;
+        this.sexOrGenderLabel = sexOrGenderLabel;
     }
 
     // getters and setters
 
-    public getSexOrGenderId(): SexOrGenderIdentifier {
+    public getSexOrGenderId(): SexOrGenderId {
         return this.sexOrGenderId;
     }
 
@@ -39,3 +34,5 @@ export class SexOrGender {
         return this.sexOrGenderLabel;
     }
 }
+
+SexOrGender.initializeSexOrGenderIds();

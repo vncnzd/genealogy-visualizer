@@ -1,6 +1,6 @@
 import { jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
-import { SexOrGenderIdentifier } from "../sexOrGenderIdentifier";
+import { SexOrGenderId } from "../sexOrGenderId";
 
 export class PersonView {
     private boxWidthInPx: number;
@@ -43,9 +43,9 @@ export class PersonView {
         this.boxElement.id = person.getId();
         this.boxElement.style.width = this.boxWidthInPx + "px";
         this.boxElement.style.height = this.boxHeightInPx + "px";
-        if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.male) {
+        if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderId.male) {
             this.boxElement.classList.add("male");
-        } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderIdentifier.female) {
+        } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderId.female) {
             this.boxElement.classList.add("female")
         }
 
