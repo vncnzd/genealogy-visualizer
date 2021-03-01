@@ -21,7 +21,8 @@ export class GenealogyController {
         // test code
         // this.genealogyView.displayAncestors(this.getTestRootPerson());
         // this.genealogyView.displayAncestors(this.generateAncestorsTree(2, "root"));
-        this.genealogyView.displayDescendants(this.generateDescedantsTree(2, "root"));
+        this.genealogyView.displayDescendants(this.generateDescedantsTree(7, "root"));
+        // this.genealogyView.displayDescendants(this.getTestRootPersonThree());
     }
 
     private addEventListenersToButtonsAndInput(): void {
@@ -189,6 +190,37 @@ export class GenealogyController {
         return root;
     }
 
+    public getTestRootPersonThree(): Person {
+        let root: Person = new Person("root");
+        root.setName("Root");
+        // root.getDatesOfBirth().push(new Date("0100-01-01"));
+        // root.getDatesOfDeath().push(new Date("0150-01-01"));
+        root.setSexOrGender(new SexOrGender("Q6581097", "male"));
+
+        let child0: Person = new Person("child0");
+        child0.setName(child0.getId());
+        child0.setSexOrGender(new SexOrGender("Q6581097", "male"));
+
+        let child1: Person = new Person("child1");
+        child1.setName(child1.getId());
+        child1.setSexOrGender(new SexOrGender("Q6581097", "male"));
+
+        let child00: Person = new Person("child00");
+        child00.setName(child00.getId());
+        child00.setSexOrGender(new SexOrGender("Q6581097", "male"));
+
+        root.getChildren().push(child0);
+        root.getChildren().push(child1);
+
+        child0.setFather(root);
+        child1.setFather(root);
+
+        child0.getChildren().push(child00);
+        child00.setFather(child0);
+
+        return root;
+    }
+
     public generateAncestorsTree(depth: number, id: string): Person {
         let person: Person = new Person(id);
         person.setSexOrGender(new SexOrGender("Q6581097", "male"));
@@ -216,9 +248,8 @@ export class GenealogyController {
         person.setName(id);
         
         if (depth > 0) {
-            let maxNumberOfChildren: number = 10;
-            // let numberOfChildren: number = Math.round(Math.random() * maxNumberOfChildren);
-            let numberOfChildren: number = 2;
+            let maxNumberOfChildren: number = 4;
+            let numberOfChildren: number = Math.round(Math.random() * maxNumberOfChildren);
             
             for (let i = 0; i < numberOfChildren; i++) {
                 let child = this.generateDescedantsTree(depth - 1, id + " " + i);
