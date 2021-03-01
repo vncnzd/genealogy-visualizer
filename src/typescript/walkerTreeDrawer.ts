@@ -9,29 +9,59 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private pixelPerYear: number;
     private jsPlumbInst: jsPlumbInstance;
 
-    run(rootPerson: Person, personViewsMap: Map<string, PersonView>, height: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
+    run(rootPerson: Person, personViewsMap: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, drawAncestors: boolean): void {
         this.pixelPerYear = pixelPerYear;
         this.jsPlumbInst = jsPlumbInst;
-
-        let rootNode: WalkerNode = this.initializeChildrenNodes(rootPerson, personViewsMap);
+        
+        
+        let rootNode: WalkerNode;
+        if (drawAncestors) {
+            rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap);
+        } else {
+            rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap);
+        }
+        
+        
         this.distance = rootNode.personView.getWidthInPx() + 50;
-    
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.prelim, 0);
     }
 
-    private initializeChildrenNodes(person, personViewMap: Map<string, PersonView>): WalkerNode {
+    private initializeChildrenNodesForDescendants(person: Person, personViewMap: Map<string, PersonView>): WalkerNode {
+        let personNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
+        let children: Person[] = person.getChildren();
+
+        personNode.thread = null;
+        personNode.ancestor = personNode;
+
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            let childNode: WalkerNode = this.initializeChildrenNodesForDescendants(child, personViewMap);
+            childNode.number = i;
+            childNode.parent = personNode;
+            personNode.children.push(childNode);
+
+            if (i > 0) {
+                childNode.leftSibling = personNode.children[i - 1];
+                personNode.children[i - 1].rightSibling = childNode;
+            }
+        }
+
+        return personNode;
+    }
+
+    private initializeChildrenNodesForAncestors(person: Person, personViewMap: Map<string, PersonView>): WalkerNode {
         let walkerNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
         walkerNode.thread = null;
         walkerNode.ancestor = walkerNode;
 
         if (walkerNode.person.getFather() != null) {
-            let fatherNode: WalkerNode = this.initializeChildrenNodes(walkerNode.person.getFather(), personViewMap);
+            let fatherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getFather(), personViewMap);
             fatherNode.parent = walkerNode;
             walkerNode.children.push(fatherNode);
         }
         if (walkerNode.person.getMother() != null) {
-            let motherNode: WalkerNode = this.initializeChildrenNodes(walkerNode.person.getMother(), personViewMap);
+            let motherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getMother(), personViewMap);
             motherNode.parent = walkerNode;
             walkerNode.children.push(motherNode);
         }
@@ -107,7 +137,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
             let sInsideLeftTree: number = vInsideLeftTree.mod;
             let sOutsideLeftTree: number = vOutsideLeftTree.mod;
 
-            while(vInsideLeftTree.getNextRight() != null && vInsideRightTree.getNextLeft != null) {
+            while(vInsideLeftTree.getNextRight() != null && vInsideRightTree.getNextLeft() != null) {
                 vInsideLeftTree = vInsideLeftTree.getNextRight();
                 vInsideRightTree = vInsideRightTree.getNextLeft();
                 vOutsideLeftTree = vOutsideLeftTree.getNextLeft();
@@ -134,7 +164,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 vOutsideRightTree.mod += sInsideLeftTree - sOutsideRightTree;
             }
 
-            if (vInsideRightTree.getNextLeft() != null && vOutsideLeftTree.getNextLeft == null) {
+            if (vInsideRightTree.getNextLeft() != null && vOutsideLeftTree.getNextLeft() == null) {
                 vOutsideLeftTree.thread = vInsideRightTree.getNextLeft();
                 vOutsideLeftTree.mod += sInsideRightTree - sOutsideLeftTree;
                 defaultAncestor = v;
