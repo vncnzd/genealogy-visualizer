@@ -146,17 +146,12 @@ export class GenealogyView {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, this.personViews, this.pixelPerYear, this.jsPlumbInst, true);
-
-        this.transformY = -rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear;
-        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-        this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
     }
 
     public displayDescendants(rootPerson: Person) {
         this.instantiateViewsForDescendantsAndAddItToMap(rootPerson, this.personViews);
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, this.personViews, this.pixelPerYear, this.jsPlumbInst, false);
-        
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
@@ -208,7 +203,7 @@ export class GenealogyView {
     }
 
     private zoom(mousePosition: Position, zoomFactor: number) {
-        this.scaleAndTranslateElements(this.scale, this.scale + zoomFactor, mousePosition.x, mousePosition.y);
+        this.scaleAndTranslateElementsWithMousePosition(this.scale, this.scale + zoomFactor, mousePosition.x, mousePosition.y);
         this.scale += zoomFactor;
     }
 
@@ -220,7 +215,7 @@ export class GenealogyView {
         return new Position(mousePositionX, mousePositionY);
     }
 
-    private scaleAndTranslateElements(currentScale: number, newScale: number, mousePositionX: number, mousePositionY: number): void {
+    private scaleAndTranslateElementsWithMousePosition(currentScale: number, newScale: number, mousePositionX: number, mousePositionY: number): void {
         let scaleRatio = newScale / currentScale;
 
         let scaledMousePositionX = this.transformX + (mousePositionX - this.transformX) * scaleRatio;
@@ -229,8 +224,7 @@ export class GenealogyView {
         this.transformX += mousePositionX - scaledMousePositionX;
         this.transformY += mousePositionY - scaledMousePositionY;
 
-        this.containerElement.style.transform = `matrix(${newScale}, 0, 0, ${newScale}, ${this.transformX}, ${this.transformY})`;
-        this.timelineContainerWrapper.style.transform = `matrix(${newScale}, 0, 0, ${newScale}, 0, ${this.transformY})`;
+        this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, newScale);
         this.adjustTimelineScale(newScale);
     }
 
@@ -250,9 +244,18 @@ export class GenealogyView {
         });
     }
 
+    private translateAndScaleContainerAndTimeline(x: number, y: number, scale: number): void {
+        this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`;
+        this.timelineContainerWrapper.style.transform = `matrix(${scale}, 0, 0, ${scale}, 0, ${y})`;
+    }
+
     private addPanningEventListeners() {
         this.containerElementWrapper.addEventListener("mousedown", (event: MouseEvent) => {
             this.isPaning = true;
+        });
+            
+        this.containerElementWrapper.addEventListener("mouseup", (event: MouseEvent) => {
+            this.isPaning = false;
         });
     
         this.containerElementWrapper.addEventListener("mousemove", (event: MouseEvent) => {
@@ -263,13 +266,8 @@ export class GenealogyView {
                 this.transformX += xDifference;
                 this.transformY += yDifference;
 
-                this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
-                this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
+                this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
             }
-        });
-    
-        this.containerElementWrapper.addEventListener("mouseup", (event: MouseEvent) => {
-            this.isPaning = false;
         });
     }
 
