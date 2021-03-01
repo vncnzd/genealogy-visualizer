@@ -5,7 +5,7 @@ import { TreeDrawer } from "./treeDrawer";
 import { ConnectParams, jsPlumbInstance } from "jsplumb";
 
 export class WSTreeDrawer implements TreeDrawer {
-    run(rootPerson: Person, personViews: Map<string, PersonView>, maxHeight: number, pixelPerYear: number, jsPlumbInst: jsPlumbInstance): void {
+    run(rootPerson: Person, personViews: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, drawAncestors: boolean): void {
         let personNodes: Map<string, WSPersonNode> = new Map<string, WSPersonNode>();
         this.instantiatePersonNodesForAncestorsAndAddThemToMap(rootPerson, personNodes, 0);
         
@@ -49,13 +49,13 @@ export class WSTreeDrawer implements TreeDrawer {
             ]
         };
 
-        for (let i = 0; i < maxHeight; i++) {
+        for (let i = 0; i < 1000; i++) {
             yearsOfBirth[i] = [];
             yearsOfDeath[i] = [];
         }
         // end
 
-        for (let i = 0; i < maxHeight; i++) {
+        for (let i = 0; i < 1000; i++) {
             modifier[i] = 0;
             nextPosition[i] = 1 * distanceUnit;
         }
