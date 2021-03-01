@@ -1,4 +1,4 @@
-import { jsPlumbInstance } from "jsplumb";
+import { ConnectParams, jsPlumbInstance } from "jsplumb";
 import { Person } from "./models/person";
 import { TreeDrawer } from "./treeDrawer";
 import { PersonView } from "./views/personView";
@@ -8,35 +8,49 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private distance: number;
     private pixelPerYear: number;
     private jsPlumbInst: jsPlumbInstance;
+    private deathYearsOfLevel: number[][];
+    private birthYearsOfLevel: number[][];
 
     run(rootPerson: Person, personViewsMap: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, drawAncestors: boolean): void {
         this.pixelPerYear = pixelPerYear;
         this.jsPlumbInst = jsPlumbInst;
+        this.deathYearsOfLevel = [];
+        this.birthYearsOfLevel = [];
         
         
         let rootNode: WalkerNode;
         if (drawAncestors) {
-            rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap);
+            rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap, 0);
         } else {
-            rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap);
+            rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap, 0);
         }
         
         
-        this.distance = rootNode.personView.getWidthInPx() + 50;
+        this.distance = rootNode.personView.getWidthInPx() + 150;
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.prelim, 0);
+        this.jsPlumbInst.repaintEverything(); // not the best solution probably
     }
 
-    private initializeChildrenNodesForDescendants(person: Person, personViewMap: Map<string, PersonView>): WalkerNode {
+    private initializeChildrenNodesForDescendants(person: Person, personViewMap: Map<string, PersonView>, level: number): WalkerNode {
         let personNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
         let children: Person[] = person.getChildren();
+
+        if (person.getDatesOfBirth()[0] != null) {
+            if (this.birthYearsOfLevel[level] == null) this.birthYearsOfLevel[level] = [];
+            this.birthYearsOfLevel[level].push(person.getDatesOfBirth()[0].getFullYear());
+        }
+        if (person.getDatesOfDeath()[0] != null) {
+            if (this.deathYearsOfLevel[level] == null) this.deathYearsOfLevel[level] = [];
+            this.deathYearsOfLevel[level].push(person.getDatesOfDeath()[0].getFullYear());
+        }
 
         personNode.thread = null;
         personNode.ancestor = personNode;
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            let childNode: WalkerNode = this.initializeChildrenNodesForDescendants(child, personViewMap);
+            let childNode: WalkerNode = this.initializeChildrenNodesForDescendants(child, personViewMap, level + 1);
             childNode.number = i;
             childNode.parent = personNode;
             personNode.children.push(childNode);
@@ -50,18 +64,27 @@ export class WalkerTreeDrawer implements TreeDrawer {
         return personNode;
     }
 
-    private initializeChildrenNodesForAncestors(person: Person, personViewMap: Map<string, PersonView>): WalkerNode {
+    private initializeChildrenNodesForAncestors(person: Person, personViewMap: Map<string, PersonView>, level: number): WalkerNode {
         let walkerNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
         walkerNode.thread = null;
         walkerNode.ancestor = walkerNode;
 
+        if (person.getDatesOfBirth()[0] != null) {
+            if (this.birthYearsOfLevel[level] == null) this.birthYearsOfLevel[level] = [];
+            this.birthYearsOfLevel[level].push(person.getDatesOfBirth()[0].getFullYear());
+        }
+        if (person.getDatesOfDeath()[0] != null) {
+            if (this.deathYearsOfLevel[level] == null) this.deathYearsOfLevel[level] = [];
+            this.deathYearsOfLevel[level].push(person.getDatesOfDeath()[0].getFullYear());
+        }
+
         if (walkerNode.person.getFather() != null) {
-            let fatherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getFather(), personViewMap);
+            let fatherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getFather(), personViewMap, level + 1);
             fatherNode.parent = walkerNode;
             walkerNode.children.push(fatherNode);
         }
         if (walkerNode.person.getMother() != null) {
-            let motherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getMother(), personViewMap);
+            let motherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getMother(), personViewMap, level + 1);
             motherNode.parent = walkerNode;
             walkerNode.children.push(motherNode);
         }
@@ -116,8 +139,10 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private secondWalk(v: WalkerNode, m: number, level: number) {
         v.personView.setOffsetLeftInPx(v.prelim + m);
         v.personView.setOffsetTopInPx(level * this.distance);
+        this.positionNodeVertically(v, level);
 
         for (const child of v.children) {
+            this.connect(this.jsPlumbInst, v.person, child.person); // not part of the original algorithm
             this.secondWalk(child, m + v.mod, level + 1);
         }
     }
@@ -206,5 +231,49 @@ export class WalkerTreeDrawer implements TreeDrawer {
         wRight.prelim += shift;
 
         wRight.mod += shift;
+    }
+
+    // not part of the original algorithm
+
+    private positionNodeVertically(node: WalkerNode, level: number): void {
+        let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
+        if (yearOfBirthOfCurrentPerson == null) {
+            yearOfBirthOfCurrentPerson = this.birthYearsOfLevel[level].reduce((a: number, b: number) => a + b) / this.birthYearsOfLevel[level].length;
+        }
+        let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+        if (yearOfDeathOfCurrentPerson == null) {
+            yearOfDeathOfCurrentPerson = this.deathYearsOfLevel[level].reduce((a: number, b: number) => a + b) / this.deathYearsOfLevel[level].length;
+        }
+
+        node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);
+        node.personView.setHeightInPx((yearOfDeathOfCurrentPerson - yearOfBirthOfCurrentPerson) * this.pixelPerYear);
+
+        let middleValue: number = (Math.min(...this.deathYearsOfLevel[level]) + Math.max(...this.birthYearsOfLevel[level])) / 2;
+        let boundHeight: number = 10; // TODO make this dynamic
+        node.personView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * this.pixelPerYear - node.personView.getBoxHeight() / 2 - boundHeight);
+    }
+
+    private connect(jsPlumbInst: jsPlumbInstance, source: Person, target: Person): void {
+        let connectionParameters: ConnectParams = {
+            anchor: ["Bottom", "Top"],
+            connector: [ "Flowchart", {}],
+            endpoint: "Dot",
+            deleteEndpointsOnDetach: false,
+            detachable: false,
+            // @ts-ignore
+            paintStyle: { 
+                stroke: "black", 
+                strokeWidth: 5 
+            },
+            hoverPaintStyle: {
+                stroke: "red",
+            },
+            endpointStyles: [
+                { fill:"black"},
+                { fill:"black" }
+            ]
+        };
+
+        jsPlumbInst.connect({ source: source.getId(), target: target.getId() }, connectionParameters);
     }
 }
