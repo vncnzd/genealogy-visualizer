@@ -17,7 +17,9 @@ export class GenealogyController {
         this.genealogy.setDepth(parseInt(genealogyView.getDepthInput().value));
 
         // test code
-        this.genealogyView.displayDescendants(TestTreeGenerator.generateDescedantsTree(4, "root"));
+        // this.genealogyView.displayDescendants(TestTreeGenerator.generateRandomDescedantsTree(3, "root", 0));
+        // this.genealogyView.displayAncestors(TestTreeGenerator.getTestRootPerson());
+        // this.genealogyView.displayDescendants(TestTreeGenerator.getExampleDescendantsTree());
     }
 
     private addEventListenersToButtonsAndInput(): void {
@@ -28,6 +30,7 @@ export class GenealogyController {
 
         this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent): void => {
             this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
+                this.genealogyView.displayDescendants(this.genealogy.getRootPerson());
                 console.log(descendants.size + " descendants found");
                 console.log(this.genealogy.getRootPerson());
             });
