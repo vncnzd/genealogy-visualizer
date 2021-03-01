@@ -1,22 +1,24 @@
 import { SexOrGenderId } from "./sexOrGenderId";
 
-export class SexOrGender {
-    private static sexOrGenderIds: Map<string, SexOrGenderId>;
-    
+export class SexOrGender {   
     private sexOrGenderId: SexOrGenderId;
     private sexOrGenderLabel: string;
 
-    public static initializeSexOrGenderIds(): void {
-        this.sexOrGenderIds = new Map<string, SexOrGenderId>();
-        this.sexOrGenderIds.set("Q6581097", SexOrGenderId.male);
-        this.sexOrGenderIds.set("Q6581072", SexOrGenderId.female);
-        this.sexOrGenderIds.set("Q1097630", SexOrGenderId.intersex);
-        this.sexOrGenderIds.set("Q1052281", SexOrGenderId.transgenderFemale);
-        this.sexOrGenderIds.set("Q2449503", SexOrGenderId.transgenderMale)
-    }
-
     public static getSexOrGenderIdForWikidataId(sexOrGenderWikidataId: string): SexOrGenderId {
-        return this.sexOrGenderIds.get(sexOrGenderWikidataId);
+        switch (sexOrGenderWikidataId) {
+            case "Q6581097":
+                return SexOrGenderId.male;
+            case "Q6581072":
+                return SexOrGenderId.female;
+            case "Q1097630":
+                return  SexOrGenderId.intersex;
+            case "Q1052281":
+                return  SexOrGenderId.transgenderFemale;
+            case "Q2449503":
+                return SexOrGenderId.transgenderMale;
+            default:
+                return null;
+        }
     }
 
     constructor(sexOrGenderId: SexOrGenderId, sexOrGenderLabel: string) {
@@ -34,5 +36,3 @@ export class SexOrGender {
         return this.sexOrGenderLabel;
     }
 }
-
-SexOrGender.initializeSexOrGenderIds();
