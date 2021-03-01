@@ -67,20 +67,36 @@ export class TestTreeGenerator {
         return root;
     }
 
-    // public static getExampleDescendantsTree(): Person {
+    public static getExampleDescendantsTree(): Person {
+        let root: Person = new Person("root");
+        root.setName(root.getId());
+        root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        root.getDatesOfBirth().push(new Date("0020-01-01"));
+        root.getDatesOfDeath().push(new Date("0060-01-01"));
 
-    // }
+        for (let i = 0; i < 3; i++) {
+            let child: Person = new Person("child " + i);
+            child.setName(child.getId());
+            child.setSexOrGender((Math.random() > 0.5) ? new SexOrGender(SexOrGenderId.male, "male") : new SexOrGender(SexOrGenderId.female, "female"));
+            child.getDatesOfBirth().push(new Date("0050-01-01"));
+            child.getDatesOfDeath().push(new Date("0100-01-01"));
+            
+            root.getChildren().push(child);
+        }
 
-    public static generateAncestorsTree(depth: number, id: string): Person {
+        return root;
+    }
+
+    public static generateRandomAncestorsTree(depth: number, id: string): Person {
         let person: Person = new Person(id);
         person.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
         person.setName(id);
         
         if (depth > 0) {
-            let father = this.generateAncestorsTree(depth - 1, id + "father");
+            let father = this.generateRandomAncestorsTree(depth - 1, id + "father");
             father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
-            let mother = this.generateAncestorsTree(depth - 1, id + "mother");
+            let mother = this.generateRandomAncestorsTree(depth - 1, id + "mother");
             mother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
             person.setFather(father);
@@ -93,7 +109,7 @@ export class TestTreeGenerator {
         return person;
     }
 
-    public static generateDescedantsTree(depth: number, id: string): Person {
+    public static generateRandomDescedantsTree(depth: number, id: string): Person {
         let person: Person = new Person(id);
         person.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
         person.setName(id);
@@ -103,7 +119,7 @@ export class TestTreeGenerator {
             let numberOfChildren: number = Math.round(Math.random() * maxNumberOfChildren);
             
             for (let i = 0; i < numberOfChildren; i++) {
-                let child = this.generateDescedantsTree(depth - 1, id + " " + i);
+                let child = this.generateRandomDescedantsTree(depth - 1, id + " " + i);
                 
                 if (Math.random() > 0.5) {
                     child.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
