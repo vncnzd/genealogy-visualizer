@@ -144,17 +144,19 @@ export class GenealogyView {
 
     public displayAncestors(rootPerson: Person) {
         this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
-        // let drawer: TreeDrawer = new WSTreeDrawer();
-        // let drawer: TreeDrawer = new RTTreeDrawer();
         let drawer: TreeDrawer = new WalkerTreeDrawer();
-        
         drawer.run(rootPerson, this.personViews, this.pixelPerYear, this.jsPlumbInst, true);
+
+        this.transformY = -rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear;
+        this.containerElement.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.transformX}, ${this.transformY})`;
+        this.timelineContainerWrapper.style.transform = `matrix(${this.scale}, 0, 0, ${this.scale}, 0, ${this.transformY})`;
     }
 
     public displayDescendants(rootPerson: Person) {
         this.instantiateViewsForDescendantsAndAddItToMap(rootPerson, this.personViews);
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, this.personViews, this.pixelPerYear, this.jsPlumbInst, false);
+        
     }
 
     private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
