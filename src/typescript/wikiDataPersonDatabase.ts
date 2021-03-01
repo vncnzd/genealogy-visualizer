@@ -80,7 +80,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
                 const id: string = (result.hasOwnProperty(itemVariable)) ? result[itemVariable]["value"].split("/").pop() : ""; // because item returns a string of format {endpoint}/entity/{id}
                 const name: string = (result.hasOwnProperty(itemVariable + "Label")) ? result[itemVariable + "Label"]["value"] : "";
                 const description: string = (result.hasOwnProperty(itemVariable + "Description")) ? result[itemVariable + "Description"]["value"] : "";
-                const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? new SexOrGender(result["sexOrGender"]["value"].split("/").pop(), result["sexOrGenderLabel"]["value"]) : null;
+                const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? new SexOrGender(SexOrGender.getSexOrGenderIdForWikidataId(result["sexOrGender"]["value"].split("/").pop()), result["sexOrGenderLabel"]["value"]) : null;
 
                 // TODO: deal with dates
                 const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
