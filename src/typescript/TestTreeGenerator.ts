@@ -102,6 +102,13 @@ export class TestTreeGenerator {
         child1.getDatesOfDeath().push(new Date("0080-01-01"));
         root.getChildren().push(child1);
 
+        let child10: Person = new Person("child 10");
+        child10.setName(child10.getId());
+        child10.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child10.getDatesOfBirth().push(new Date("0060-01-01"));
+        child10.getDatesOfDeath().push(new Date("0120-01-01"));
+        child1.getChildren().push(child10);
+
         let child2: Person = new Person("child 2");
         child2.setName(child2.getId());
         child2.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
