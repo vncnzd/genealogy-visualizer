@@ -1,5 +1,6 @@
 import { jsPlumbInstance } from "jsplumb";
 import { Person } from "../models/person";
+import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderId } from "../sexOrGenderId";
 
 export class PersonView {
@@ -8,12 +9,14 @@ export class PersonView {
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
     private boxElement: HTMLElement;
+    private deleteButtonElement: HTMLElement;
+
     private lifeLineBoundTop: HTMLElement;
     private lifeLineBoundBottom: HTMLElement;
     private lifeLineTop: HTMLElement;
     private lifeLineBottom: HTMLElement;
-    private deleteButtonElement: HTMLElement;
-
+    private lifeLineBoundHeightInPx: number;
+    
     private jsPlumbInst: jsPlumbInstance;
 
     constructor(person: Person, rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
@@ -21,6 +24,7 @@ export class PersonView {
         this.jsPlumbInst = jsPlumbInst;
         this.boxWidthInPx = 200;
         this.boxHeightInPx = 125;
+        this.lifeLineBoundHeightInPx = 10;
 
         this.createPersonNode(person);
     }
@@ -32,6 +36,7 @@ export class PersonView {
 
         this.lifeLineBoundTop = document.createElement("div");
         this.lifeLineBoundTop.classList.add("lifeline", "lifeline-bound");
+        this.lifeLineBoundTop.style.height = this.lifeLineBoundHeightInPx.toString() + "px";
         this.containerElement.appendChild(this.lifeLineBoundTop);
 
         this.lifeLineTop = document.createElement("div");
@@ -43,11 +48,8 @@ export class PersonView {
         this.boxElement.id = person.getId();
         this.boxElement.style.width = this.boxWidthInPx + "px";
         this.boxElement.style.height = this.boxHeightInPx + "px";
-        if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderId.male) {
-            this.boxElement.classList.add("male");
-        } else if (person.getSexOrGender().getSexOrGenderId() === SexOrGenderId.female) {
-            this.boxElement.classList.add("female")
-        }
+
+        this.addSexOrGenderCSSClassesToElement(this.boxElement, person.getSexOrGender());
 
         let paragraphElement: HTMLElement = document.createElement("p");
         paragraphElement.classList.add("person-name");
@@ -83,6 +85,7 @@ export class PersonView {
 
         this.lifeLineBoundBottom = document.createElement("div");
         this.lifeLineBoundBottom.classList.add("lifeline", "lifeline-bound");
+        this.lifeLineBoundBottom.style.height = this.lifeLineBoundHeightInPx.toString() + "px";
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
         if (person.getDatesOfBirth()[0] == null) {
@@ -93,6 +96,18 @@ export class PersonView {
         }
 
         this.jsPlumbInst.draggable(this.containerElement);
+    }
+
+    public addSexOrGenderCSSClassesToElement(htmlElement: HTMLElement, sexOrGender: SexOrGender): void {
+        if (sexOrGender != null) {
+            if (sexOrGender.getSexOrGenderId() === SexOrGenderId.male) {
+                htmlElement.classList.add("male");
+            } else if (sexOrGender.getSexOrGenderId() === SexOrGenderId.female) {
+                htmlElement.classList.add("female")
+            }
+        } else {
+            htmlElement.classList.add("unknown-gender");
+        }
     }
 
     public setHasEstimatedYearOfBirth(hasEstimatedYearOfBirth: boolean) {
@@ -165,5 +180,9 @@ export class PersonView {
 
     public getBoxWidth(): number {
         return this.boxWidthInPx;
+    }
+
+    public getLifelineBoundHeightInPx(): number {
+        return this.lifeLineBoundHeightInPx;
     }
 }
