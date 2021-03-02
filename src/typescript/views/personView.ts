@@ -147,7 +147,12 @@ export class PersonView {
     }
 
     public setHeightInPx(height: number): void {
-        this.containerElement.style.height = height + "px";
+        let minHeight: number = this.boxHeightInPx + 2 * this.lifeLineBoundHeightInPx;
+        if (height >= minHeight) {
+            this.containerElement.style.height = height + "px";
+        } else {
+            this.containerElement.style.height = minHeight + "px";
+        }
     }
 
     public getOffsetLeftInPx(): number {
