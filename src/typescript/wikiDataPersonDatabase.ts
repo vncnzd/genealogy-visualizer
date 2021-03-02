@@ -2,6 +2,7 @@ import { Person } from "./models/person";
 import { PersonDatabase } from "./personDatabase";
 import { QueryHelper } from "./queryHelper";
 import { SexOrGender } from "./sexOrGender";
+import { SexOrGenderId } from "./sexOrGenderId";
 import { SPARQLQueryDispatcher } from "./sparqlQueryDispatcher";
 
 export class WikidataPersonDatabase implements PersonDatabase {
@@ -71,20 +72,18 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getListOfPeopleFromResponse(responseObject: Object): Person[] {
-        let results = responseObject["results"]["bindings"];
+        let results: Object = responseObject["results"]["bindings"];
         let people: Person[] = [];
         let itemVariable = this.queryHelper.getItemVariable();
 
         for (const result of Object.values(results)) { // TODO: don't forget to add babel to webpack
             if (result.hasOwnProperty(itemVariable)) {
-                const id: string = (result.hasOwnProperty(itemVariable)) ? result[itemVariable]["value"].split("/").pop() : ""; // because item returns a string of format {endpoint}/entity/{id}
-                const name: string = (result.hasOwnProperty(itemVariable + "Label")) ? result[itemVariable + "Label"]["value"] : "";
-                const description: string = (result.hasOwnProperty(itemVariable + "Description")) ? result[itemVariable + "Description"]["value"] : "";
-                const sexOrGender: SexOrGender = (result.hasOwnProperty("sexOrGender")) ? new SexOrGender(SexOrGender.getSexOrGenderIdForWikidataId(result["sexOrGender"]["value"].split("/").pop()), result["sexOrGenderLabel"]["value"]) : null;
-
-                // TODO: deal with dates
-                const dateOfBirth: Date = (result.hasOwnProperty("dateOfBirth")) ? new Date(result["dateOfBirth"]["value"]) : null;
-                const dateOfDeath: Date = (result.hasOwnProperty("dateOfDeath")) ? new Date(result["dateOfDeath"]["value"]) : null;
+                const id: string = this.getIdFromResponse(result);
+                const name: string = this.getNameFromResponse(result);
+                const description: string = this.getDescriptionFromResponse(result);
+                const sexOrGender: SexOrGender = this.getSexOrGenderFromResponse(result);
+                const dateOfBirth: Date =  this.getDateOfBirthFromResponseEntry(result);
+                const dateOfDeath: Date = this.getDateOfDeathFromResponseEntry(result);
                 
                 if (!people.find(element => element.getId() === id)) {
                     let person: Person = new Person(id);
@@ -110,5 +109,77 @@ export class WikidataPersonDatabase implements PersonDatabase {
         }
 
         return people;
+    }
+
+    private getIdFromResponse(response: object): string {
+        let itemVariable: string = this.queryHelper.getItemVariable();
+        let id: string;
+
+        if (response.hasOwnProperty(itemVariable)) {
+            let itemAdress: string = response[itemVariable]["value"];
+            id= itemAdress.split("/").pop(); // because item returns a string of format {endpoint}/entity/{id}
+        } else {
+            throw "Item has no id";
+        }
+
+        return id;
+    }
+
+    private getNameFromResponse(response: object): string {
+        let itemVariable: string = this.queryHelper.getItemVariable();
+
+        if (response.hasOwnProperty(itemVariable + "Label")) {
+            return response[itemVariable + "Label"]["value"];
+        } else {
+            return "";
+        }
+    }
+
+    private getDescriptionFromResponse(response: object): string {
+        let itemVariable: string = this.queryHelper.getItemVariable();
+
+        if (response.hasOwnProperty(itemVariable + "Description")) {
+            return response[itemVariable + "Description"]["value"]
+        } else {
+            return "";
+        }
+    }
+
+    private getSexOrGenderFromResponse(responseEntry: object): SexOrGender {
+        if (responseEntry.hasOwnProperty("sexOrGender")) {
+            let sexOrGenderWikidataId: string = responseEntry["sexOrGender"]["value"].split("/").pop();
+            let sexOrGenderLabel: string = responseEntry["sexOrGenderLabel"]["value"];
+
+            // Maybe put the getSexOrGenderIdForWikidataId method into this class since it is very specific.
+            let sexOrGenderId: SexOrGenderId = SexOrGender.getSexOrGenderIdForWikidataId(sexOrGenderWikidataId);
+            
+            if (sexOrGenderId != null) {
+                return new SexOrGender(sexOrGenderId, sexOrGenderLabel);
+            } else {
+                throw `No fitting sex or gender identifier found for wikidata id: ${sexOrGenderWikidataId} ${sexOrGenderLabel}`;
+            }
+        } else {
+            console.info("Response entry has no sex or gender.");
+            console.info(responseEntry);
+            return null;
+        }
+    }
+
+    private getDateOfBirthFromResponseEntry(responseEntry: object): Date {
+        if (responseEntry.hasOwnProperty("dateOfBirth")) {
+            let dateOfBirth: string = responseEntry["dateOfBirth"]["value"];
+            return new Date(dateOfBirth);
+        } else {
+            return null;
+        }
+    }
+
+    private getDateOfDeathFromResponseEntry(responseEntry: object): Date {
+        if (responseEntry.hasOwnProperty("dateOfDeath")) {
+            let dateOfBirth: string = responseEntry["dateOfDeath"]["value"];
+            return new Date(dateOfBirth);
+        } else {
+            return null;
+        }
     }
 }
