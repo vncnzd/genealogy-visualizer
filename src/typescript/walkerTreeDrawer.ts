@@ -5,7 +5,7 @@ import { PersonView } from "./views/personView";
 import { WalkerNode } from "./walkerNode";
 
 export class WalkerTreeDrawer implements TreeDrawer {
-    private distance: number;
+    private distanceBetweenNodes: number;
     private pixelPerYear: number;
     private jsPlumbInst: jsPlumbInstance;
     private deathYearsOfLevel: number[][];
@@ -26,7 +26,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
         }
         
         
-        this.distance = rootNode.personView.getWidthInPx() + 150;
+        this.distanceBetweenNodes = rootNode.personView.getWidthInPx() + 150;
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.prelim, 0);
         this.jsPlumbInst.repaintEverything(); // not the best solution probably
@@ -112,7 +112,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
             if (v.leftSibling == null) {
                 v.prelim = 0;
             } else {
-                v.prelim = v.leftSibling.prelim + this.distance;
+                v.prelim = v.leftSibling.prelim + this.distanceBetweenNodes;
             }
         } else {
             let defaultAncestor: WalkerNode = v.getLeftMostChild();
@@ -128,7 +128,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
             let w: WalkerNode = v.leftSibling;
             if (w != null) {
-                v.prelim = w.prelim + this.distance;
+                v.prelim = w.prelim + this.distanceBetweenNodes;
                 v.mod = v.prelim - midpoint;
             } else {
                 v.prelim = midpoint;
@@ -138,8 +138,8 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
     private secondWalk(v: WalkerNode, m: number, level: number) {
         v.personView.setOffsetLeftInPx(v.prelim + m);
-        v.personView.setOffsetTopInPx(level * this.distance);
-        this.positionNodeVertically(v, level);
+        v.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
+        this.positionNodeVertically(v, level); // not part of the original algorithm
 
         for (const child of v.children) {
             this.connect(this.jsPlumbInst, v.person, child.person); // not part of the original algorithm
@@ -157,10 +157,10 @@ export class WalkerTreeDrawer implements TreeDrawer {
             let vInsideLeftTree: WalkerNode = w;
             let vOutsideLeftTree : WalkerNode = vInsideRightTree.parent.getLeftMostChild();
 
-            let sInsideRightTree: number = vInsideRightTree.mod;
-            let sOutsideRightTree: number = vOutsideRightTree.mod;
-            let sInsideLeftTree: number = vInsideLeftTree.mod;
-            let sOutsideLeftTree: number = vOutsideLeftTree.mod;
+            let modsumInsideRightTree: number = vInsideRightTree.mod;
+            let modsumOutsideRightTree: number = vOutsideRightTree.mod;
+            let modsumInsideLeftTree: number = vInsideLeftTree.mod;
+            let modsumOutsideLeftTree: number = vOutsideLeftTree.mod;
 
             while(vInsideLeftTree.getNextRight() != null && vInsideRightTree.getNextLeft() != null) {
                 vInsideLeftTree = vInsideLeftTree.getNextRight();
@@ -170,28 +170,28 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
                 vOutsideRightTree.ancestor = v;
 
-                let shift: number = (vInsideLeftTree.prelim + sInsideLeftTree) - (vInsideRightTree.prelim + sInsideRightTree) + this.distance;
+                let shift: number = (vInsideLeftTree.prelim + modsumInsideLeftTree) - (vInsideRightTree.prelim + modsumInsideRightTree) + this.distanceBetweenNodes;
 
                 if (shift > 0) {
                     this.moveSubtree(this.ancestor(vInsideLeftTree, v, defaultAncestor), v, shift);
-                    sInsideRightTree += shift;
-                    sOutsideRightTree += shift;
+                    modsumInsideRightTree += shift;
+                    modsumOutsideRightTree += shift;
                 }
 
-                sInsideLeftTree += vInsideLeftTree.mod;
-                sInsideRightTree += vInsideRightTree.mod;
-                sOutsideLeftTree += vOutsideLeftTree.mod;
-                sOutsideRightTree += vOutsideRightTree.mod;
+                modsumInsideLeftTree += vInsideLeftTree.mod;
+                modsumInsideRightTree += vInsideRightTree.mod;
+                modsumOutsideLeftTree += vOutsideLeftTree.mod;
+                modsumOutsideRightTree += vOutsideRightTree.mod;
             }
 
             if (vInsideLeftTree.getNextRight() != null && vOutsideRightTree.getNextRight() == null) {
                 vOutsideRightTree.thread = vInsideLeftTree.getNextRight();
-                vOutsideRightTree.mod += sInsideLeftTree - sOutsideRightTree;
+                vOutsideRightTree.mod += modsumInsideLeftTree - modsumOutsideRightTree;
             }
 
             if (vInsideRightTree.getNextLeft() != null && vOutsideLeftTree.getNextLeft() == null) {
                 vOutsideLeftTree.thread = vInsideRightTree.getNextLeft();
-                vOutsideLeftTree.mod += sInsideRightTree - sOutsideLeftTree;
+                vOutsideLeftTree.mod += modsumInsideRightTree - modsumOutsideLeftTree;
                 defaultAncestor = v;
             }
         }
@@ -238,11 +238,11 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private positionNodeVertically(node: WalkerNode, level: number): void {
         let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
         if (yearOfBirthOfCurrentPerson == null) {
-            yearOfBirthOfCurrentPerson = this.birthYearsOfLevel[level].reduce((a: number, b: number) => a + b) / this.birthYearsOfLevel[level].length;
+            // yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
         }
         let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
         if (yearOfDeathOfCurrentPerson == null) {
-            yearOfDeathOfCurrentPerson = this.deathYearsOfLevel[level].reduce((a: number, b: number) => a + b) / this.deathYearsOfLevel[level].length;
+            // yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
         }
 
         node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);
@@ -251,12 +251,51 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let middleValue: number = (Math.min(...this.deathYearsOfLevel[level]) + Math.max(...this.birthYearsOfLevel[level])) / 2;
         let boundHeight: number = 10; // TODO make this dynamic
         node.personView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * this.pixelPerYear - node.personView.getBoxHeight() / 2 - boundHeight);
+        
+    }
+
+    private calculateAproximateBirthYear(node: WalkerNode, level: number): number {
+        if (node.parent != null && node.parent.children.length > 1) {
+            let summedUpBirthYears = 0;
+            let numberOfValidSiblings = 0;
+            
+            for (const sibling of node.parent.children) {
+                if (sibling.person.getDatesOfBirth().length > 0) {
+                    numberOfValidSiblings++;
+                    summedUpBirthYears += sibling.person.getDatesOfBirth()[0].getFullYear();
+                }
+            }
+
+            let birthYearsMean = summedUpBirthYears / numberOfValidSiblings;
+            return birthYearsMean;
+        } else if (this.birthYearsOfLevel[level].length > 0) {
+            return this.birthYearsOfLevel[level]?.reduce((a: number, b: number) => {return a + b}) / this.birthYearsOfLevel[level].length;
+        } 
+    }
+
+    private calculateAproximateDeathYear(node: WalkerNode, level: number): number {
+        if (node.parent != null && node.parent.children.length > 1) {
+            let summedUpDeathYears = 0;
+            let numberOfValidSiblings = 0;
+            
+            for (const sibling of node.parent.children) {
+                if (sibling.person.getDatesOfDeath().length > 0) {
+                    numberOfValidSiblings++;
+                    summedUpDeathYears += sibling.person.getDatesOfDeath()[0].getFullYear();
+                }
+            }
+
+            let deathYearsMean = summedUpDeathYears / numberOfValidSiblings;
+            return deathYearsMean;
+        } else {
+            return this.deathYearsOfLevel[level]?.reduce((a: number, b: number) => {return a + b}) / this.deathYearsOfLevel[level].length;
+        }
     }
 
     private connect(jsPlumbInst: jsPlumbInstance, source: Person, target: Person): void {
         let connectionParameters: ConnectParams = {
             anchor: ["Bottom", "Top"],
-            connector: [ "Flowchart", {}],
+            connector: [ "Bezier", {}],
             endpoint: "Dot",
             deleteEndpointsOnDetach: false,
             detachable: false,
@@ -265,9 +304,9 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 stroke: "black", 
                 strokeWidth: 5 
             },
-            hoverPaintStyle: {
-                stroke: "red",
-            },
+            // hoverPaintStyle: {
+            //     stroke: "gray",
+            // },
             endpointStyles: [
                 { fill:"black"},
                 { fill:"black" }
