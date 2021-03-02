@@ -34,13 +34,10 @@ export class PersonView {
         this.containerElement.classList.add("person-container")
         this.rootElement.appendChild(this.containerElement);
 
-        this.lifeLineBoundTop = document.createElement("div");
-        this.lifeLineBoundTop.classList.add("lifeline", "lifeline-bound");
-        this.lifeLineBoundTop.style.height = this.lifeLineBoundHeightInPx.toString() + "px";
+        this.lifeLineBoundTop = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundTop);
 
-        this.lifeLineTop = document.createElement("div");
-        this.lifeLineTop.classList.add("lifeline", "lifeline-top");
+        this.lifeLineTop = this.createLifelineElement(30, ["lifeline-top"]);
         this.containerElement.appendChild(this.lifeLineTop);
 
         this.boxElement = document.createElement("div");
@@ -48,6 +45,7 @@ export class PersonView {
         this.boxElement.id = person.getId();
         this.boxElement.style.width = this.boxWidthInPx + "px";
         this.boxElement.style.height = this.boxHeightInPx + "px";
+        this.containerElement.appendChild(this.boxElement);
 
         this.addSexOrGenderCSSClassesToElement(this.boxElement, person.getSexOrGender());
 
@@ -64,7 +62,7 @@ export class PersonView {
         birthInput.classList.add("birth-and-death-input");
         birthInput.type = "number";
         birthInput.setAttribute("dir", "rtl");
-        birthInput.valueAsNumber = person.getDatesOfBirth()[0] != null ? person.getDatesOfBirth()[0].getFullYear() : 0;
+        if (person.getDatesOfBirth()[0]) birthInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
         dateContainer.appendChild(birthInput);
 
         let minusDiv: HTMLElement = document.createElement("div");
@@ -74,31 +72,26 @@ export class PersonView {
         let deathInput: HTMLInputElement = document.createElement("input");
         deathInput.classList.add("birth-and-death-input");
         deathInput.type = "number";
-        deathInput.valueAsNumber = person.getDatesOfDeath()[0] != null ? person.getDatesOfDeath()[0].getFullYear() : 0;
+        if (person.getDatesOfDeath()[0] != null) deathInput.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
         dateContainer.appendChild(deathInput);
-        
-        this.containerElement.appendChild(this.boxElement);
 
-        this.lifeLineBottom = document.createElement("div");
-        this.lifeLineBottom.classList.add("lifeline", "lifeline-bottom");
+        this.lifeLineBottom = this.createLifelineElement(30, ["lifeline-bottom"]);
         this.containerElement.appendChild(this.lifeLineBottom);
 
-        this.lifeLineBoundBottom = document.createElement("div");
-        this.lifeLineBoundBottom.classList.add("lifeline", "lifeline-bound");
-        this.lifeLineBoundBottom.style.height = this.lifeLineBoundHeightInPx.toString() + "px";
+        this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
         if (person.getDatesOfBirth()[0] == null) {
-            this.setHasEstimatedYearOfBirth(true);
+            this.setHasNoBirthdate(true);
         }
         if (person.getDatesOfDeath()[0] == null) {
-            this.setHasEstimatedYearOfDeath(true);
+            this.setHasNoDeathdate(true);
         }
 
         this.jsPlumbInst.draggable(this.containerElement);
     }
 
-    public addSexOrGenderCSSClassesToElement(htmlElement: HTMLElement, sexOrGender: SexOrGender): void {
+    private addSexOrGenderCSSClassesToElement(htmlElement: HTMLElement, sexOrGender: SexOrGender): void {
         if (sexOrGender != null) {
             if (sexOrGender.getSexOrGenderId() === SexOrGenderId.male) {
                 htmlElement.classList.add("male");
@@ -110,8 +103,27 @@ export class PersonView {
         }
     }
 
-    public setHasEstimatedYearOfBirth(hasEstimatedYearOfBirth: boolean) {
-        if (hasEstimatedYearOfBirth) {
+    private createLifelineElement(widthInPixel: number, classList: string[]): HTMLElement{
+        let lifeline: HTMLElement = document.createElement("div");
+        lifeline.classList.add("lifeline");
+        for (const className of classList) {
+            lifeline.classList.add(className);
+        }
+        // lifeline.style.width = widthInPixel.toString() + "px"
+
+        return lifeline;
+    }
+
+    private createLifelineBoundElement(heightInPixel: number): HTMLElement {
+        let lifelineBound: HTMLElement = document.createElement("div");
+        lifelineBound.classList.add("lifeline", "lifeline-bound");
+        lifelineBound.style.height = heightInPixel.toString + "px";
+
+        return lifelineBound;
+    }
+
+    private setHasNoBirthdate(hasNoBirthyear: boolean) {
+        if (hasNoBirthyear) {
             this.lifeLineBoundTop.classList.add("estimated-lifeline");
             this.lifeLineTop.classList.add("estimated-lifeline");
         } else {
@@ -120,8 +132,8 @@ export class PersonView {
         }
     }
 
-    public setHasEstimatedYearOfDeath(hasEstimatedYearOfDeath: boolean) {
-        if (hasEstimatedYearOfDeath) {
+    private setHasNoDeathdate(hasNoDeathdate: boolean) {
+        if (hasNoDeathdate) {
             this.lifeLineBoundBottom.classList.add("estimated-lifeline");
             this.lifeLineBottom.classList.add("estimated-lifeline");
         } else {
