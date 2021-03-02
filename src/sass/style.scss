@@ -1,5 +1,6 @@
 $male-color: #77bc65;
 $female-color: #729fcf;
+$unknown-gender-color: #808080;
 
 #jsplumb-container-wrapper {
     position: relative;
@@ -41,6 +42,11 @@ $female-color: #729fcf;
 .female {
     background-color: $female-color;
     border-color: darken($female-color, 30%);
+}
+
+.unknown-gender {
+    background-color: $unknown-gender-color;
+    border-color: darken($unknown-gender-color, 30%);;
 }
 
 .estimated-lifeline {
@@ -85,19 +91,11 @@ $female-color: #729fcf;
     margin-left: 0.1em;
 }
 
-.male .birth-and-death-input {
-    background-color: #77bc65;
-}
-
-.female .birth-and-death-input {
-    background-color: #729fcf;
-}
-
 .birth-and-death-input {
     text-align: center;
     border: none;
-    background-color: #77bc65;
-    width: 3em;
+    background-color: inherit;
+    width: 4em;
 }
 
 .date-container {
