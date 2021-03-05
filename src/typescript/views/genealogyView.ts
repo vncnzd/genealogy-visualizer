@@ -19,6 +19,7 @@ export class GenealogyView {
     private timelineContainerWrapper: HTMLElement;
     private timelineContainer: HTMLElement;
     private timelineLineContainers: HTMLElement[];
+    private timelineWidthInPx: number;
     private pixelPerYear: number;
 
     private scale = 1;
@@ -31,6 +32,7 @@ export class GenealogyView {
 
     constructor(parentElement: HTMLElement, languageData: Object) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
+        this.timelineWidthInPx = 50;
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
         this.personViews = new Map<string, PersonView>();
@@ -118,7 +120,7 @@ export class GenealogyView {
         this.timelineContainer.id = "timeline-container";
         this.timelineContainerWrapper.appendChild(this.timelineContainer);
 
-        for (let year = -5000; year < 2500; year+= 5) {
+        for (let year = -5000; year < new Date().getFullYear(); year+= 5) {
             const lineContainer: HTMLElement = document.createElement("div");
             this.timelineContainer.appendChild(lineContainer);
             lineContainer.style.top = `${year * this.pixelPerYear}px`
@@ -228,18 +230,23 @@ export class GenealogyView {
     }
 
     private adjustTimelineScale(scale: number): void {
+        this.timelineContainerWrapper.style.width = (this.timelineWidthInPx / scale) + "px";
+        this.timelineContainerWrapper.style.fontSize = (1 / scale) + "rem";
+        
         this.timelineLineContainers.forEach((element: Element, index: number) => {
-            const htmlElement: HTMLElement = (element as HTMLElement);
+            const timelineLineContainer: HTMLElement = (element as HTMLElement);
+            const lineElement: HTMLElement = <HTMLElement> timelineLineContainer.children[0];
 
+            lineElement.style.height = (1 / scale) + "px";
+            
             if (index % 5 !== 0) {
-                if (scale <= 0.3) {
-                    htmlElement.style.visibility = "hidden";
+                if (scale <= 0.5) {
+                    timelineLineContainer.style.visibility = "hidden";
                 } else {
-                    htmlElement.style.visibility = "visible";
+                    timelineLineContainer.style.visibility = "visible";
                 }
             }
-            
-            // (element as HTMLElement).style.transform = `scale(${1 / scale})`;
+
         });
     }
 
