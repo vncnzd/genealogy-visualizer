@@ -168,7 +168,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     private getDateOfBirthFromResponseEntry(responseEntry: object): Date {
         if (responseEntry.hasOwnProperty("dateOfBirth")) {
             let dateOfBirth: string = responseEntry["dateOfBirth"]["value"];
-            return new Date(dateOfBirth);
+            return this.getValidDateOrNull(dateOfBirth);
         } else {
             return null;
         }
@@ -176,8 +176,17 @@ export class WikidataPersonDatabase implements PersonDatabase {
 
     private getDateOfDeathFromResponseEntry(responseEntry: object): Date {
         if (responseEntry.hasOwnProperty("dateOfDeath")) {
-            let dateOfBirth: string = responseEntry["dateOfDeath"]["value"];
-            return new Date(dateOfBirth);
+            let dateOfDeath: string = responseEntry["dateOfDeath"]["value"];
+            return this.getValidDateOrNull(dateOfDeath);
+        } else {
+            return null;
+        }
+    }
+
+    private getValidDateOrNull(dateString: string): Date {
+        let date: Date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+            return date;
         } else {
             return null;
         }
