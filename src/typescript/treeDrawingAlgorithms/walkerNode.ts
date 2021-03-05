@@ -1,6 +1,5 @@
-import { Person } from "./models/person";
-import { PersonView } from "./views/personView";
-import { WalkerTreeDrawer } from "./walkerTreeDrawer";
+import { Person } from "../models/person";
+import { PersonView } from "../views/personView";
 
 export class WalkerNode {
     public mod: number;

@@ -1,6 +1,4 @@
-import { Person } from "./models/person";
-import { Position } from "./position";
-import { PersonView } from "./views/personView";
+import { Person } from "../models/person";
 
 export class WSPersonNode {
     private person: Person;

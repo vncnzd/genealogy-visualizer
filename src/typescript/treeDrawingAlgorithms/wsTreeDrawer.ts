@@ -1,8 +1,8 @@
-import { Person } from "./models/person";
 import { WSPersonNode } from "./wsPersonNode";
-import { PersonView } from "./views/personView";
 import { TreeDrawer } from "./treeDrawer";
 import { ConnectParams, jsPlumbInstance } from "jsplumb";
+import { PersonView } from "../views/personView";
+import { Person } from "../models/person";
 
 export class WSTreeDrawer implements TreeDrawer {
     run(rootPerson: Person, personViews: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, drawAncestors: boolean): void {

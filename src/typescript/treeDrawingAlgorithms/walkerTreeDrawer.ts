@@ -1,7 +1,7 @@
 import { ConnectParams, jsPlumbInstance } from "jsplumb";
-import { Person } from "./models/person";
+import { Person } from "../models/person";
+import { PersonView } from "../views/personView";
 import { TreeDrawer } from "./treeDrawer";
-import { PersonView } from "./views/personView";
 import { WalkerNode } from "./walkerNode";
 
 export class WalkerTreeDrawer implements TreeDrawer {

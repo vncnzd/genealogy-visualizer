@@ -2,12 +2,8 @@ import { ConnectParams, jsPlumb, jsPlumbInstance, jsPlumbUtil } from "jsplumb";
 import { Person } from "../models/person";
 import { PersonView } from "./personView";
 import { Position } from "../position"
-import { AncestorsTreeDrawer } from "../ancestorsTreeDrawer";
-import { TreeDrawer } from "../treeDrawer";
-import { WSTreeDrawer } from "../wsTreeDrawer";
-import { WSPersonNode } from "../wsPersonNode";
-import { RTTreeDrawer } from "../rtTreeDrawer";
-import { WalkerTreeDrawer } from "../walkerTreeDrawer";
+import { TreeDrawer } from "../treeDrawingAlgorithms/treeDrawer";
+import { WalkerTreeDrawer } from "../treeDrawingAlgorithms/walkerTreeDrawer";
 
 export class GenealogyView {
     private containerElement: HTMLElement;

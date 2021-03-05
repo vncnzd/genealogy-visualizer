@@ -1,5 +1,5 @@
-import { Person } from "./models/person";
-import { PersonView } from "./views/personView";
+import { Person } from "../models/person";
+import { PersonView } from "../views/personView";
 
 export class RTNode {
     public person: Person;
