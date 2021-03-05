@@ -57,7 +57,7 @@ export class PersonView {
         dateContainer.appendChild(birthInput);
 
         if (person.getDatesOfBirth()[0] == null) {
-            this.setHasBirthdate(true);
+            this.setHasBirthdate(false);
         }
 
         let minusDiv: HTMLElement = document.createElement("div");
