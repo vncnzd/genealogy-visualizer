@@ -17,7 +17,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
         this.deathYearsOfLevel = [];
         this.birthYearsOfLevel = [];
         
-        
         let rootNode: WalkerNode;
         if (drawAncestors) {
             rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap, 0);
@@ -25,10 +24,11 @@ export class WalkerTreeDrawer implements TreeDrawer {
             rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap, 0);
         }
         
-        
-        this.distanceBetweenNodes = rootNode.personView.getWidthInPx() + 150;
+        this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;
+
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.prelim, 0);
+
         this.jsPlumbInst.repaintEverything(); // not the best solution probably
     }
 
@@ -234,15 +234,14 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     // not part of the original algorithm
-
     private positionNodeVertically(node: WalkerNode, level: number): void {
         let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
         if (yearOfBirthOfCurrentPerson == null) {
-            // yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
+            yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
         }
         let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
         if (yearOfDeathOfCurrentPerson == null) {
-            // yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
+            yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
         }
 
         node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);

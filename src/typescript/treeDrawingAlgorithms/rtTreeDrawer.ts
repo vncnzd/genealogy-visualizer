@@ -1,9 +1,9 @@
 import { ConnectParams, jsPlumbInstance } from "jsplumb";
-import { Person } from "./models/person";
+import { Person } from "../models/person";
+import { PersonView } from "../views/personView";
 import { RTExtreme } from "./rtExtreme";
 import { RTNode } from "./RTNode";
 import { TreeDrawer } from "./treeDrawer";
-import { PersonView } from "./views/personView";
 
 export class RTTreeDrawer implements TreeDrawer {
     private nodeMap: Map<string, RTNode>;
