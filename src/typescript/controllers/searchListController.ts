@@ -19,14 +19,23 @@ export class SearchListController {
     }
 
     private addSearchEventListener(): void {
-        this.searchListView.getSearchButtonElement().addEventListener("click", () => {
-            this.personDatabase.findPersonByLabel(this.searchListView.getSearchInputElement().value, 20).then((people: Person[]) => {
-                this.searchList.clearSearchResultPeople();
-                this.searchList.getSearchResultPeople().push.apply(this.searchList.getSearchResultPeople(), people);
+        // this.searchListView.getSearchButtonElement().addEventListener("click", () => {
+        //     this.startSearchForPerson(this.searchListView.getSearchInputElement().value);
+        // });
 
-                this.searchListView.updateList(people);
-                this.addEventListenersToResultTableRows();
-            });
+        this.searchListView.getSearchInputElement().addEventListener("input", (event: Event) => {
+            let input: HTMLInputElement = <HTMLInputElement> event.target;
+            this.startSearchForPerson(input.value);
+        });
+    }
+
+    private startSearchForPerson(searchValue: string): void {
+        this.personDatabase.findPersonByLabel(searchValue, 20).then((people: Person[]) => {
+            this.searchList.clearSearchResultPeople();
+            this.searchList.getSearchResultPeople().push.apply(this.searchList.getSearchResultPeople(), people);
+
+            this.searchListView.updateList(people);
+            this.addEventListenersToResultTableRows();
         });
     }
 
@@ -47,11 +56,12 @@ export class SearchListController {
 
             if (selectedPerson != undefined) {
                 this.searchList.setSelectedPerson(selectedPerson);
-                this.searchListView.markElementAsSelected(rowElement);
+                this.searchListView.setValueOfInputField(selectedPerson.getName());
+                this.searchListView.emptySearchResultsTable();
                 console.log("Selected Person:")
                 console.log(selectedPerson);
               
-                this.genealogyController.setRootPerson(selectedPerson);              
+                this.genealogyController.setRootPerson(selectedPerson);             
             } else {
                 console.error("Selected Person was not found in memory");
             }

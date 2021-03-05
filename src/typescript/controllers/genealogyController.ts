@@ -1,6 +1,6 @@
 import { Genealogy } from "../models/genealogy";
 import { Person } from "../models/person";
-import { TestTreeGenerator } from "../TestTreeGenerator";
+import { TestTreeGenerator } from "../testTreeGenerator";
 import { GenealogyView } from "../views/genealogyView";
 import { PersonController } from "./personController";
 
@@ -17,9 +17,10 @@ export class GenealogyController {
         this.genealogy.setDepth(parseInt(genealogyView.getDepthInput().value));
 
         // test code
-        // this.genealogyView.displayDescendants(TestTreeGenerator.generateRandomDescedantsTree(3, "root", 0));
+        // this.genealogyView.displayDescendants(TestTreeGenerator.generateRandomDescedantsTree(3, "root", 500));
+        // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(5, "root", 500));
         // this.genealogyView.displayAncestors(TestTreeGenerator.getTestRootPerson());
-        // this.genealogyView.displayDescendants(TestTreeGenerator.getExampleDescendantsTree());
+        this.genealogyView.displayDescendants(TestTreeGenerator.getExampleDescendantsTree());
     }
 
     private addEventListenersToButtonsAndInput(): void {

@@ -11,9 +11,9 @@ export class SearchListView {
         parentElement.appendChild(this.searchInputElement);
         this.searchInputElement.setAttribute("type", "search");
 
-        this.searchButtonElement = document.createElement("button");
-        parentElement.appendChild(this.searchButtonElement);
-        this.searchButtonElement.innerHTML = languageData["searchButtonText"];
+        // this.searchButtonElement = document.createElement("button");
+        // parentElement.appendChild(this.searchButtonElement);
+        // this.searchButtonElement.innerHTML = languageData["searchButtonText"];
 
         this.searchResultTableElement = document.createElement("table");
         this.searchResultTableElement.id = "search-results-table";
@@ -41,13 +41,21 @@ export class SearchListView {
         }
     }
 
-    public markElementAsSelected(element: HTMLElement) {
+    public markElementAsSelected(element: HTMLElement): void {
         if (this.currentSelectedRowElement != null) {
             this.currentSelectedRowElement.classList.remove("selected-row");
         }
 
         this.currentSelectedRowElement = element;
         this.currentSelectedRowElement.classList.add("selected-row");
+    }
+
+    public setValueOfInputField(value: string): void {
+        this.searchInputElement.value = value;
+    }
+
+    public emptySearchResultsTable(): void {
+        this.searchResultTableElement.innerHTML = '';
     }
 
     // getters and setters
