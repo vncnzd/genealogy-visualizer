@@ -17,8 +17,22 @@ $unknown-gender-color: #808080;
     transform-origin: top left;
 }
 
+#search-container {
+    margin: 1rem auto;
+    max-width: 600px;
+    position: relative;
+
+    input {
+        width: 100%;
+    }
+}
+
 #search-results-table {
     border-collapse: collapse;
+    position: absolute;
+    z-index: 1;
+    background-color: white;
+    border: 1px solid grey;
 }
 
 .person-container {
@@ -78,8 +92,11 @@ $unknown-gender-color: #808080;
     text-align: center;
 }
 
-.search-row:hover {
-    background-color: grey;
+.search-row {
+    border: 1px solid #d4d4d4;
+    &:hover {
+        background-color: darken($color: white, $amount: 25);
+    }
 }
 
 .selected-row {
@@ -89,6 +106,7 @@ $unknown-gender-color: #808080;
 .timeline-number {
     margin-top: -0.5em;
     margin-left: 0.1em;
+    font-weight: bold;
 }
 
 .birth-and-death-input {
