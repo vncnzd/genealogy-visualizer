@@ -3,7 +3,7 @@ import { SexOrGender } from "./sexOrGender";
 import { SexOrGenderId } from "./sexOrGenderId";
 
 export class TestTreeGenerator {
-    public static getTestRootPerson(): Person {
+    public static getAncestorsExampleTree(): Person {
         let root: Person = new Person("root");
         root.setName("Root");
         root.getDatesOfBirth().push(new Date("0100-01-01"));
@@ -25,12 +25,12 @@ export class TestTreeGenerator {
         let grandFather: Person = new Person("grandfather");
         grandFather.setName("grandfather");
         grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
-        grandFather.getDatesOfDeath().push(new Date("0070-01-01"));
+        grandFather.getDatesOfDeath().push(new Date("0090-01-01"));
         grandFather.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let grandMother: Person = new Person("grandmother");
         grandMother.setName("grandmother");
-        grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
+        grandMother.getDatesOfBirth().push(new Date("0070-01-01"));
         grandMother.getDatesOfDeath().push(new Date("0090-01-01"));
         grandMother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
@@ -119,25 +119,29 @@ export class TestTreeGenerator {
         return root;
     }
 
-    public static generateRandomAncestorsTree(depth: number, id: string, birthYear: number): Person {
+    public static generateRandomAncestorsTree(depth: number, id: string, deathYear: number): Person {
         let person: Person = new Person(id);
         person.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
         person.setName(id);
         
         let birthDate: Date = new Date();
-        birthDate.setFullYear(birthYear);
-        person.getDatesOfBirth().push(birthDate);
+        birthDate.setFullYear(deathYear - Math.random() * 100);
+        if (Math.random() > 0.000001) {
+            person.getDatesOfBirth().push(birthDate);   
+        }
 
         let deathDate: Date = new Date();
-        deathDate.setFullYear(birthYear + 20 + Math.round(Math.random() * 50));
-        person.getDatesOfDeath().push(deathDate);
+        deathDate.setFullYear(deathYear);
+        if (Math.random() > 0.000001) {
+            person.getDatesOfDeath().push(deathDate);
+        }
 
         
         if (depth > 0) {
-            let father = this.generateRandomAncestorsTree(depth - 1, id + "father", birthYear + 25);
+            let father = this.generateRandomAncestorsTree(depth - 1, id + "father", deathYear - 25);
             father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
-            let mother = this.generateRandomAncestorsTree(depth - 1, id + "mother", birthYear + 25);
+            let mother = this.generateRandomAncestorsTree(depth - 1, id + "mother", deathYear - 25);
             mother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
             person.setFather(father);
