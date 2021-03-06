@@ -37,12 +37,12 @@ export class PersonView {
         this.lifeLineBoundTop = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundTop);
 
+        this.lifeLineTop = this.createLifelineElement(["lifeline-top"]);
+        this.containerElement.appendChild(this.lifeLineTop);
+
         this.boxElement = this.createBoxElement(person, this.boxWidthInPx, this.boxHeightInPx);
         this.addSexOrGenderCSSClassesToElement(this.boxElement, person.getSexOrGender());
         this.containerElement.appendChild(this.boxElement);
-
-        this.lifeLineTop = this.createLifelineElement(["lifeline-top"]);
-        this.containerElement.appendChild(this.lifeLineTop);
 
         let nameParagraphElement: HTMLElement = this.createTextParagraphElement(person.getName(), ["person-name"]);
         this.boxElement.appendChild(nameParagraphElement);
@@ -56,10 +56,6 @@ export class PersonView {
         if (person.getDatesOfBirth()[0] != null) birthInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
         dateContainer.appendChild(birthInput);
 
-        if (person.getDatesOfBirth()[0] == null) {
-            this.setHasBirthdate(false);
-        }
-
         let minusDiv: HTMLElement = document.createElement("div");
         minusDiv.appendChild(document.createTextNode("-"));
         dateContainer.appendChild(minusDiv);
@@ -68,15 +64,18 @@ export class PersonView {
         if (person.getDatesOfDeath()[0] != null) deathInput.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
         dateContainer.appendChild(deathInput);
 
-        if (person.getDatesOfDeath()[0] == null) {
-            this.setHasDeathdate(true);
-        }
-
         this.lifeLineBottom = this.createLifelineElement(["lifeline-bottom"]);
         this.containerElement.appendChild(this.lifeLineBottom);
 
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
+
+        if (person.getDatesOfBirth()[0] == null) {
+            this.setHasBirthdate(false);
+        }
+        if (person.getDatesOfDeath()[0] == null) {
+            this.setHasDeathdate(false);
+        }
 
         this.jsPlumbInst.draggable(this.containerElement);
     }
@@ -143,9 +142,15 @@ export class PersonView {
 
     private setHasBirthdate(hasBirthdate: boolean) {
         if (!hasBirthdate) {
+            this.lifeLineBoundTop.style.visibility = "hidden";
+            this.lifeLineTop.style.visibility = "hidden";
+
             this.lifeLineBoundTop.classList.add("estimated-lifeline");
             this.lifeLineTop.classList.add("estimated-lifeline");
         } else {
+            this.lifeLineBoundTop.style.visibility = "visible";
+            this.lifeLineBottom.style.visibility = "visible";
+
             this.lifeLineBoundTop.classList.remove("estimated-lifeline");
             this.lifeLineTop.classList.remove("estimated-lifeline");
         }
@@ -153,9 +158,11 @@ export class PersonView {
 
     private setHasDeathdate(hasDeathDate: boolean) {
         if (!hasDeathDate) {
+            this.lifeLineBoundTop.style.visibility = "hidden";
             this.lifeLineBoundBottom.classList.add("estimated-lifeline");
             this.lifeLineBottom.classList.add("estimated-lifeline");
         } else {
+            this.lifeLineBoundTop.style.visibility = "visible";
             this.lifeLineBoundBottom.classList.remove("estimated-lifeline");
             this.lifeLineBottom.classList.remove("estimated-lifeline");
         }
