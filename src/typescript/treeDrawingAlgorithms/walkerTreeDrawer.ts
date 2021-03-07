@@ -262,7 +262,15 @@ export class WalkerTreeDrawer implements TreeDrawer {
         }
 
         let boxHeight: number = node.personView.getBoxHeight();
-        node.personView.setOffsetTopOfPersonBox(yearDifference * this.pixelPerYear - boxHeight - boundHeight);
+        let lifelineBoxHeight: number = node.personView.getLifelineBoxHeightInPx();
+        let offsetTop = yearDifference * this.pixelPerYear - boxHeight - boundHeight;
+
+        node.personView.setOffsetTopOfPersonBox(offsetTop);
+        node.personView.setOffsetTopOfLifelineBox(yearDifference * this.pixelPerYear - lifelineBoxHeight);
+        if (offsetTop < 0) {
+            node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + offsetTop - boundHeight);
+            node.personView.setOffsetTopOfLifelineBox(yearDifference * this.pixelPerYear - lifelineBoxHeight - offsetTop + boundHeight);
+        }
     }
 
     private calculateAproximateBirthYear(node: WalkerNode, level: number): number {
