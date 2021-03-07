@@ -17,7 +17,7 @@ export class PersonView {
     private lifelineBox: HTMLElement;
     private lifelineBoxWidthInPx: number;
     private lifelineBoxHeightInPx: number;
-    private lifelineBoxBorderWidthInPx: number
+    private lifelineBoxBorderHeightInPx: number
     private lifeLineBoundHeightInPx: number;
     
     private jsPlumbInst: jsPlumbInstance;
@@ -29,9 +29,9 @@ export class PersonView {
         this.boxHeightInPx = 125;
 
         this.lifeLineBoundHeightInPx = 10;
-        this.lifelineBoxBorderWidthInPx = 10;
-        this.lifelineBoxWidthInPx = this.boxWidthInPx + this.lifelineBoxBorderWidthInPx * 2;
-        this.lifelineBoxHeightInPx = this.boxHeightInPx + this.lifelineBoxBorderWidthInPx * 2;
+        this.lifelineBoxBorderHeightInPx = 15;
+        this.lifelineBoxWidthInPx = this.boxWidthInPx + this.lifelineBoxBorderHeightInPx * 2;
+        this.lifelineBoxHeightInPx = this.boxHeightInPx + this.lifelineBoxBorderHeightInPx * 2;
         this.createPersonNode(person);
     }
 
@@ -156,6 +156,10 @@ export class PersonView {
         return lifelineBound;
     }
 
+    public hideLifelineBox(): void {
+        this.lifelineBox.style.visibility = "hidden";
+    }
+
     private setHasBirthdate(hasBirthdate: boolean) {
         // if (!hasBirthdate) {
         //     this.lifeLineBoundTop.style.visibility = "hidden";
@@ -211,6 +215,10 @@ export class PersonView {
 
     public setLifelineBoxHeightInPx(heightInPx: number): void {
         this.lifelineBox.style.height = heightInPx + "px";
+    }
+
+    public getLifelineBoxBorderHeightInPx(): number {
+        return this.lifelineBoxBorderHeightInPx;
     }
 
     public getOffsetLeftInPx(): number {

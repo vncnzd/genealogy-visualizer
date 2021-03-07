@@ -236,40 +236,45 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
     // not part of the original algorithm
     private positionNodeVertically(node: WalkerNode, level: number): void {
-        let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
-        // if (yearOfBirthOfCurrentPerson == null) {
-        //     yearOfBirthOfCurrentPerson = Math.max(...this.birthYearsOfLevel[level])
-        //     yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
-        // }
-        let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
-        // if (yearOfDeathOfCurrentPerson == null) {
-        //     yearOfDeathOfCurrentPerson = 
-        //     yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
-        // }
+        let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
+        let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
 
-        node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);
-        node.personView.setHeightInPx((yearOfDeathOfCurrentPerson - yearOfBirthOfCurrentPerson) * this.pixelPerYear);
-
-        let boundHeight: number = node.personView.getLifelineBoundHeightInPx();
-        let yearDifference: number;
+        // Set the birth date as the start of the life line.
+        node.personView.setOffsetTopInPx(yearOfBirth * this.pixelPerYear);
+        // Set the height of the lifeline according to the years lived.
+        node.personView.setHeightInPx((yearOfDeath - yearOfBirth) * this.pixelPerYear);
 
         if (this.drawAncestors) {
-            let minDeathdateYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
-            yearDifference = minDeathdateYearOfLevel - yearOfBirthOfCurrentPerson;
-        } else {
-            let maxBirthdateYearOfLevel: number = Math.max(...this.birthYearsOfLevel[level]);
-            yearDifference = maxBirthdateYearOfLevel - yearOfBirthOfCurrentPerson;
-        }
+            let minDeathYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
+            let birthYearMinDeathYearDifference: number = minDeathYearOfLevel - yearOfBirth;
 
-        let boxHeight: number = node.personView.getBoxHeight();
-        let lifelineBoxHeight: number = node.personView.getLifelineBoxHeightInPx();
-        let offsetTop = yearDifference * this.pixelPerYear - boxHeight - boundHeight;
+            let yearDifferenceInPx = birthYearMinDeathYearDifference * this.pixelPerYear;
+            let boxAndBoundOffset = node.personView.getBoxHeight() + node.personView.getLifelineBoxBorderHeightInPx();
+            let relativeYPositionOfPersonBox = yearDifferenceInPx - boxAndBoundOffset;
+            node.personView.setOffsetTopOfPersonBox(relativeYPositionOfPersonBox);
 
-        node.personView.setOffsetTopOfPersonBox(offsetTop);
-        node.personView.setOffsetTopOfLifelineBox(yearDifference * this.pixelPerYear - lifelineBoxHeight);
-        if (offsetTop < 0) {
-            node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + offsetTop - boundHeight);
-            node.personView.setOffsetTopOfLifelineBox(yearDifference * this.pixelPerYear - lifelineBoxHeight - offsetTop + boundHeight);
+            let relativeYPositionOfLifelineBox = relativeYPositionOfPersonBox - node.personView.getLifelineBoxBorderHeightInPx();
+            
+            if (relativeYPositionOfPersonBox < -node.personView.getBoxHeight()) {
+                // the person box is above the upper bound of the lifeline
+                node.personView.hideLifelineBox();
+            } else if (relativeYPositionOfPersonBox < 0) {
+                // the upper bound of the lifeline is in the person box
+                node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + relativeYPositionOfLifelineBox);
+            } else {
+                node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
+            }
+            
+            // node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
+            // if (relativeYPositionOfPersonBox >= 0) {
+            // } else {
+            //     node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + relativeYPositionOfLifelineBox);
+            // }
+
+            // let lifelineBoxIsPlacedAbovePersonBox: boolean = relativeYPositionOfPersonBox + node.personView.getLifelineBoxBorderHeightInPx() < relativeYPositionOfLifelineBox;
+            // if (relativeYPositionOfLifelineBox < relativeYPositionOfPersonBox + node.personView.getLifelineBoxBorderHeightInPx()) {
+            //     node.personView.hideLifelineBox();
+            // }
         }
     }
 
