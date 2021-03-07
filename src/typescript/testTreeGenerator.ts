@@ -136,9 +136,9 @@ export class TestTreeGenerator {
             person.getDatesOfDeath().push(deathDate);
         }
 
-        
+        let age = deathDate.getFullYear() - birthDate.getFullYear();
         if (depth > 0) {
-            let father = this.generateRandomAncestorsTree(depth - 1, id + "father", deathYear - 25);
+            let father = this.generateRandomAncestorsTree(depth - 1, id + "father", birthDate.getFullYear() + age * Math.random());
             father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
             let mother = this.generateRandomAncestorsTree(depth - 1, id + "mother", deathYear - 25);
