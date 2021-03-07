@@ -10,12 +10,14 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private jsPlumbInst: jsPlumbInstance;
     private deathYearsOfLevel: number[][];
     private birthYearsOfLevel: number[][];
+    private drawAncestors: boolean;
 
     run(rootPerson: Person, personViewsMap: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, drawAncestors: boolean): void {
         this.pixelPerYear = pixelPerYear;
         this.jsPlumbInst = jsPlumbInst;
         this.deathYearsOfLevel = [];
         this.birthYearsOfLevel = [];
+        this.drawAncestors = drawAncestors;
         
         let rootNode: WalkerNode;
         if (drawAncestors) {
@@ -221,7 +223,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private moveSubtree(wLeft: WalkerNode, wRight: WalkerNode, shift: number): void {
-        // let subtrees: number = (wRight.number - wLeft.number) * this.distance;
         let subtrees: number = wRight.number - wLeft.number;
 
         wRight.change -= shift / subtrees;
@@ -237,20 +238,29 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private positionNodeVertically(node: WalkerNode, level: number): void {
         let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
         if (yearOfBirthOfCurrentPerson == null) {
-            yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
+            // yearOfBirthOfCurrentPerson = Math.max(...this.birthYearsOfLevel[level])
+            // yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
         }
         let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
         if (yearOfDeathOfCurrentPerson == null) {
-            yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
+            // yearOfDeathOfCurrentPerson = 
+            // yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
         }
 
         node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);
         node.personView.setHeightInPx((yearOfDeathOfCurrentPerson - yearOfBirthOfCurrentPerson) * this.pixelPerYear);
-
-        let middleValue: number = (Math.min(...this.deathYearsOfLevel[level]) + Math.max(...this.birthYearsOfLevel[level])) / 2;
-        let boundHeight: number = 10; // TODO make this dynamic
-        node.personView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * this.pixelPerYear - node.personView.getBoxHeight() / 2 - boundHeight);
         
+        let boundHeight: number = node.personView.getLifelineBoundHeightInPx();
+        let yearDifference: number;
+        if (this.drawAncestors) {
+            let minDeathdateYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
+            yearDifference = minDeathdateYearOfLevel - yearOfBirthOfCurrentPerson;
+        } else {
+            let maxBirthdateYearOfLevel: number = Math.max(...this.birthYearsOfLevel[level]);
+            yearDifference = maxBirthdateYearOfLevel - yearOfBirthOfCurrentPerson;
+        }
+        let boxHeight: number = node.personView.getBoxHeight();
+        node.personView.setTopPositionOfPersonBox(yearDifference * this.pixelPerYear - boxHeight - boundHeight * 2);
     }
 
     private calculateAproximateBirthYear(node: WalkerNode, level: number): number {
@@ -294,7 +304,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private connect(jsPlumbInst: jsPlumbInstance, source: Person, target: Person): void {
         let connectionParameters: ConnectParams = {
             anchor: ["Bottom", "Top"],
-            connector: [ "Bezier", {}],
+            connector: [ "Flowchart", {}],
             endpoint: "Dot",
             deleteEndpointsOnDetach: false,
             detachable: false,
