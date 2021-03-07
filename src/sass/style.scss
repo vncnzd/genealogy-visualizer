@@ -48,6 +48,17 @@ $lifeline-color: #e3ecf6;
     border-radius: 10px;
     border-width: 5px;
     box-sizing: border-box;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.lifeline-box {
+    position: absolute;
+    background: linear-gradient($lifeline-color, $lifeline-color);;
+    border-radius: 10px;
+    border-width: 5px;
 }
 
 .male {
@@ -80,7 +91,6 @@ $lifeline-color: #e3ecf6;
 
 .lifeline-bound {
     margin: 0 20%;
-    height: 10px;
 }
 
 .person-name {
