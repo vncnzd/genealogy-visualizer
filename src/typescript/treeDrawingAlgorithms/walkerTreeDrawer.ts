@@ -237,21 +237,22 @@ export class WalkerTreeDrawer implements TreeDrawer {
     // not part of the original algorithm
     private positionNodeVertically(node: WalkerNode, level: number): void {
         let yearOfBirthOfCurrentPerson: number = node.person.getDatesOfBirth()[0]?.getFullYear();
-        if (yearOfBirthOfCurrentPerson == null) {
-            // yearOfBirthOfCurrentPerson = Math.max(...this.birthYearsOfLevel[level])
-            // yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
-        }
+        // if (yearOfBirthOfCurrentPerson == null) {
+        //     yearOfBirthOfCurrentPerson = Math.max(...this.birthYearsOfLevel[level])
+        //     yearOfBirthOfCurrentPerson = this.calculateAproximateBirthYear(node, level);
+        // }
         let yearOfDeathOfCurrentPerson: number = node.person.getDatesOfDeath()[0]?.getFullYear();
-        if (yearOfDeathOfCurrentPerson == null) {
-            // yearOfDeathOfCurrentPerson = 
-            // yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
-        }
+        // if (yearOfDeathOfCurrentPerson == null) {
+        //     yearOfDeathOfCurrentPerson = 
+        //     yearOfDeathOfCurrentPerson = this.calculateAproximateDeathYear(node, level);
+        // }
 
         node.personView.setOffsetTopInPx(yearOfBirthOfCurrentPerson * this.pixelPerYear);
         node.personView.setHeightInPx((yearOfDeathOfCurrentPerson - yearOfBirthOfCurrentPerson) * this.pixelPerYear);
-        
+
         let boundHeight: number = node.personView.getLifelineBoundHeightInPx();
         let yearDifference: number;
+
         if (this.drawAncestors) {
             let minDeathdateYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
             yearDifference = minDeathdateYearOfLevel - yearOfBirthOfCurrentPerson;
@@ -259,8 +260,9 @@ export class WalkerTreeDrawer implements TreeDrawer {
             let maxBirthdateYearOfLevel: number = Math.max(...this.birthYearsOfLevel[level]);
             yearDifference = maxBirthdateYearOfLevel - yearOfBirthOfCurrentPerson;
         }
+
         let boxHeight: number = node.personView.getBoxHeight();
-        node.personView.setTopPositionOfPersonBox(yearDifference * this.pixelPerYear - boxHeight - boundHeight * 2);
+        node.personView.setOffsetTopOfPersonBox(yearDifference * this.pixelPerYear - boxHeight - boundHeight);
     }
 
     private calculateAproximateBirthYear(node: WalkerNode, level: number): number {

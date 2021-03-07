@@ -12,9 +12,8 @@ export class PersonView {
     private deleteButtonElement: HTMLElement;
 
     private lifeLineBoundTop: HTMLElement;
+    private lifeline: HTMLElement;
     private lifeLineBoundBottom: HTMLElement;
-    private lifeLineTop: HTMLElement;
-    private lifeLineBottom: HTMLElement;
     private lifeLineBoundHeightInPx: number;
     
     private jsPlumbInst: jsPlumbInstance;
@@ -31,14 +30,15 @@ export class PersonView {
 
     public createPersonNode(person: Person): void {
         this.containerElement = document.createElement("div");
-        this.containerElement.classList.add("person-container")
+        this.containerElement.classList.add("person-container");
+        this.containerElement.style.width = this.boxWidthInPx + "px";
         this.rootElement.appendChild(this.containerElement);
 
         this.lifeLineBoundTop = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundTop);
 
-        this.lifeLineTop = this.createLifelineElement(["lifeline-top"]);
-        this.containerElement.appendChild(this.lifeLineTop);
+        this.lifeline = this.createLifelineElement(["lifeline-line"]);
+        this.containerElement.appendChild(this.lifeline);
 
         this.boxElement = this.createBoxElement(person, this.boxWidthInPx, this.boxHeightInPx);
         this.addSexOrGenderCSSClassesToElement(this.boxElement, person.getSexOrGender());
@@ -63,9 +63,6 @@ export class PersonView {
         let deathInput: HTMLInputElement = this.createNumberInputElement(["birth-and-death-input"]);
         if (person.getDatesOfDeath()[0] != null) deathInput.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
         dateContainer.appendChild(deathInput);
-
-        this.lifeLineBottom = this.createLifelineElement(["lifeline-bottom"]);
-        this.containerElement.appendChild(this.lifeLineBottom);
 
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
@@ -141,35 +138,27 @@ export class PersonView {
     }
 
     private setHasBirthdate(hasBirthdate: boolean) {
-        if (!hasBirthdate) {
-            this.lifeLineBoundTop.style.visibility = "hidden";
-            this.lifeLineTop.style.visibility = "hidden";
-
-            this.lifeLineBoundTop.classList.add("estimated-lifeline");
-            this.lifeLineTop.classList.add("estimated-lifeline");
-        } else {
-            this.lifeLineBoundTop.style.visibility = "visible";
-            this.lifeLineBottom.style.visibility = "visible";
-
-            this.lifeLineBoundTop.classList.remove("estimated-lifeline");
-            this.lifeLineTop.classList.remove("estimated-lifeline");
-        }
+        // if (!hasBirthdate) {
+        //     this.lifeLineBoundTop.style.visibility = "hidden";
+        //     this.lifeline.style.visibility = "hidden";
+        // } else {
+        //     this.lifeLineBoundTop.style.visibility = "visible";
+        //     this.lifeline.style.visibility = "hidden";
+        // }
     }
 
     private setHasDeathdate(hasDeathDate: boolean) {
-        if (!hasDeathDate) {
-            this.lifeLineBoundTop.style.visibility = "hidden";
-            this.lifeLineBoundBottom.classList.add("estimated-lifeline");
-            this.lifeLineBottom.classList.add("estimated-lifeline");
-        } else {
-            this.lifeLineBoundTop.style.visibility = "visible";
-            this.lifeLineBoundBottom.classList.remove("estimated-lifeline");
-            this.lifeLineBottom.classList.remove("estimated-lifeline");
-        }
+        // if (!hasDeathDate) {
+        //     this.lifeLineBoundTop.style.visibility = "hidden";
+        //     this.lifeLineBoundBottom.classList.add("estimated-lifeline");
+        // } else {
+        //     this.lifeLineBoundTop.style.visibility = "visible";
+        //     this.lifeLineBoundBottom.classList.remove("estimated-lifeline");
+        // }
     }
 
-    public setTopPositionOfPersonBox(distanceInPx: number): void {
-        this.lifeLineTop.style.flexBasis = distanceInPx + "px";
+    public setOffsetTopOfPersonBox(distanceInPx: number): void {
+        this.boxElement.style.top = distanceInPx + "px";
     }
 
     public getWidthInPx(): number {

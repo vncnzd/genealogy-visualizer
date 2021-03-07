@@ -221,7 +221,7 @@ export class RTTreeDrawer implements TreeDrawer {
 
         let middleValue: number = (Math.min(...this.deathYearsOfLevel[level]) + Math.max(...this.birthYearsForLevel[level])) / 2;
         let boundHeight: number = 10; // TODO make this dynamic
-        node.personView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * this.pixelPerYear - node.personView.getBoxHeight() / 2 - boundHeight);
+        node.personView.setOffsetTopOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * this.pixelPerYear - node.personView.getBoxHeight() / 2 - boundHeight);
 
         this.connectNodeWithParents(node);
     }

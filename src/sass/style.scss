@@ -1,6 +1,7 @@
 $male-color: #77bc65;
 $female-color: #729fcf;
 $unknown-gender-color: #808080;
+$lifeline-color: #e3ecf6;
 
 #jsplumb-container-wrapper {
     position: relative;
@@ -42,6 +43,7 @@ $unknown-gender-color: #808080;
 }
 
 .person-box {
+    position: absolute;
     border-style: solid;
     border-radius: 10px;
     border-width: 5px;
@@ -68,16 +70,10 @@ $unknown-gender-color: #808080;
 }
 
 .lifeline {
-    background-color: $female-color;
-    opacity: 0.2;
+    background-color: $lifeline-color;
 }
 
-.lifeline-top {
-    margin: 0 40%;
-    // flex-basis: 40%;
-}
-
-.lifeline-bottom {
+.lifeline-line {
     margin: 0 40%;
     flex-grow: 1;
 }

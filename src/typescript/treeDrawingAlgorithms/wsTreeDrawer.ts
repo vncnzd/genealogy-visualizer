@@ -181,7 +181,7 @@ export class WSTreeDrawer implements TreeDrawer {
                     height = currentPersonNode.getHeight();
                     let middleValue: number = (minDeathYearOfHeight[height] + maxBirthYearOfHeight[height]) / 2;
                     let boundHeight: number = 10; // make this dynamic
-                    currentPersonView.setTopPositionOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * pixelPerYear - currentPersonView.getBoxHeight() / 2 - boundHeight);
+                    currentPersonView.setOffsetTopOfPersonBox((middleValue - yearOfBirthOfCurrentPerson) * pixelPerYear - currentPersonView.getBoxHeight() / 2 - boundHeight);
                     if (currentPerson.getFather() != null) this.connect(jsPlumbInst, connectionParameters, currentPerson, currentPerson.getFather());
                     if (currentPerson.getMother() != null) this.connect(jsPlumbInst, connectionParameters, currentPerson, currentPerson.getMother());
                     jsPlumbInst.revalidate(currentPerson.getId());
