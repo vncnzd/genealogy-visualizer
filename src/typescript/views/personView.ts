@@ -79,12 +79,7 @@ export class PersonView {
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
-        if (person.getDatesOfBirth()[0] == null) {
-            this.setHasBirthdate(false);
-        }
-        if (person.getDatesOfDeath()[0] == null) {
-            this.setHasDeathdate(false);
-        }
+        this.setCssClassesForBirthAndDeathDate(person.getDatesOfBirth()[0], person.getDatesOfDeath()[0]);
 
         // this.jsPlumbInst.draggable(this.containerElement);
     }
@@ -160,21 +155,18 @@ export class PersonView {
         this.lifelineBox.style.visibility = "hidden";
     }
 
-    private setHasBirthdate(hasBirthdate: boolean) {
-        if (!hasBirthdate) {
+    private setCssClassesForBirthAndDeathDate(birthdate: Date, deathdate: Date): void {
+        if (birthdate == null && deathdate == null) {
+            this.lifeline.style.visibility = "hidden";
+            this.lifeLineBoundTop.style.visibility = "hidden";
+            this.lifeLineBoundBottom.style.visibility = "hidden";
+            this.lifelineBox.style.visibility = "hidden";
+        } else if (birthdate == null) {
             this.lifelineBox.classList.add("gradient-transparent-lifeline");
             this.lifeLineBoundTop.style.visibility = "hidden";
-        } else {
-
-        }
-    }
-
-    private setHasDeathdate(hasDeathDate: boolean) {
-        if (!hasDeathDate) {
+        } else if (deathdate == null) {
             this.lifelineBox.classList.add("gradient-lifeline-transparent");
             this.lifeLineBoundBottom.style.visibility = "hidden";
-        } else {
-
         }
     }
 
