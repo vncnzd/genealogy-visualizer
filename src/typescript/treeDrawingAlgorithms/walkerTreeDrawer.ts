@@ -238,6 +238,11 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private positionNodeVertically(node: WalkerNode, level: number): void {
         let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
         let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+        let minDeathYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
+
+        if (yearOfBirth == null) {
+            yearOfBirth = minDeathYearOfLevel - node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
+        }
 
         // Set the birth date as the start of the life line.
         node.personView.setOffsetTopInPx(yearOfBirth * this.pixelPerYear);
@@ -245,7 +250,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
         node.personView.setHeightInPx((yearOfDeath - yearOfBirth) * this.pixelPerYear);
 
         if (this.drawAncestors) {
-            let minDeathYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
             let birthYearMinDeathYearDifference: number = minDeathYearOfLevel - yearOfBirth;
 
             let yearDifferenceInPx = birthYearMinDeathYearDifference * this.pixelPerYear;
@@ -262,19 +266,9 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 // the upper bound of the lifeline is in the person box
                 node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + relativeYPositionOfLifelineBox);
             } else {
+                // the lifeline box is lower the upper bound
                 node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
             }
-            
-            // node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
-            // if (relativeYPositionOfPersonBox >= 0) {
-            // } else {
-            //     node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + relativeYPositionOfLifelineBox);
-            // }
-
-            // let lifelineBoxIsPlacedAbovePersonBox: boolean = relativeYPositionOfPersonBox + node.personView.getLifelineBoxBorderHeightInPx() < relativeYPositionOfLifelineBox;
-            // if (relativeYPositionOfLifelineBox < relativeYPositionOfPersonBox + node.personView.getLifelineBoxBorderHeightInPx()) {
-            //     node.personView.hideLifelineBox();
-            // }
         }
     }
 
