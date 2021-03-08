@@ -28,7 +28,7 @@ export class PersonView {
         this.boxWidthInPx = 200;
         this.boxHeightInPx = 125;
 
-        this.lifeLineBoundHeightInPx = 10;
+        this.lifeLineBoundHeightInPx = 15;
         this.lifelineBoxBorderHeightInPx = 15;
         this.lifelineBoxWidthInPx = this.boxWidthInPx + this.lifelineBoxBorderHeightInPx * 2;
         this.lifelineBoxHeightInPx = this.boxHeightInPx + this.lifelineBoxBorderHeightInPx * 2;
@@ -161,23 +161,21 @@ export class PersonView {
     }
 
     private setHasBirthdate(hasBirthdate: boolean) {
-        // if (!hasBirthdate) {
-        //     this.lifeLineBoundTop.style.visibility = "hidden";
-        //     this.lifeline.style.visibility = "hidden";
-        // } else {
-        //     this.lifeLineBoundTop.style.visibility = "visible";
-        //     this.lifeline.style.visibility = "hidden";
-        // }
+        if (!hasBirthdate) {
+            this.lifelineBox.classList.add("gradient-transparent-lifeline");
+            this.lifeLineBoundTop.style.visibility = "hidden";
+        } else {
+
+        }
     }
 
     private setHasDeathdate(hasDeathDate: boolean) {
-        // if (!hasDeathDate) {
-        //     this.lifeLineBoundTop.style.visibility = "hidden";
-        //     this.lifeLineBoundBottom.classList.add("estimated-lifeline");
-        // } else {
-        //     this.lifeLineBoundTop.style.visibility = "visible";
-        //     this.lifeLineBoundBottom.classList.remove("estimated-lifeline");
-        // }
+        if (!hasDeathDate) {
+            this.lifelineBox.classList.add("gradient-lifeline-transparent");
+            this.lifeLineBoundBottom.style.visibility = "hidden";
+        } else {
+
+        }
     }
 
     public setOffsetTopOfLifelineBox(distanceInPx: number): void {
