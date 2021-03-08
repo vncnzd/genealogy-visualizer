@@ -61,6 +61,14 @@ $lifeline-color: #e3ecf6;
     border-width: 5px;
 }
 
+.gradient-lifeline-transparent {
+    background: linear-gradient($lifeline-color, transparent);
+}
+
+.gradient-transparent-lifeline {
+    background: linear-gradient(transparent, $lifeline-color);
+}
+
 .male {
     background-color: $male-color;
     border-color: darken($male-color, 30%);
