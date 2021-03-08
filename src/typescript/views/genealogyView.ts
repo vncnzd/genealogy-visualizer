@@ -87,6 +87,16 @@ export class GenealogyView {
         this.depthInput.value = "4";
         optionsContainer.appendChild(this.depthInput);
 
+        this.zoomInButton = document.createElement("button");
+        this.zoomInButton.id = "zoom-in-button";
+        this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
+        parentElement.appendChild(this.zoomInButton);
+
+        this.zoomOutButton = document.createElement("button");
+        this.zoomOutButton.id = "zoom-out-button";
+        this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
+        parentElement.appendChild(this.zoomOutButton);
+
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
         parentElement.appendChild(this.containerElementWrapper);
@@ -97,16 +107,6 @@ export class GenealogyView {
 
         this.jsPlumbInst = jsPlumb.getInstance();
         this.jsPlumbInst.setContainer(this.containerElement);
-
-        this.zoomInButton = document.createElement("button");
-        this.zoomInButton.id = "zoom-in-button";
-        this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
-        parentElement.appendChild(this.zoomInButton);
-
-        this.zoomOutButton = document.createElement("button");
-        this.zoomOutButton.id = "zoom-out-button";
-        this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
-        parentElement.appendChild(this.zoomOutButton);
 
         this.addTimeline();
     }
