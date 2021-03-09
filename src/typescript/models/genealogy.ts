@@ -58,24 +58,33 @@ export class Genealogy {
         }
     }
 
-    private async getChildrenOfPersonRecursively(currentPerson: Person, descendants: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+    private async getChildrenOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
             let children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getId());
             let promises: Promise<Map<string, Person>>[] = [];
 
             for (const child of children) {
-                if (descendants.has(child.getId())) {
-                    // this child has already been fetched, thus we don't have to deal with this branch anymore
-                    let alreadyFetchedChild = descendants.get(child.getId());
-                    currentPerson.getChildren().push(alreadyFetchedChild);
+                if (relatedPeople.has(child.getId())) {
+                    let duplicatesForId: Person[] = this.duplicates.get(child.getId());
+                    if (duplicatesForId == null) {
+                        duplicatesForId = [relatedPeople.get(child.getId())];
+                        this.duplicates.set(child.getId(), duplicatesForId);
+                    }
+
+                    child.setId(child.getId() + "-" + duplicatesForId.length);
+                    duplicatesForId.push(child);
+
+                    currentPerson.getChildren().push(child);
+                    relatedPeople.set(child.getId(), child);
+                    promises.push(this.getChildrenOfPersonRecursively(child, relatedPeople, depth - 1));
                 } else {
                     currentPerson.getChildren().push(child);
-                    descendants.set(child.getId(), child);
-                    promises.push(this.getChildrenOfPersonRecursively(child, descendants, depth - 1));
+                    relatedPeople.set(child.getId(), child);
+                    promises.push(this.getChildrenOfPersonRecursively(child, relatedPeople, depth - 1));
                 }
             }
 
-            return Promise.all(promises).then(() => { return descendants });
+            return Promise.all(promises).then(() => { return relatedPeople });
         }
     }
 

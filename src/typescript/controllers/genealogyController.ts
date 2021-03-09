@@ -18,9 +18,15 @@ export class GenealogyController {
         this.genealogy.setDepth(parseInt(genealogyView.getDepthInput().value));
 
         // test code
+        let personViews: Map<string, PersonView> = new Map<string, PersonView>();
         // this.genealogyView.displayDescendants(TestTreeGenerator.generateRandomDescedantsTree(3, "root", 500));
+        
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
-        // this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), this.i);
+
+        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
+        
         // this.genealogyView.displayDescendants(TestTreeGenerator.getExampleDescendantsTree());
     }
 
@@ -34,10 +40,11 @@ export class GenealogyController {
             this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
                 let personViews: Map<string, PersonView> = new Map<string, PersonView>();
                 this.instantiateViewsAndControllersForDescendantsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
+                this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
 
                 this.genealogyView.displayDescendants(this.genealogy.getRootPerson(), personViews);
                 console.log(descendants.size + " descendants found");
-                console.log(this.genealogy.getRootPerson());
+                console.log("Duplicates: " + this.genealogy.getDuplicates().size)
             });
         });
 
@@ -49,7 +56,7 @@ export class GenealogyController {
                 this.genealogyView.displayAncestors(this.genealogy.getRootPerson(), personViews);
                 this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
                 console.log(ancestors.size + " ancestors found");
-                console.log(this.genealogy.getRootPerson());
+                console.log("Duplicates: " + this.genealogy.getDuplicates().size)
             });
         });
     }

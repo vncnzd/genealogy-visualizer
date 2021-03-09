@@ -69,19 +69,17 @@ export class GenealogyView {
 
                 for (const duplicateTwo of duplicatesList) {
                     let connectionParameters: ConnectParams = {
-                        anchor: ["Bottom", "Right", "Left", "Top"],
+                        anchor: ["Right", "Left"],
                         connector: [ "Straight", {}],
                         endpoint: "Blank",
                         deleteEndpointsOnDetach: false,
                         detachable: false,
                         // @ts-ignore
                         paintStyle: { 
-                            stroke: "red",
-                            strokeWidth: 7 
+                            stroke: "#ca0404",
+                            strokeWidth: 7,
+                            dashstyle: "6 4"
                         },
-                        // hoverPaintStyle: {
-                        //     stroke: "gray",
-                        // },
                         endpointStyles: [
                             { fill:"red"},
                             { fill:"red" }
