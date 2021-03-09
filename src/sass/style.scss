@@ -3,6 +3,13 @@ $female-color: #729fcf;
 $unknown-gender-color: #808080;
 $lifeline-color: #e3ecf6;
 
+// z-indices
+
+.lifeline { z-index: 2; }
+.jtk-connector { z-index: 3;}
+.jtk-endpoint { z-index: 3; }
+.person-box { z-index: 4; }
+
 #jsplumb-container-wrapper {
     position: relative;
     border: black 3px solid;
