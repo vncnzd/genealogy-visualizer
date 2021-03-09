@@ -59,7 +59,45 @@ export class GenealogyView {
         this.addPanningEventListeners();
     }
 
-    private initializeHTMLElements(parentElement: HTMLElement, languageData: Object) {
+    public connectDuplicates(duplicates: Map<string, Person[]>): void {
+        console.log(duplicates);
+
+        duplicates.forEach((duplicatesList: Person[], id: string) => {
+            for (const duplicateOne of duplicatesList) {
+                let personView: PersonView = this.personViews.get(duplicateOne.getId());
+                personView.toggleVisibilityOfDuplicatesButton();
+
+                for (const duplicateTwo of duplicatesList) {
+                    let connectionParameters: ConnectParams = {
+                        anchor: ["Bottom", "Right", "Left", "Top"],
+                        connector: [ "Straight", {}],
+                        endpoint: "Blank",
+                        deleteEndpointsOnDetach: false,
+                        detachable: false,
+                        // @ts-ignore
+                        paintStyle: { 
+                            stroke: "red",
+                            strokeWidth: 7 
+                        },
+                        // hoverPaintStyle: {
+                        //     stroke: "gray",
+                        // },
+                        endpointStyles: [
+                            { fill:"red"},
+                            { fill:"red" }
+                        ],
+                        cssClass: "hidden duplicates-stroke-from-" + duplicateOne.getId()
+                    };
+
+                    if (duplicateOne.getId() != duplicateTwo.getId()) {
+                        this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);
+                    }
+                }
+            }
+        });
+    }
+
+    private initializeHTMLElements(parentElement: HTMLElement, languageData: Object): void {
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
