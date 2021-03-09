@@ -64,17 +64,18 @@ export class GenealogyView {
 
         duplicates.forEach((duplicatesList: Person[], id: string) => {
             for (let i = 0; i < duplicatesList.length; i++) {
-                const duplicateOne = duplicatesList[i];
+                const duplicateOne: Person = duplicatesList[i];
                 const personView: PersonView = personViews.get(duplicateOne.getId());
                 personView.toggleVisibilityOfDuplicatesButton();
 
                 for (let x = i + 1; x < duplicatesList.length; x++) {
-                    const duplicateTwo = duplicatesList[x];
+                    const duplicateTwo: Person = duplicatesList[x];
+                    const cssClass: string = "duplicates-stroke-" + id
                     
                     let connectionParameters: ConnectParams = {
                         anchor: ["Right", "Left"],
                         connector: [ "Straight", {}],
-                        endpoint: "Blank",
+                        endpoint: ["Dot", { cssClass: "hidden " + cssClass } ],
                         deleteEndpointsOnDetach: false,
                         detachable: false,
                         // @ts-ignore
@@ -84,10 +85,10 @@ export class GenealogyView {
                             dashstyle: "6 4"
                         },
                         endpointStyles: [
-                            { fill:"red"},
-                            { fill:"red" }
+                            { fill:"#ca0404", cssClass: "test-endpoint"},
+                            { fill:"#ca0404", cssClass: "test-endpoint" }
                         ],
-                        cssClass: "hidden duplicates-stroke-" + id
+                        cssClass: "hidden " + cssClass
                     };
 
                     this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);
