@@ -63,11 +63,14 @@ export class GenealogyView {
         console.log(duplicates);
 
         duplicates.forEach((duplicatesList: Person[], id: string) => {
-            for (const duplicateOne of duplicatesList) {
-                let personView: PersonView = personViews.get(duplicateOne.getId());
+            for (let i = 0; i < duplicatesList.length; i++) {
+                const duplicateOne = duplicatesList[i];
+                const personView: PersonView = personViews.get(duplicateOne.getId());
                 personView.toggleVisibilityOfDuplicatesButton();
 
-                for (const duplicateTwo of duplicatesList) {
+                for (let x = i + 1; x < duplicatesList.length; x++) {
+                    const duplicateTwo = duplicatesList[x];
+                    
                     let connectionParameters: ConnectParams = {
                         anchor: ["Right", "Left"],
                         connector: [ "Straight", {}],
@@ -84,12 +87,10 @@ export class GenealogyView {
                             { fill:"red"},
                             { fill:"red" }
                         ],
-                        cssClass: "hidden duplicates-stroke-from-" + duplicateOne.getId()
+                        cssClass: "hidden duplicates-stroke-from-" + duplicateOne.getId() + " duplicates-stroke-to-" + duplicateTwo.getId()
                     };
 
-                    if (duplicateOne.getId() != duplicateTwo.getId()) {
-                        this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);
-                    }
+                    this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);
                 }
             }
         });
