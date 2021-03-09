@@ -87,7 +87,7 @@ export class GenealogyView {
                             { fill:"red"},
                             { fill:"red" }
                         ],
-                        cssClass: "hidden duplicates-stroke-from-" + duplicateOne.getId() + " duplicates-stroke-to-" + duplicateTwo.getId()
+                        cssClass: "hidden duplicates-stroke-" + id
                     };
 
                     this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);

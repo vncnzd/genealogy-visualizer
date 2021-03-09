@@ -15,7 +15,8 @@ export class PersonController {
     private addDuplicatesButtonEventListener(): void {
         let duplicatesButton: HTMLElement = this.personView.getDuplicatesButtonElement();
         duplicatesButton.addEventListener("click", (event: MouseEvent) => {
-            let querySelector: string = `.duplicates-stroke-from-${this.person.getId()}, .duplicates-stroke-to-${this.person.getId()}`
+            let baseId: string = this.person.getId().split("-")[0]; 
+            let querySelector: string = `.duplicates-stroke-from-${this.person.getId()}, .duplicates-stroke-${baseId}`
             let strokesFromPersonElement: NodeList = document.querySelectorAll(querySelector);
 
             for (let i = 0; i < strokesFromPersonElement.length; i++) {
