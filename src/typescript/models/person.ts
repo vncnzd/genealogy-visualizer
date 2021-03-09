@@ -20,12 +20,20 @@ export class Person {
     }
 
     // getters and setters
-    public setId(id: string): void {
-        this.id = id;
+    public setId(id: string, duplicateAddition: string = null): void {
+        if (duplicateAddition != null) {
+            this.id = id + "-" + duplicateAddition;
+        } else {
+            this.id = id;
+        }
     }
 
     public getId(): string {
         return this.id;
+    }
+
+    public getBaseId(): string {
+        return this.id.split("-")[0];
     }
 
     public setName(name: string): void {

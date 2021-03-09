@@ -93,7 +93,7 @@ export class PersonView {
         let duplicatesButton: HTMLElement = document.createElement("button");
         duplicatesButton.classList.add("duplicates-button");
         duplicatesButton.classList.toggle("hidden");
-        duplicatesButton.innerText = "Duplicates"; // TODO get text for different languages
+        duplicatesButton.innerText = "Show duplicates"; // TODO get text for different languages
         return duplicatesButton;
     }
 

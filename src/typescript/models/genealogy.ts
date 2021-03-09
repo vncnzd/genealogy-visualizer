@@ -28,7 +28,7 @@ export class Genealogy {
 
     public async getParentsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
-            let parents: Person[] = await this.personDatabase.getParentsOfPerson(currentPerson.getId());
+            let parents: Person[] = await this.personDatabase.getParentsOfPerson(currentPerson.getBaseId());
             let promises: Promise<Map<string, Person>>[] = [];
 
             for (const parent of parents) {
@@ -39,7 +39,7 @@ export class Genealogy {
                         this.duplicates.set(parent.getId(), duplicatesForId);
                     }
 
-                    parent.setId(parent.getId() + "-" + duplicatesForId.length);
+                    parent.setId(parent.getId(), duplicatesForId.length.toString());
                     duplicatesForId.push(parent);
                     
                     currentPerson.setParent(parent);
@@ -60,7 +60,7 @@ export class Genealogy {
 
     private async getChildrenOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         if (depth > 0) {
-            let children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getId());
+            let children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getBaseId());
             let promises: Promise<Map<string, Person>>[] = [];
 
             for (const child of children) {
@@ -71,7 +71,7 @@ export class Genealogy {
                         this.duplicates.set(child.getId(), duplicatesForId);
                     }
 
-                    child.setId(child.getId() + "-" + duplicatesForId.length);
+                    child.setId(child.getId(), duplicatesForId.length.toString());
                     duplicatesForId.push(child);
 
                     currentPerson.getChildren().push(child);
