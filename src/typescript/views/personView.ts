@@ -28,7 +28,7 @@ export class PersonView {
         this.rootElement = rootElement;
         this.jsPlumbInst = jsPlumbInst;
         this.boxWidthInPx = 200;
-        this.boxHeightInPx = 125;
+        this.boxHeightInPx = 150;
 
         this.lifeLineBoundHeightInPx = 15;
         this.lifelineBoxBorderHeightInPx = 15;
