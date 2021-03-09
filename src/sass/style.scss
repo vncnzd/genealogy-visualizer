@@ -42,6 +42,12 @@ $lifeline-color: #e3ecf6;
     border: 1px solid grey;
 }
 
+.duplicates-button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .person-container {
     position: absolute;
     display: flex;
@@ -58,6 +64,10 @@ $lifeline-color: #e3ecf6;
     right: 0;
     margin-left: auto;
     margin-right: auto;
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 .lifeline-box {

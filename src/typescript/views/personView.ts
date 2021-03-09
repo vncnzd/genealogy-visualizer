@@ -1,4 +1,5 @@
 import { jsPlumbInstance } from "jsplumb";
+import { LanguageManager } from "../LanguageManager";
 import { Person } from "../models/person";
 import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderId } from "../sexOrGenderId";
@@ -9,6 +10,7 @@ export class PersonView {
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
     private boxElement: HTMLElement;
+    private duplicatesButton: HTMLElement;
     private deleteButtonElement: HTMLElement;
 
     private lifeLineBoundTop: HTMLElement;
@@ -76,12 +78,27 @@ export class PersonView {
         if (person.getDatesOfDeath()[0] != null) deathInput.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
         dateContainer.appendChild(deathInput);
 
+        this.duplicatesButton = this.createDuplicatesButtonElement();
+        this.boxElement.append(this.duplicatesButton);
+
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
         this.setCssClassesForBirthAndDeathDate(person.getDatesOfBirth()[0], person.getDatesOfDeath()[0]);
 
         // this.jsPlumbInst.draggable(this.containerElement);
+    }
+
+    private createDuplicatesButtonElement(): HTMLElement {
+        let duplicatesButton: HTMLElement = document.createElement("button");
+        duplicatesButton.classList.add("duplicates-button");
+        duplicatesButton.classList.toggle("hidden");
+        duplicatesButton.innerText = "Duplicates"; // TODO get text for different languages
+        return duplicatesButton;
+    }
+
+    public toggleVisibilityOfDuplicatesButton(): void {
+        this.duplicatesButton.classList.toggle("hidden");
     }
 
     private createLifelineBoxElement(): HTMLElement {
@@ -170,6 +187,10 @@ export class PersonView {
         }
     }
 
+    public setBorderColor(color: string): void {
+        this.boxElement.style.borderColor = color;
+    }
+
     public setOffsetTopOfLifelineBox(distanceInPx: number): void {
         this.lifelineBox.style.top = distanceInPx + "px";
     }
@@ -197,6 +218,10 @@ export class PersonView {
         } else {
             this.containerElement.style.height = minHeight + "px";
         }
+    }
+
+    public getDuplicatesButtonElement(): HTMLElement {
+        return this.duplicatesButton;
     }
 
     public getLifelineBoxHeightInPx(): number {
