@@ -28,14 +28,14 @@ export class GenealogyView {
     private transformY: number = 0
     private zoomFactor: number;
 
-    private personViews: Map<string, PersonView>;
+    // private personViews: Map<string, PersonView>;
 
     constructor(parentElement: HTMLElement, languageData: Object) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
         this.timelineWidthInPx = 50;
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
-        this.personViews = new Map<string, PersonView>();
+        // this.personViews = new Map<string, PersonView>();
         
         this.connectionParameters = {
             anchors: ["Bottom", "Top"],
@@ -59,12 +59,12 @@ export class GenealogyView {
         this.addPanningEventListeners();
     }
 
-    public connectDuplicates(duplicates: Map<string, Person[]>): void {
+    public connectDuplicates(duplicates: Map<string, Person[]>, personViews: Map<string, PersonView>): void {
         console.log(duplicates);
 
         duplicates.forEach((duplicatesList: Person[], id: string) => {
             for (const duplicateOne of duplicatesList) {
-                let personView: PersonView = this.personViews.get(duplicateOne.getId());
+                let personView: PersonView = personViews.get(duplicateOne.getId());
                 personView.toggleVisibilityOfDuplicatesButton();
 
                 for (const duplicateTwo of duplicatesList) {
@@ -178,41 +178,19 @@ export class GenealogyView {
         }
     }
 
-    public displayAncestors(rootPerson: Person) {
-        this.instantiateViewsForAncestorsAndAddItToMap(rootPerson, this.personViews);
+    public displayAncestors(rootPerson: Person, personViews: Map<string, PersonView>) {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
-        drawer.run(rootPerson, this.personViews, this.pixelPerYear, this.jsPlumbInst, true);
+        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
         this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear;
         this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
     }
 
-    public displayDescendants(rootPerson: Person) {
-        this.instantiateViewsForDescendantsAndAddItToMap(rootPerson, this.personViews);
+    public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
-        drawer.run(rootPerson, this.personViews, this.pixelPerYear, this.jsPlumbInst, false);
+        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
         this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear;
         this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);    }
 
-    private instantiateViewsForAncestorsAndAddItToMap(ancestor: Person, personViews: Map<string, PersonView>) {
-        let personView: PersonView = new PersonView(ancestor, this.containerElement, this.jsPlumbInst);
-        personViews.set(ancestor.getId(), personView);
-
-        if (ancestor.getFather() != null) {
-            this.instantiateViewsForAncestorsAndAddItToMap(ancestor.getFather(), personViews);
-        }
-        if (ancestor.getMother() != null) {
-            this.instantiateViewsForAncestorsAndAddItToMap(ancestor.getMother(), personViews);
-        }
-    }
-
-    private instantiateViewsForDescendantsAndAddItToMap(person: Person, personViews: Map<string, PersonView>) {
-        let personView: PersonView = new PersonView(person, this.containerElement, this.jsPlumbInst);
-        personViews.set(person.getId(), personView);
-
-        for (const child of person.getChildren()) {
-            this.instantiateViewsForDescendantsAndAddItToMap(child, personViews);
-        }
-    }
 
     private addZoomEventListeners() {
         this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {
@@ -329,7 +307,11 @@ export class GenealogyView {
         return this.ancestorsButton;
     }
 
-    public getPersonViews(): Map<string, PersonView> {
-        return this.personViews;
+    public getContainer(): HTMLElement {
+        return this.containerElement;
+    }
+
+    public getJSPlumbInstance(): jsPlumbInstance {
+        return this.jsPlumbInst;
     }
 }
