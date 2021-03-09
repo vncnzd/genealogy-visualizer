@@ -4,11 +4,13 @@ import { Person } from "./person";
 export class Genealogy {
     private rootPerson: Person;
     private people: Map<string, Person>;
+    private duplicates: Map<string, Person[]>
     private personDatabase: PersonDatabase;
     private depth: number;
 
     constructor(personDatabase: PersonDatabase) {
         this.people = new Map<string, Person>();
+        this.duplicates = new Map<string, Person[]>();
         this.personDatabase = personDatabase;
     }
 
@@ -31,10 +33,19 @@ export class Genealogy {
 
             for (const parent of parents) {
                 if (relatedPeople.has(parent.getId())) {
-                    // this parent has already been fetched, thus we don't have to deal with this branch anymore
-                    let alreadyFetchedParent = relatedPeople.get(parent.getId());
-                    currentPerson.setParent(alreadyFetchedParent);
-                    alreadyFetchedParent.getChildren().push(currentPerson);
+                    let duplicatesForId: Person[] = this.duplicates.get(parent.getId());
+                    if (duplicatesForId == null) {
+                        duplicatesForId = [relatedPeople.get(parent.getId())];
+                        this.duplicates.set(parent.getId(), duplicatesForId);
+                    }
+
+                    parent.setId(parent.getId() + "-" + duplicatesForId.length);
+                    duplicatesForId.push(parent);
+                    
+                    currentPerson.setParent(parent);
+                    parent.getChildren().push(currentPerson);
+                    relatedPeople.set(parent.getId(), parent);
+                    promises.push(this.getParentsOfPersonRecursively(parent, relatedPeople, depth - 1)); // Maybe? Better to clone?
                 } else {
                     currentPerson.setParent(parent);
                     parent.getChildren().push(currentPerson);
@@ -78,6 +89,10 @@ export class Genealogy {
 
     public getPeople(): Map<string, Person> {
         return this.people;
+    }
+
+    public getDuplicates(): Map<string, Person[]> {
+        return this.duplicates;
     }
 
     public getDepth(): number {
