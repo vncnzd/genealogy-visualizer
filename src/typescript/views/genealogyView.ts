@@ -181,14 +181,14 @@ export class GenealogyView {
     public displayAncestors(rootPerson: Person, personViews: Map<string, PersonView>) {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
-        this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear;
+        this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear * this.scale;
         this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
     }
 
     public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
-        this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear;
+        this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear * this.scale;
         this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);    }
 
 
