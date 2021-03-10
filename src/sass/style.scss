@@ -2,6 +2,7 @@ $male-color: #77bc65;
 $female-color: #729fcf;
 $unknown-gender-color: #808080;
 $lifeline-color: #e3ecf6;
+$darker-lifeline-color: #c0c9d2;
 
 // z-indices
 
@@ -52,6 +53,23 @@ $lifeline-color: #e3ecf6;
     position: absolute;
     display: flex;
     flex-direction: column;
+
+    &:hover>.lifeline {
+        background-color: $darker-lifeline-color;
+        z-index: 3;
+    }
+    
+    &:hover>.lifeline-box {
+        background: linear-gradient($darker-lifeline-color, $darker-lifeline-color);
+    }
+
+    &:hover>.gradient-lifeline-transparent {
+        background: linear-gradient($darker-lifeline-color, transparent);
+    }
+    
+    &:hover>.gradient-transparent-lifeline {
+        background: linear-gradient(transparent, $darker-lifeline-color);
+    }
 }
 
 .person-box {
