@@ -5,43 +5,43 @@ import { SexOrGenderId } from "./sexOrGenderId";
 export class TestTreeGenerator {
     public static getAncestorsExampleTree(): Person {
         let root: Person = new Person("root");
-        root.setName("Root");
+        root.setName(root.getId());
         root.getDatesOfBirth().push(new Date("0100-01-01"));
         root.getDatesOfDeath().push(new Date("0150-01-01"));
         root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let mother: Person = new Person("mother");
-        mother.setName("mother");
+        mother.setName(mother.getId());
         mother.getDatesOfBirth().push(new Date("0075-01-01"));
         mother.getDatesOfDeath().push(new Date("0125-01-01"));
         mother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
         let father: Person = new Person("father");
-        father.setName("father");
+        father.setName(father.getId());
         father.getDatesOfBirth().push(new Date("0060-01-01"));
         father.getDatesOfDeath().push(new Date("0110-01-01"));
         father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
-        let grandFather: Person = new Person("grandfather");
-        grandFather.setName("grandfather");
+        let grandFather: Person = new Person("grandfather0");
+        grandFather.setName(grandFather.getId();
         grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
         grandFather.getDatesOfDeath().push(new Date("0090-01-01"));
         grandFather.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
-        let grandMother: Person = new Person("grandmother");
-        grandMother.setName("grandmother");
+        let grandMother: Person = new Person("grandmother0");
+        grandMother.setName(grandMother.getId());
         grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
         // grandMother.getDatesOfDeath().push(new Date("0080-01-01"));
         grandMother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
-        let grandFatherTwo: Person = new Person("grandfatherTwo");
-        grandFatherTwo.setName("grandfatherTwo");
+        let grandFatherTwo: Person = new Person("grandfather1");
+        grandFatherTwo.setName(grandFatherTwo.getId());
         grandFatherTwo.getDatesOfBirth().push(new Date("0060-01-01"));
         grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
         grandFatherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
-        let grandMotherTwo: Person = new Person("grandmotherTwo");
-        grandMotherTwo.setName("grandmotherTwo");
+        let grandMotherTwo: Person = new Person("grandmother1");
+        grandMotherTwo.setName(grandMotherTwo.getId());
         grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
         grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
         grandMotherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
@@ -52,14 +52,14 @@ export class TestTreeGenerator {
         mother.getChildren().push(root);
         father.getChildren().push(root);
 
-        mother.setFather(grandFather);
-        mother.setMother(grandMother);
+        father.setFather(grandFather);
+        father.setMother(grandMother);
 
         grandMother.getChildren().push(mother);
         grandFather.getChildren().push(mother);
 
-        father.setFather(grandFatherTwo);
-        father.setMother(grandMotherTwo);
+        mother.setFather(grandFatherTwo);
+        mother.setMother(grandMotherTwo);
         
         grandFatherTwo.getChildren().push(father);
         grandMotherTwo.getChildren().push(father);
