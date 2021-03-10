@@ -19,15 +19,20 @@ export class GenealogyController {
 
         // test code
         let personViews: Map<string, PersonView> = new Map<string, PersonView>();
-        // this.genealogyView.displayDescendants(TestTreeGenerator.generateRandomDescedantsTree(3, "root", 500));
+
+        // let rootPerson: Person = TestTreeGenerator.generateRandomDescedantsTree(3, "root", 500);
+        // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
+        // this.genealogyView.displayDescendants(rootPerson, personViews);
         
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
 
-        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
-        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
+        // let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        // this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        // this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
         
-        // this.genealogyView.displayDescendants(TestTreeGenerator.getExampleDescendantsTree());
+        let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
+        this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
+        this.genealogyView.displayDescendants(rootPerson, personViews);
     }
 
     private addEventListenersToButtonsAndInput(): void {
