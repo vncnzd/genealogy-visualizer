@@ -29,7 +29,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
         this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;
 
         this.firstWalk(rootNode);
-        this.secondWalk(rootNode, -rootNode.prelim, 0);
+        this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);
 
         this.jsPlumbInst.repaintEverything(); // not the best solution probably
     }
@@ -53,7 +53,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             let childNode: WalkerNode = this.initializeChildrenNodesForDescendants(child, personViewMap, level + 1);
-            childNode.number = i;
+            childNode.childrenIndex = i;
             childNode.parent = personNode;
             personNode.children.push(childNode);
 
@@ -99,139 +99,142 @@ export class WalkerTreeDrawer implements TreeDrawer {
         // maybe put this into the firstWalk method
         for (let index = 0; index < walkerNode.children.length; index++) {
             const child = walkerNode.children[index];
-            child.number = index;
+            child.childrenIndex = index;
         }
 
         return walkerNode;
     }
 
-    private firstWalk(v: WalkerNode): void {
-        if (v.isLeaf()) {
+    private firstWalk(node: WalkerNode): void {
+        if (node.isLeaf()) {
             // In the algorithm described by Buchheimer et al. the preliminary x position of every leaf is just 0, 
             // which does not make sense, since the right sibling needs to have a distance to its left sibling.
+            // 
+            // Original algorithm:
             // v.prelim = 0;
 
-            if (v.leftSibling == null) {
-                v.prelim = 0;
+            if (node.leftSibling == null) {
+                node.preliminaryXPosition = 0;
             } else {
-                v.prelim = v.leftSibling.prelim + this.distanceBetweenNodes;
+                // Keep in mind, that the preliminary x position is the left upper corner of a node.
+                node.preliminaryXPosition = node.leftSibling.preliminaryXPosition + this.distanceBetweenNodes;
             }
         } else {
-            let defaultAncestor: WalkerNode = v.getLeftMostChild();
+            let defaultAncestor: WalkerNode = node.getLeftMostChild();
 
-            for (const w of v.children) {
-                this.firstWalk(w);
-                defaultAncestor = this.apportion(w, defaultAncestor);
+            for (const child of node.children) {
+                this.firstWalk(child);
+                defaultAncestor = this.apportion(child, defaultAncestor);
             }
 
-            this.executeShifts(v);
+            this.executeShifts(node);
 
-            let midpoint = 0.5 * (v.getLeftMostChild().prelim + v.getRightMostChild().prelim);
+            let midpointBetweenChildren = 0.5 * (node.getLeftMostChild().preliminaryXPosition + node.getRightMostChild().preliminaryXPosition);
 
-            let w: WalkerNode = v.leftSibling;
+            let w: WalkerNode = node.leftSibling;
             if (w != null) {
-                v.prelim = w.prelim + this.distanceBetweenNodes;
-                v.mod = v.prelim - midpoint;
+                node.preliminaryXPosition = w.preliminaryXPosition + this.distanceBetweenNodes;
+                node.modifier = node.preliminaryXPosition - midpointBetweenChildren;
             } else {
-                v.prelim = midpoint;
+                node.preliminaryXPosition = midpointBetweenChildren;
             }
         }
     }
 
-    private secondWalk(v: WalkerNode, m: number, level: number) {
-        v.personView.setOffsetLeftInPx(v.prelim + m);
-        v.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
-        this.positionNodeVertically(v, level); // not part of the original algorithm
+    private secondWalk(node: WalkerNode, m: number, level: number) {
+        node.personView.setOffsetLeftInPx(node.preliminaryXPosition + m);
+        node.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
+        this.positionNodeVertically(node, level); // not part of the original algorithm
 
-        for (const child of v.children) {
-            this.connect(this.jsPlumbInst, v.person, child.person); // not part of the original algorithm
-            this.secondWalk(child, m + v.mod, level + 1);
+        for (const child of node.children) {
+            this.connect(this.jsPlumbInst, node.person, child.person); // not part of the original algorithm
+            this.secondWalk(child, m + node.modifier, level + 1);
         }
     }
 
-    private apportion(v: WalkerNode, defaultAncestor: WalkerNode): WalkerNode {
-        let w: WalkerNode = v.leftSibling;
+    private apportion(node: WalkerNode, defaultAncestor: WalkerNode): WalkerNode {
+        let leftSibling: WalkerNode = node.leftSibling;
         
-        if (w != null) {
+        if (leftSibling != null) {
 
-            let vInsideRightTree: WalkerNode = v;
-            let vOutsideRightTree: WalkerNode = v; 
-            let vInsideLeftTree: WalkerNode = w;
-            let vOutsideLeftTree : WalkerNode = vInsideRightTree.parent.getLeftMostChild();
+            let contourNodeInsideRightTree: WalkerNode = node;
+            let contourNodeOutsideRightTree: WalkerNode = node; 
+            let contourNodeInsideLeftTree: WalkerNode = leftSibling;
+            let contourNodeOutsideLeftTree : WalkerNode = contourNodeInsideRightTree.parent.getLeftMostChild();
 
-            let modsumInsideRightTree: number = vInsideRightTree.mod;
-            let modsumOutsideRightTree: number = vOutsideRightTree.mod;
-            let modsumInsideLeftTree: number = vInsideLeftTree.mod;
-            let modsumOutsideLeftTree: number = vOutsideLeftTree.mod;
+            let modsumInsideRightTree: number = contourNodeInsideRightTree.modifier;
+            let modsumOutsideRightTree: number = contourNodeOutsideRightTree.modifier;
+            let modsumInsideLeftTree: number = contourNodeInsideLeftTree.modifier;
+            let modsumOutsideLeftTree: number = contourNodeOutsideLeftTree.modifier;
 
-            while(vInsideLeftTree.getNextRight() != null && vInsideRightTree.getNextLeft() != null) {
-                vInsideLeftTree = vInsideLeftTree.getNextRight();
-                vInsideRightTree = vInsideRightTree.getNextLeft();
-                vOutsideLeftTree = vOutsideLeftTree.getNextLeft();
-                vOutsideRightTree = vOutsideRightTree.getNextRight();
+            while(contourNodeInsideLeftTree.getNextRight() != null && contourNodeInsideRightTree.getNextLeft() != null) {
+                contourNodeInsideLeftTree = contourNodeInsideLeftTree.getNextRight();
+                contourNodeInsideRightTree = contourNodeInsideRightTree.getNextLeft();
+                contourNodeOutsideLeftTree = contourNodeOutsideLeftTree.getNextLeft();
+                contourNodeOutsideRightTree = contourNodeOutsideRightTree.getNextRight();
 
-                vOutsideRightTree.ancestor = v;
+                contourNodeOutsideRightTree.ancestor = node;
 
-                let shift: number = (vInsideLeftTree.prelim + modsumInsideLeftTree) - (vInsideRightTree.prelim + modsumInsideRightTree) + this.distanceBetweenNodes;
+                let shift: number = (contourNodeInsideLeftTree.preliminaryXPosition + modsumInsideLeftTree) - (contourNodeInsideRightTree.preliminaryXPosition + modsumInsideRightTree) + this.distanceBetweenNodes;
 
                 if (shift > 0) {
-                    this.moveSubtree(this.ancestor(vInsideLeftTree, v, defaultAncestor), v, shift);
+                    this.moveSubtree(this.ancestor(contourNodeInsideLeftTree, node, defaultAncestor), node, shift);
                     modsumInsideRightTree += shift;
                     modsumOutsideRightTree += shift;
                 }
 
-                modsumInsideLeftTree += vInsideLeftTree.mod;
-                modsumInsideRightTree += vInsideRightTree.mod;
-                modsumOutsideLeftTree += vOutsideLeftTree.mod;
-                modsumOutsideRightTree += vOutsideRightTree.mod;
+                modsumInsideLeftTree += contourNodeInsideLeftTree.modifier;
+                modsumInsideRightTree += contourNodeInsideRightTree.modifier;
+                modsumOutsideLeftTree += contourNodeOutsideLeftTree.modifier;
+                modsumOutsideRightTree += contourNodeOutsideRightTree.modifier;
             }
 
-            if (vInsideLeftTree.getNextRight() != null && vOutsideRightTree.getNextRight() == null) {
-                vOutsideRightTree.thread = vInsideLeftTree.getNextRight();
-                vOutsideRightTree.mod += modsumInsideLeftTree - modsumOutsideRightTree;
+            if (contourNodeInsideLeftTree.getNextRight() != null && contourNodeOutsideRightTree.getNextRight() == null) {
+                contourNodeOutsideRightTree.thread = contourNodeInsideLeftTree.getNextRight();
+                contourNodeOutsideRightTree.modifier += modsumInsideLeftTree - modsumOutsideRightTree;
             }
 
-            if (vInsideRightTree.getNextLeft() != null && vOutsideLeftTree.getNextLeft() == null) {
-                vOutsideLeftTree.thread = vInsideRightTree.getNextLeft();
-                vOutsideLeftTree.mod += modsumInsideRightTree - modsumOutsideLeftTree;
-                defaultAncestor = v;
+            if (contourNodeInsideRightTree.getNextLeft() != null && contourNodeOutsideLeftTree.getNextLeft() == null) {
+                contourNodeOutsideLeftTree.thread = contourNodeInsideRightTree.getNextLeft();
+                contourNodeOutsideLeftTree.modifier += modsumInsideRightTree - modsumOutsideLeftTree;
+                defaultAncestor = node;
             }
         }
 
         return defaultAncestor;
     }
 
-    private executeShifts(v: WalkerNode): void {
+    private executeShifts(node: WalkerNode): void {
         let shift: number = 0;
         let change: number = 0;
 
-        for (let i = v.children.length - 1; i >= 0; i--) {
-            const w = v.children[i];
-            w.prelim += shift;
-            w.mod += shift;
+        for (let i = node.children.length - 1; i >= 0; i--) {
+            const w = node.children[i];
+            w.preliminaryXPosition += shift;
+            w.modifier += shift;
             change += w.change;
             shift += w.shift + change;
         }
     }
 
-    private ancestor(vInsideLeftTree: WalkerNode, v: WalkerNode, defaultAncestor: WalkerNode) {
-        if (v.parent.children.includes(vInsideLeftTree.ancestor)) {
-            return vInsideLeftTree.ancestor;
+    private ancestor(contourNodeInsideLeftTree: WalkerNode, node: WalkerNode, defaultAncestor: WalkerNode) {
+        if (node.parent.children.includes(contourNodeInsideLeftTree.ancestor)) {
+            return contourNodeInsideLeftTree.ancestor;
         } else {
             return defaultAncestor;
         }
     }
 
     private moveSubtree(wLeft: WalkerNode, wRight: WalkerNode, shift: number): void {
-        let subtrees: number = wRight.number - wLeft.number;
+        let subtrees: number = wRight.childrenIndex - wLeft.childrenIndex;
 
         wRight.change -= shift / subtrees;
         wRight.shift += shift;
 
         wLeft.change += shift / subtrees;
-        wRight.prelim += shift;
+        wRight.preliminaryXPosition += shift;
 
-        wRight.mod += shift;
+        wRight.modifier += shift;
     }
 
     // not part of the original algorithm
@@ -294,13 +297,17 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
     private checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node: WalkerNode): void {
         if (relativeYPositionOfLifelineBox < -node.personView.getLifelineBoxHeightInPx()) {
+            // The lifeline box is above the lifeline.
             node.personView.hideLifelineBox();
         } else if (relativeYPositionOfLifelineBox < 0) {
+            // The upper lifeline bound is inside the lifeline box. 
             node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + relativeYPositionOfLifelineBox);
             node.personView.setOffsetTopOfLifelineBox(0)
         } else if (relativeYPositionOfLifelineBox > lifelineHeight) {
+            // The lower lifeline bound is inside the lifeline box.
               node.personView.hideLifelineBox();         
         } else if (relativeYPositionOfLifelineBox > lifelineHeight - node.personView.getLifelineBoxHeightInPx()) {
+            // The lifeline box is below the lifeline.
             let lifelineBoxHeightInPx: number = node.personView.getLifelineBoxHeightInPx();
             let difference: number = relativeYPositionOfLifelineBox + lifelineBoxHeightInPx - lifelineHeight;
             node.personView.setLifelineBoxHeightInPx(lifelineBoxHeightInPx - difference);

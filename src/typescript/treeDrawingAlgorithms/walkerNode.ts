@@ -2,11 +2,11 @@ import { Person } from "../models/person";
 import { PersonView } from "../views/personView";
 
 export class WalkerNode {
-    public mod: number;
-    public prelim: number;
+    public modifier: number;
+    public preliminaryXPosition: number;
     public shift: number;
     public change: number;
-    public number: number;
+    public childrenIndex: number;
 
     public thread: WalkerNode;
     public ancestor: WalkerNode;
@@ -20,11 +20,11 @@ export class WalkerNode {
     public personView: PersonView;
 
     constructor(person: Person, personView: PersonView) {
-        this.mod = 0;
-        this.prelim = 0;
+        this.modifier = 0;
+        this.preliminaryXPosition = 0;
         this.shift = 0;
         this.change = 0;
-        this.number = 0;
+        this.childrenIndex = 0;
 
         this.person = person;
         this.personView = personView;
