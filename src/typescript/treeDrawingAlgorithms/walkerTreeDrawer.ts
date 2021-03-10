@@ -129,26 +129,32 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
             this.executeShifts(node);
 
-            let midpointBetweenChildren = 0.5 * (node.getLeftMostChild().preliminaryXPosition + node.getRightMostChild().preliminaryXPosition);
+            let midpointBetweenChildren: number = 0.5 * (node.getLeftMostChild().preliminaryXPosition + node.getRightMostChild().preliminaryXPosition);
 
-            let w: WalkerNode = node.leftSibling;
-            if (w != null) {
-                node.preliminaryXPosition = w.preliminaryXPosition + this.distanceBetweenNodes;
+            let leftSibling: WalkerNode = node.leftSibling;
+            if (leftSibling != null) {
+                // This happens, when the node has a left sibling and is not a leaf.
+                node.preliminaryXPosition = leftSibling.preliminaryXPosition + this.distanceBetweenNodes;
+                // This modifier gets applied to all children of this node later, since this node is now placed preliminary to the 
+                // right of the left sibling.
                 node.modifier = node.preliminaryXPosition - midpointBetweenChildren;
             } else {
                 node.preliminaryXPosition = midpointBetweenChildren;
             }
+
         }
     }
 
-    private secondWalk(node: WalkerNode, m: number, level: number) {
-        node.personView.setOffsetLeftInPx(node.preliminaryXPosition + m);
+    private secondWalk(node: WalkerNode, offset: number, level: number) {
+        console.log(node.person.getName() + ": " + (node.preliminaryXPosition + offset));
+        // The offset takes care of placing the root node at x position 0 and placing all other nodes accordingly.
+        node.personView.setOffsetLeftInPx(node.preliminaryXPosition + offset);
         node.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
         this.positionNodeVertically(node, level); // not part of the original algorithm
 
         for (const child of node.children) {
             this.connect(this.jsPlumbInst, node.person, child.person); // not part of the original algorithm
-            this.secondWalk(child, m + node.modifier, level + 1);
+            this.secondWalk(child, offset + node.modifier, level + 1);
         }
     }
 
@@ -175,6 +181,8 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
                 contourNodeOutsideRightTree.ancestor = node;
 
+                // This calculates the necessary shift between the subtress so that the nodes on a level are placed 
+                // next to each other.
                 let shift: number = (contourNodeInsideLeftTree.preliminaryXPosition + modsumInsideLeftTree) - (contourNodeInsideRightTree.preliminaryXPosition + modsumInsideRightTree) + this.distanceBetweenNodes;
 
                 if (shift > 0) {
@@ -209,11 +217,11 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let change: number = 0;
 
         for (let i = node.children.length - 1; i >= 0; i--) {
-            const w = node.children[i];
-            w.preliminaryXPosition += shift;
-            w.modifier += shift;
-            change += w.change;
-            shift += w.shift + change;
+            const child = node.children[i];
+            child.preliminaryXPosition += shift;
+            child.modifier += shift;
+            change += child.change;
+            shift += child.shift + change;
         }
     }
 
