@@ -11,11 +11,21 @@ $darker-lifeline-color: #c0c9d2;
 .jtk-endpoint { z-index: 3; }
 .person-box { z-index: 4; }
 
+body {
+    margin: 0;
+    font-family: Arial;
+    background-color: rgb(205, 213, 255);
+}
+
 #jsplumb-container-wrapper {
     position: relative;
     border: black 3px solid;
+    border-radius: 5px;
     overflow: hidden;
     cursor: move;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    background-color: white;
 }
 
 #jsplumb-container {
@@ -41,12 +51,36 @@ $darker-lifeline-color: #c0c9d2;
     z-index: 1;
     background-color: white;
     border: 1px solid grey;
+    width: 100%;
 }
 
 .duplicates-button {
+    margin-top: 1rem;
     display: block;
     margin-left: auto;
     margin-right: auto;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    color: white;
+    border: none;
+}
+
+.male > .duplicates-button {
+    background-color: darken($male-color, 15);
+    border: 1px solid darken($male-color, 20);
+
+    &:hover {
+        background-color: darken($male-color, 20);
+    }
+}
+
+.female > .duplicates-button {
+    background-color: darken($female-color, 15);
+    border: 1px solid darken($female-color, 20);
+
+    &:hover {
+        background-color: darken($female-color, 20);
+    }
 }
 
 .person-container {
@@ -136,7 +170,6 @@ $darker-lifeline-color: #c0c9d2;
 }
 
 .person-name {
-    font-family: Arial;
     font-weight: bold;
     text-align: center;
     margin-top: 0.5rem;
@@ -146,7 +179,7 @@ $darker-lifeline-color: #c0c9d2;
 .search-row {
     border: 1px solid #d4d4d4;
     &:hover {
-        background-color: darken($color: white, $amount: 25);
+        background-color: darken($color: white, $amount: 5);
     }
 }
 

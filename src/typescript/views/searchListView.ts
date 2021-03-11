@@ -8,6 +8,7 @@ export class SearchListView {
 
     constructor(parentElement: HTMLElement, languageData: Object) {
         this.searchInputElement = document.createElement("input");
+        this.searchInputElement.setAttribute("placeholder", "Name of the person");
         parentElement.appendChild(this.searchInputElement);
         this.searchInputElement.setAttribute("type", "search");
 
