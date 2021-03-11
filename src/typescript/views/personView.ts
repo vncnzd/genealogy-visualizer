@@ -27,7 +27,7 @@ export class PersonView {
     constructor(person: Person, rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
         this.rootElement = rootElement;
         this.jsPlumbInst = jsPlumbInst;
-        this.boxWidthInPx = 200;
+        this.boxWidthInPx = 170;
         this.boxHeightInPx = 150;
 
         this.lifeLineBoundHeightInPx = 15;

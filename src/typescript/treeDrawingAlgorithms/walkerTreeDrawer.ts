@@ -18,20 +18,51 @@ export class WalkerTreeDrawer implements TreeDrawer {
         this.deathYearsOfLevel = [];
         this.birthYearsOfLevel = [];
         this.drawAncestors = drawAncestors;
-        
+
         let rootNode: WalkerNode;
         if (drawAncestors) {
             rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap, 0);
         } else {
             rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap, 0);
         }
-        
-        this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;
+
+        this.distanceBetweenNodes = rootNode.personView.getWidthInPx();
 
         this.firstWalk(rootNode);
-        this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);
+        // this.secondWalk(rootNode, 0, 0, 0);
+        this.thirdWalk(rootNode, -rootNode.preliminaryXPosition, 0);
 
         this.jsPlumbInst.repaintEverything(); // not the best solution probably
+    }
+
+    private secondWalk(node: WalkerNode, modifier: number, xPositionOfParent, level: number): number {
+        let modifiedXPosition: number = node.preliminaryXPosition + modifier
+        node.preliminaryXPosition += modifier;
+        // console.log(node.person.getName() + ": " + modifiedXPosition);
+
+        let lifelineCollisionModifier: number = 0;
+        if (modifiedXPosition >= xPositionOfParent && modifiedXPosition < xPositionOfParent + node.parent?.personView.getWidthInPx()) {
+            // TODO check if they collide
+            let shift: number = this.distanceBetweenNodes
+            // Shift the position of the current node one distance to the right.
+            node.preliminaryXPosition += shift;
+            // Adjust the modifier by the same value so that the modifier gets applied to the children
+            // of this node.
+            node.modifier += shift;
+            lifelineCollisionModifier = shift;
+        }
+
+        node.personView.setOffsetLeftInPx(node.preliminaryXPosition);
+        this.positionNodeVertically(node, level);
+
+        let lifelineCollisionModSum: number = 0;
+        for (const child of node.children) {
+            let totalModifier: number = node.modifier + lifelineCollisionModSum;
+            lifelineCollisionModSum += this.secondWalk(child, totalModifier, modifiedXPosition, level + 1);
+            this.connect(this.jsPlumbInst, node.person, child.person);
+        }
+
+        return lifelineCollisionModifier;
     }
 
     private initializeChildrenNodesForDescendants(person: Person, personViewMap: Map<string, PersonView>, level: number): WalkerNode {
@@ -145,8 +176,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
         }
     }
 
-    private secondWalk(node: WalkerNode, offset: number, level: number) {
-        console.log(node.person.getName() + ": " + (node.preliminaryXPosition + offset));
+    private thirdWalk(node: WalkerNode, offset: number, level: number) {
         // The offset takes care of placing the root node at x position 0 and placing all other nodes accordingly.
         node.personView.setOffsetLeftInPx(node.preliminaryXPosition + offset);
         node.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
@@ -154,26 +184,26 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
         for (const child of node.children) {
             this.connect(this.jsPlumbInst, node.person, child.person); // not part of the original algorithm
-            this.secondWalk(child, offset + node.modifier, level + 1);
+            this.thirdWalk(child, offset + node.modifier, level + 1);
         }
     }
 
     private apportion(node: WalkerNode, defaultAncestor: WalkerNode): WalkerNode {
         let leftSibling: WalkerNode = node.leftSibling;
-        
+
         if (leftSibling != null) {
 
             let contourNodeInsideRightTree: WalkerNode = node;
-            let contourNodeOutsideRightTree: WalkerNode = node; 
+            let contourNodeOutsideRightTree: WalkerNode = node;
             let contourNodeInsideLeftTree: WalkerNode = leftSibling;
-            let contourNodeOutsideLeftTree : WalkerNode = contourNodeInsideRightTree.parent.getLeftMostChild();
+            let contourNodeOutsideLeftTree: WalkerNode = contourNodeInsideRightTree.parent.getLeftMostChild();
 
             let modsumInsideRightTree: number = contourNodeInsideRightTree.modifier;
             let modsumOutsideRightTree: number = contourNodeOutsideRightTree.modifier;
             let modsumInsideLeftTree: number = contourNodeInsideLeftTree.modifier;
             let modsumOutsideLeftTree: number = contourNodeOutsideLeftTree.modifier;
 
-            while(contourNodeInsideLeftTree.getNextRight() != null && contourNodeInsideRightTree.getNextLeft() != null) {
+            while (contourNodeInsideLeftTree.getNextRight() != null && contourNodeInsideRightTree.getNextLeft() != null) {
                 contourNodeInsideLeftTree = contourNodeInsideLeftTree.getNextRight();
                 contourNodeInsideRightTree = contourNodeInsideRightTree.getNextLeft();
                 contourNodeOutsideLeftTree = contourNodeOutsideLeftTree.getNextLeft();
@@ -266,7 +296,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
             let birthYearMinDeathYearDifference: number = minDeathYearOfLevel - yearOfBirth;
             let yearDifferenceInPx: number = birthYearMinDeathYearDifference * this.pixelPerYear;
-            let relativeYPositionOfLifelineBox: number = yearDifferenceInPx  - node.personView.getLifelineBoxHeightInPx();
+            let relativeYPositionOfLifelineBox: number = yearDifferenceInPx - node.personView.getLifelineBoxHeightInPx();
 
             this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
             let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
@@ -297,10 +327,10 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private positionLifeline(yearOfBirth: number, yearOfDeath: number, node: WalkerNode): void {
-            // Set the birth date as the start of the life line.
-            node.personView.setOffsetTopInPx(yearOfBirth * this.pixelPerYear);
-            // Set the height of the lifeline according to the years lived.
-            node.personView.setHeightInPx((yearOfDeath - yearOfBirth) * this.pixelPerYear);
+        // Set the birth date as the start of the life line.
+        node.personView.setOffsetTopInPx(yearOfBirth * this.pixelPerYear);
+        // Set the height of the lifeline according to the years lived.
+        node.personView.setHeightInPx((yearOfDeath - yearOfBirth) * this.pixelPerYear);
     }
 
     private checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node: WalkerNode): void {
@@ -313,33 +343,33 @@ export class WalkerTreeDrawer implements TreeDrawer {
             node.personView.setOffsetTopOfLifelineBox(0)
         } else if (relativeYPositionOfLifelineBox > lifelineHeight) {
             // The lower lifeline bound is inside the lifeline box.
-              node.personView.hideLifelineBox();         
+            node.personView.hideLifelineBox();
         } else if (relativeYPositionOfLifelineBox > lifelineHeight - node.personView.getLifelineBoxHeightInPx()) {
             // The lifeline box is below the lifeline.
             let lifelineBoxHeightInPx: number = node.personView.getLifelineBoxHeightInPx();
             let difference: number = relativeYPositionOfLifelineBox + lifelineBoxHeightInPx - lifelineHeight;
             node.personView.setLifelineBoxHeightInPx(lifelineBoxHeightInPx - difference);
-        } 
+        }
     }
 
     private connect(jsPlumbInst: jsPlumbInstance, source: Person, target: Person): void {
         let connectionParameters: ConnectParams = {
             anchor: ["Bottom", "Top"],
-            connector: [ "Flowchart", {}],
+            connector: ["Flowchart", {}],
             endpoint: "Dot",
             deleteEndpointsOnDetach: false,
             detachable: false,
             // @ts-ignore
-            paintStyle: { 
-                stroke: "black", 
-                strokeWidth: 5 
+            paintStyle: {
+                stroke: "black",
+                strokeWidth: 5
             },
             // hoverPaintStyle: {
             //     stroke: "gray",
             // },
             endpointStyles: [
-                { fill:"black"},
-                { fill:"black" }
+                { fill: "black" },
+                { fill: "black" }
             ]
         };
 
