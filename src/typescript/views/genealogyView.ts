@@ -14,6 +14,7 @@ export class GenealogyView {
     private ancestorsButton: HTMLElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
+    private redrawButton: HTMLElement;
     private connectionParameters: ConnectParams;
 
     private timelineContainerWrapper: HTMLElement;
@@ -134,6 +135,10 @@ export class GenealogyView {
         this.zoomOutButton.id = "zoom-out-button";
         this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
         parentElement.appendChild(this.zoomOutButton);
+
+        this.redrawButton = document.createElement("button");
+        this.redrawButton.innerText = "Redraw tree";
+        parentElement.appendChild(this.redrawButton);
 
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
@@ -313,5 +318,9 @@ export class GenealogyView {
 
     public getJSPlumbInstance(): jsPlumbInstance {
         return this.jsPlumbInst;
+    }
+
+    public getRedrawButton(): HTMLElement {
+        return this.redrawButton;
     }
 }

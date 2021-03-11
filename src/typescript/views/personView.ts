@@ -42,7 +42,6 @@ export class PersonView {
     public delete(): void {
         this.containerElement.remove();
         this.jsPlumbInst.remove(this.boxElement);
-        // this.jsPlumbInst.repaintEverything();
     }
 
     private createPersonNode(person: Person): void {

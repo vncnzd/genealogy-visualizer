@@ -43,27 +43,33 @@ export class GenealogyController {
 
         this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent): void => {
             this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
-                let personViews: Map<string, PersonView> = new Map<string, PersonView>();
-                this.instantiateViewsAndControllersForDescendantsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
-                this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
-
-                this.genealogyView.displayDescendants(this.genealogy.getRootPerson(), personViews);
-                console.log(descendants.size + " descendants found");
-                console.log("Duplicates: " + this.genealogy.getDuplicates().size)
+                this.drawDescendants();
             });
         });
 
         this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent): void => {
             this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
-                let personViews: Map<string, PersonView> = new Map<string, PersonView>();
-                this.instantiateViewsAndControllersForAncestorsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
-                
-                this.genealogyView.displayAncestors(this.genealogy.getRootPerson(), personViews);
-                this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
-                console.log(ancestors.size + " ancestors found");
-                console.log("Duplicates: " + this.genealogy.getDuplicates().size)
+                this.drawAncestors();
             });
         });
+
+        this.genealogyView.getRedrawButton().addEventListener("click", (event: MouseEvent) => {
+
+        });
+    }
+
+    private drawDescendants(): void {
+        let personViews: Map<string, PersonView> = new Map<string, PersonView>();
+        this.instantiateViewsAndControllersForDescendantsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
+        this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
+        this.genealogyView.displayDescendants(this.genealogy.getRootPerson(), personViews);
+    }
+
+    private drawAncestors(): void {
+        let personViews: Map<string, PersonView> = new Map<string, PersonView>();
+        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
+        this.genealogyView.displayAncestors(this.genealogy.getRootPerson(), personViews);
+        this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
     }
 
     private instantiateViewsAndControllersForAncestorsAndAddItToMap(person: Person, personViews: Map<string, PersonView>) {

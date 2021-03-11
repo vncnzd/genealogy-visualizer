@@ -44,7 +44,6 @@ export class PersonController {
         let deleteButton: HTMLElement = this.personView.getDeleteButtonElement();
 
         deleteButton.addEventListener("click", (event: MouseEvent) => {
-            console.log("delete");
             this.person.delete();
             this.personView.delete();
         });
