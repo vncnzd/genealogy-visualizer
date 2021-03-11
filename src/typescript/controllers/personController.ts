@@ -30,10 +30,12 @@ export class PersonController {
     private addExpandButtonEeventListener(): void {
         let expandButton: HTMLElement = this.personView.getExpandButtonElement();
         let additionalInfoContainer: HTMLElement = this.personView.getAdditionalInfoContainerElement();
+        let personBox: HTMLElement = this.personView.getPersonBox();
 
         expandButton.addEventListener("click", (event: MouseEvent) => {
             expandButton.classList.toggle("turn-180");
             additionalInfoContainer.classList.toggle("opacity-100");
+            personBox.classList.toggle("z-index-6");
         });
     }
 }

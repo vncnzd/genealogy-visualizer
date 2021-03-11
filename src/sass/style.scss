@@ -10,6 +10,7 @@ $darker-lifeline-color: #c0c9d2;
 .jtk-connector { z-index: 3;}
 .jtk-endpoint { z-index: 3; }
 .person-box { z-index: 4; }
+.additional-info-container {z-index: 5}
 
 body {
     margin: 0;
@@ -58,6 +59,10 @@ p {
     width: 100%;
 }
 
+.display-flex {
+    display: flex;
+}
+
 .duplicates-button {
     margin-top: 0.5rem;
     display: block;
@@ -70,7 +75,7 @@ p {
     transition: background-color 0.25s ease;
 }
 
-.male > button {
+.male button {
     background-color: darken($male-color, 15);
     border: 1px solid darken($male-color, 20);
 
@@ -79,7 +84,7 @@ p {
     }
 }
 
-.female > button {
+.female button {
     background-color: darken($female-color, 15);
     border: 1px solid darken($female-color, 20);
 
@@ -106,14 +111,20 @@ p {
     rotate: 180deg;
 }
 
+.z-index-6 {
+    z-index: 6;
+}
+
 .additional-info-container {
+    position: absolute;
+    top: -5px;
+    left: 100%;
     background-color: inherit;
     width: 400px;
     padding: 1rem;
     border-style: solid;
     border-radius: 10px;
     border-width: 5px;
-    margin-left: -125px;
     opacity: 0;
     transition: opacity 0.5s ease;
 }

@@ -80,14 +80,18 @@ export class PersonView {
         if (person.getDatesOfDeath()[0] != null) deathInput.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
         dateContainer.appendChild(deathInput);
 
+        let buttonContainer: HTMLElement = document.createElement("div");
+        buttonContainer.classList.add("display-flex");
+        this.boxElement.appendChild(buttonContainer);
+
         this.duplicatesButton = this.createDuplicatesButtonElement();
-        this.boxElement.append(this.duplicatesButton);
+        buttonContainer.append(this.duplicatesButton);
 
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
         this.expandButtonElement = this.createExpandButton();
-        this.boxElement.appendChild(this.expandButtonElement);
+        buttonContainer.appendChild(this.expandButtonElement);
 
         this.additionalInfoContainerElement = this.createAdditionalInfoContainer();
         this.boxElement.appendChild(this.additionalInfoContainerElement);
@@ -101,7 +105,6 @@ export class PersonView {
         wikidataLink.setAttribute("href", "https://www.wikidata.org/wiki/" + person.getBaseId());
         wikidataLink.setAttribute("target", "_blank");
         this.additionalInfoContainerElement.appendChild(wikidataLink);
-
 
         this.setCssClassesForBirthAndDeathDate(person.getDatesOfBirth()[0], person.getDatesOfDeath()[0]);
 
@@ -117,8 +120,7 @@ export class PersonView {
     private createExpandButton(): HTMLElement {
         let expandButton: HTMLElement = document.createElement("button");
         expandButton.classList.add("expand-button");
-        expandButton.innerText = "▼";
-
+        expandButton.innerText = "➔";
         return expandButton;
     }
 
@@ -311,5 +313,9 @@ export class PersonView {
 
     public getAdditionalInfoContainerElement(): HTMLElement {
         return this.additionalInfoContainerElement;
+    }
+
+    public getPersonBox(): HTMLElement {
+        return this.boxElement;
     }
 }
