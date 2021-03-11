@@ -12,6 +12,8 @@ export class PersonView {
     private boxElement: HTMLElement;
     private duplicatesButton: HTMLElement;
     private deleteButtonElement: HTMLElement;
+    private expandButtonElement: HTMLElement;
+    private additionalInfoContainerElement: HTMLElement;
 
     private lifeLineBoundTop: HTMLElement;
     private lifeline: HTMLElement;
@@ -84,15 +86,46 @@ export class PersonView {
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
+        this.expandButtonElement = this.createExpandButton();
+        this.boxElement.appendChild(this.expandButtonElement);
+
+        this.additionalInfoContainerElement = this.createAdditionalInfoContainer();
+        this.boxElement.appendChild(this.additionalInfoContainerElement);
+
+        let descriptionParagraph: HTMLElement = document.createElement("p");
+        descriptionParagraph.appendChild(new Text(person.getDescription()));
+        this.additionalInfoContainerElement.appendChild(descriptionParagraph);
+
+        let wikidataLink: HTMLElement = document.createElement("a");
+        wikidataLink.innerText = "https://www.wikidata.org/wiki/" + person.getBaseId();
+        wikidataLink.setAttribute("href", "https://www.wikidata.org/wiki/" + person.getBaseId());
+        wikidataLink.setAttribute("target", "_blank");
+        this.additionalInfoContainerElement.appendChild(wikidataLink);
+
+
         this.setCssClassesForBirthAndDeathDate(person.getDatesOfBirth()[0], person.getDatesOfDeath()[0]);
 
         // this.jsPlumbInst.draggable(this.containerElement);
     }
 
+    private createAdditionalInfoContainer(): HTMLElement {
+        let additionalInfoContainer: HTMLElement = document.createElement("div");
+        additionalInfoContainer.classList.add("additional-info-container");
+        return additionalInfoContainer;
+    }
+
+    private createExpandButton(): HTMLElement {
+        let expandButton: HTMLElement = document.createElement("button");
+        expandButton.classList.add("expand-button");
+        expandButton.innerText = "▼";
+
+        return expandButton;
+    }
+
     private createDuplicatesButtonElement(): HTMLElement {
         let duplicatesButton: HTMLElement = document.createElement("button");
         duplicatesButton.classList.add("duplicates-button");
-        // duplicatesButton.classList.toggle("hidden");
+        duplicatesButton.classList.toggle("hidden");
         duplicatesButton.innerText = "Show duplicates"; // TODO get text for different languages
         return duplicatesButton;
     }
@@ -270,5 +303,13 @@ export class PersonView {
 
     public getLifelineBoundHeightInPx(): number {
         return this.lifeLineBoundHeightInPx;
+    }
+
+    public getExpandButtonElement(): HTMLElement {
+        return this.expandButtonElement;
+    }
+
+    public getAdditionalInfoContainerElement(): HTMLElement {
+        return this.additionalInfoContainerElement;
     }
 }

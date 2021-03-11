@@ -71,6 +71,7 @@ export class TestTreeGenerator {
         let root: Person = new Person("root");
         root.setName(root.getId());
         root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        root.setDescription("Testdescription of root person");
         root.getDatesOfBirth().push(new Date("0160-01-01"));
         root.getDatesOfDeath().push(new Date("0220-01-01"));
 

@@ -17,6 +17,10 @@ body {
     background-color: rgb(205, 213, 255);
 }
 
+p {
+    margin: 0;
+}
+
 #jsplumb-container-wrapper {
     position: relative;
     border: black 3px solid;
@@ -63,9 +67,10 @@ body {
     border-radius: 10px;
     color: white;
     border: none;
+    transition: background-color 0.25s ease;
 }
 
-.male > .duplicates-button {
+.male > button {
     background-color: darken($male-color, 15);
     border: 1px solid darken($male-color, 20);
 
@@ -74,13 +79,54 @@ body {
     }
 }
 
-.female > .duplicates-button {
+.female > button {
     background-color: darken($female-color, 15);
     border: 1px solid darken($female-color, 20);
 
     &:hover {
         background-color: darken($female-color, 20);
     }
+}
+
+.expand-button {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1rem;
+    border: none;
+    color: white;
+    transition: rotate 0.5s ease;
+    position: relative;
+}
+
+.turn-180 {
+    rotate: 180deg;
+}
+
+.additional-info-container {
+    background-color: inherit;
+    width: 400px;
+    padding: 1rem;
+    border-style: solid;
+    border-radius: 10px;
+    border-width: 5px;
+    margin-left: -125px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.opacity-100 {
+    opacity: 100;
+}
+
+.male > .additional-info-container {
+    border-color: darken($male-color, 30%);
+}
+
+.female > .additional-info-container {
+    border-color: darken($female-color, 30%);
 }
 
 .person-container {
