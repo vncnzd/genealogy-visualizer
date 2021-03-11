@@ -11,6 +11,7 @@ export class PersonController {
 
         this.addDuplicatesButtonEventListener();
         this.addExpandButtonEeventListener();
+        this.addDeleteButtonEventListener();
     };
 
     private addDuplicatesButtonEventListener(): void {
@@ -36,6 +37,16 @@ export class PersonController {
             expandButton.classList.toggle("turn-180");
             additionalInfoContainer.classList.toggle("opacity-100");
             personBox.classList.toggle("z-index-6");
+        });
+    }
+
+    private addDeleteButtonEventListener(): void {
+        let deleteButton: HTMLElement = this.personView.getDeleteButtonElement();
+
+        deleteButton.addEventListener("click", (event: MouseEvent) => {
+            console.log("delete");
+            this.person.delete();
+            this.personView.delete();
         });
     }
 }

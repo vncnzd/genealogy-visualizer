@@ -39,7 +39,12 @@ export class PersonView {
         this.createPersonNode(person);
     }
 
-    public createPersonNode(person: Person): void {
+    public delete(): void {
+        this.containerElement.remove();
+        this.jsPlumbInst.repaintEverything();
+    }
+
+    private createPersonNode(person: Person): void {
         this.containerElement = document.createElement("div");
         this.containerElement.classList.add("person-container");
         this.containerElement.style.width = this.lifelineBoxWidthInPx + "px";
@@ -83,6 +88,11 @@ export class PersonView {
         let buttonContainer: HTMLElement = document.createElement("div");
         buttonContainer.classList.add("display-flex");
         this.boxElement.appendChild(buttonContainer);
+
+        this.deleteButtonElement = document.createElement("button");
+        this.deleteButtonElement.innerText = "Delete";
+        this.deleteButtonElement.classList.add("delete-button");
+        this.boxElement.appendChild(this.deleteButtonElement);
 
         this.duplicatesButton = this.createDuplicatesButtonElement();
         buttonContainer.append(this.duplicatesButton);

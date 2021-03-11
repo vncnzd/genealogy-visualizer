@@ -3,6 +3,7 @@ $female-color: #729fcf;
 $unknown-gender-color: #808080;
 $lifeline-color: #e3ecf6;
 $darker-lifeline-color: #c0c9d2;
+$alert-color: #dc3545;
 
 // z-indices
 
@@ -113,6 +114,22 @@ p {
 
 .z-index-6 {
     z-index: 6;
+}
+
+button.delete-button {
+    background-color: $alert-color;
+    padding: 0.25rem 1rem;
+    border-color: darken($color: $alert-color, $amount: 20);
+    border-radius: 1rem;
+    color: white;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    &:hover {
+        background-color: darken($alert-color, $amount: 10);
+        border-color: darken($color: $alert-color, $amount: 30) !important;
+    }
 }
 
 .additional-info-container {
