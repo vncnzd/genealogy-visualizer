@@ -71,8 +71,8 @@ export class RTTreeDrawer implements TreeDrawer {
                         cursep = minsep;
                     }
 
-                    // Advance L & R.
-                    if (l.person.getMother() != null) {
+                    // Advance L & R. Follow the right nodes of the left subtree and the left nodes of the right subtrees when possible
+                    if (l.person.getMother() != null) { // if l.rightLink != null
                         lOffSum = lOffSum + l.offset;
                         cursep = cursep - l.offset;
                         l = this.nodeMap.get(l.person.getMother().getId());
@@ -82,7 +82,7 @@ export class RTTreeDrawer implements TreeDrawer {
                         l = this.nodeMap.get(l.person.getFather()?.getId());
                     }
 
-                    if (r.person.getFather() != null) {
+                    if (r.person.getFather() != null) { // if r.leftLink != null
                         rOffSum = rOffSum - r.offset;
                         cursep = cursep - r.offset;
                         r = this.nodeMap.get(r.person.getFather().getId());
@@ -102,18 +102,34 @@ export class RTTreeDrawer implements TreeDrawer {
                 // Update extreme descendants information
 
                 if (rl.level > ll.level || t.person.getFather() == null) {
-                    lMost = rl;
+                    // lMost = rl; original code, does not work because in the calling method this does not get changed
+                    lMost.address = rl.address
+                    lMost.level = rl.level;
+                    lMost.offset = rl.offset
+
                     lMost.offset = lMost.offset + t.offset;
                 } else {
-                    lMost = ll;
+                    // lMost = ll;
+                    lMost.address = ll.address;
+                    lMost.level = ll.level;
+                    lMost.offset = ll.offset;
+
                     lMost.offset = lMost.offset - t.offset;
                 }
 
                 if (lr.level > rr.level || t.person.getMother() == null) {
-                    rMost = lr;
+                    // rMost = lr;
+                    rMost.address = lr.address;
+                    rMost.level = lr.level;
+                    rMost.offset = lr.offset;
+
                     rMost.offset = rMost.offset - t.offset;
                 } else {
-                    rMost = rr;
+                    // rMost = rr;
+                    rMost.address = rr.address;
+                    rMost.level = rr.level;
+                    rMost.offset = rr.offset;
+
                     rMost.offset = rMost.offset + t.offset;
                 }
 

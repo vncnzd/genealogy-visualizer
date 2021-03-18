@@ -14,9 +14,11 @@ export class Person {
 
     constructor(id: string) {
         this.id = id;
+        this.name = id;
         this.datesOfBirth = [];
         this.datesOfDeath = [];
         this.children = [];
+        this.setSexOrGender(new SexOrGender("Q6581097", "male"));
     }
 
     // getters and setters
