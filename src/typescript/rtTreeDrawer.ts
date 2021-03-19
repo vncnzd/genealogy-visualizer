@@ -38,12 +38,12 @@ export class RTTreeDrawer implements TreeDrawer {
             rMost.level = -1;
         } else {
             t.personView.setOffsetTopInPx(level * 200);
-            
+
             l = this.nodeMap.get(t.person.getFather()?.getId()); // follows contour of tleft subtree
-            r= this.nodeMap.get(t.person.getMother()?.getId()); // follows contour of right subtree
+            r = this.nodeMap.get(t.person.getMother()?.getId()); // follows contour of right subtree
 
             // Position subtrees recursively
-            this.setup(l, level + 1, lr, ll); 
+            this.setup(l, level + 1, lr, ll);
             this.setup(r, level + 1, rr, rl);
 
             if (r == null && l == null) { // leaf
@@ -155,16 +155,18 @@ export class RTTreeDrawer implements TreeDrawer {
                 }
             }
         }
+
+        if(t != null) console.log(t.person.getName() + ": " + t.offset);
     }
 
     // This procedure performs a preorder traversal of the tree, converting the relative offsets to absolute coordinates.
     private petrify(t: RTNode, xPos: number) {
         if (t != null) {
             t.personView.setOffsetLeftInPx(xPos * t.personView.getBoxWidth());
-            
+
             if (t.thread) {
                 t.thread = false;
-                t.person.setFather(null); 
+                t.person.setFather(null);
                 t.person.setMother(null);
             }
 

@@ -54,6 +54,12 @@ export class GenealogyController {
         let p8: Person = new Person("8");
         let p9: Person = new Person("9");
         let p10: Person = new Person("10");
+        let p11: Person = new Person("11");
+        let p12: Person = new Person("12");
+        let p13: Person = new Person("13");
+        let p14: Person = new Person("14");
+        let p15: Person = new Person("15");
+        let p16: Person = new Person("16");
 
         p0.setFather(p1);
         p0.setMother(p2);
@@ -61,17 +67,27 @@ export class GenealogyController {
         p1.setFather(p3);
         p1.setMother(p4);
 
-        p4.setMother(p7);
+        p4.setFather(p7);
+        p4.setMother(p8);
 
-        p7.setFather(p9);
-        p7.setMother(p10);
+        p7.setMother(p12);
+
+        p8.setFather(p13);
+        p8.setMother(p14);
 
         p2.setFather(p5);
         p2.setMother(p6);
+        
+        p5.setFather(p9);
+        p5.setMother(p10);
 
-        p5.setFather(p8);
+        p6.setFather(p11);
 
+        p9.setFather(p15);
 
+        p10.setMother(p16);
+
+        p6.setFather(p11);
 
         // p0.setMother(mother);
         // p0.setFather(father);
