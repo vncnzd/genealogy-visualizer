@@ -104,12 +104,13 @@ p {
     border-radius: 1rem;
     border: none;
     color: white;
-    transition: rotate 0.5s ease;
+    transition: transform 0.5s ease;
     position: relative;
+    outline: none;
 }
 
 .turn-180 {
-    rotate: 180deg;
+    transform: rotate(180deg);
 }
 
 .z-index-6 {
@@ -125,6 +126,7 @@ button.delete-button {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    outline: none;
 
     &:hover {
         background-color: darken($alert-color, $amount: 10);
@@ -273,6 +275,7 @@ button.delete-button {
     border: none;
     background-color: inherit;
     width: 4em;
+    unicode-bidi: plaintext;
 }
 
 .date-container {
