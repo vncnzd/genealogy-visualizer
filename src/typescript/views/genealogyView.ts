@@ -37,23 +37,6 @@ export class GenealogyView {
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
         // this.personViews = new Map<string, PersonView>();
-        
-        this.connectionParameters = {
-            anchors: ["Bottom", "Top"],
-            connector: [ "Flowchart", {}],
-            endpoint: "Dot",
-            deleteEndpointsOnDetach: false,
-            detachable: false,
-            // @ts-ignore
-            paintStyle:{ 
-                stroke: "black", 
-                strokeWidth: 5 
-            },
-            endpointStyles: [
-                { fill:"black"},
-                { fill:"grey" }
-            ]
-        }
 
         this.initializeHTMLElements(parentElement, languageData);
         this.addZoomEventListeners();

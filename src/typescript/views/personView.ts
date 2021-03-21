@@ -14,6 +14,8 @@ export class PersonView {
     private deleteButtonElement: HTMLElement;
     private expandButtonElement: HTMLElement;
     private additionalInfoContainerElement: HTMLElement;
+    private birthInputElement: HTMLInputElement;
+    private deathInputElement: HTMLInputElement;
 
     private lifeLineBoundTop: HTMLElement;
     private lifeline: HTMLElement;
@@ -72,18 +74,18 @@ export class PersonView {
         dateContainer.classList.add("date-container");
         this.boxElement.appendChild(dateContainer);
 
-        let birthInput: HTMLInputElement = this.createNumberInputElement(["birth-and-death-input"]);
-        birthInput.setAttribute("dir", "rtl");
-        if (person.getDatesOfBirth()[0] != null) birthInput.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
-        dateContainer.appendChild(birthInput);
+        this.birthInputElement = this.createNumberInputElement(["birth-and-death-input"]);
+        this.birthInputElement.setAttribute("dir", "rtl");
+        if (person.getDatesOfBirth()[0] != null) this.birthInputElement.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
+        dateContainer.appendChild(this.birthInputElement);
 
         let minusDiv: HTMLElement = document.createElement("div");
         minusDiv.appendChild(document.createTextNode("-"));
         dateContainer.appendChild(minusDiv);
 
-        let deathInput: HTMLInputElement = this.createNumberInputElement(["birth-and-death-input"]);
-        if (person.getDatesOfDeath()[0] != null) deathInput.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
-        dateContainer.appendChild(deathInput);
+        this.deathInputElement = this.createNumberInputElement(["birth-and-death-input"]);
+        if (person.getDatesOfDeath()[0] != null) this.deathInputElement.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
+        dateContainer.appendChild(this.deathInputElement);
 
         let buttonContainer: HTMLElement = document.createElement("div");
         buttonContainer.classList.add("display-flex");
@@ -327,5 +329,13 @@ export class PersonView {
 
     public getPersonBox(): HTMLElement {
         return this.boxElement;
+    }
+
+    public getDeathInputElement(): HTMLInputElement {
+        return this.deathInputElement;
+    }
+
+    public getBirthInputElement(): HTMLInputElement {
+        return this.birthInputElement;
     }
 }

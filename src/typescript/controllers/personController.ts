@@ -12,6 +12,7 @@ export class PersonController {
         this.addDuplicatesButtonEventListener();
         this.addExpandButtonEeventListener();
         this.addDeleteButtonEventListener();
+        this.addBirthInputEventListener();
     };
 
     private addDuplicatesButtonEventListener(): void {
@@ -46,6 +47,34 @@ export class PersonController {
         deleteButton.addEventListener("click", (event: MouseEvent) => {
             this.person.delete();
             this.personView.delete();
+        });
+    }
+
+    private addBirthInputEventListener(): void {
+        let birthInput: HTMLInputElement = this.personView.getBirthInputElement();
+
+        birthInput.addEventListener("change", (event: Event): void => {
+            let year: number = birthInput.valueAsNumber;
+
+            if (this.person.getDatesOfBirth().length > 0) {
+                this.person.getDatesOfBirth()[0].setFullYear(year);
+            }
+    
+            console.log(this.person);
+        });
+    }
+
+    private addDeathInputEventListener(): void {
+        let deathInput: HTMLInputElement = this.personView.getDeathInputElement();
+
+        deathInput.addEventListener("change", (event: Event): void => {
+            let year: number = deathInput.valueAsNumber;
+
+            if (this.person.getDatesOfDeath().length > 0) {
+                this.person.getDatesOfDeath()[0].setFullYear(year);
+            }
+    
+            console.log(this.person);
         });
     }
 }

@@ -54,7 +54,7 @@ export class GenealogyController {
         });
 
         this.genealogyView.getRedrawButton().addEventListener("click", (event: MouseEvent) => {
-
+            
         });
     }
 
