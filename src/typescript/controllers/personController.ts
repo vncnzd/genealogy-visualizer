@@ -13,6 +13,7 @@ export class PersonController {
         this.addExpandButtonEeventListener();
         this.addDeleteButtonEventListener();
         this.addBirthInputEventListener();
+        this.addDeathInputEventListener();
     };
 
     private addDuplicatesButtonEventListener(): void {
@@ -59,8 +60,6 @@ export class PersonController {
             if (this.person.getDatesOfBirth().length > 0) {
                 this.person.getDatesOfBirth()[0].setFullYear(year);
             }
-    
-            console.log(this.person);
         });
     }
 
@@ -73,8 +72,6 @@ export class PersonController {
             if (this.person.getDatesOfDeath().length > 0) {
                 this.person.getDatesOfDeath()[0].setFullYear(year);
             }
-    
-            console.log(this.person);
         });
     }
 }
