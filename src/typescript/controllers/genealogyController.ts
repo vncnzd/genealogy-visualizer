@@ -41,20 +41,38 @@ export class GenealogyController {
             this.genealogy.setDepth(depth);
         });
 
-        this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent): void => {
-            this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
-                this.drawDescendants();
-            });
-        });
 
-        this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent): void => {
-            this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
-                this.drawAncestors();
-            });
-        });
-
-        this.genealogyView.getRedrawButton().addEventListener("click", (event: MouseEvent) => {
+        this.genealogyView.getTimeSelectElement().addEventListener("change", (event: Event): void => {
             
+        });
+
+        // this.genealogyView.getDescendantsButton().addEventListener("click", (event: MouseEvent): void => {
+        //     this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
+        //         this.drawDescendants();
+        //     });
+        // });
+
+        // this.genealogyView.getAncestorsButton().addEventListener("click", (event: MouseEvent): void => {
+        //     this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
+        //         this.drawAncestors();
+        //     });
+        // });
+
+        this.genealogyView.getDrawTreeButton().addEventListener("click", (event: MouseEvent) => {
+            let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
+            var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
+            switch (timeOption) {
+                case "ascendancy":
+                    this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
+                        this.drawAncestors();
+                    });
+                    break;
+                case "descendancy":
+                    this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
+                        this.drawDescendants();
+                    });
+                    break;
+            }
         });
     }
 

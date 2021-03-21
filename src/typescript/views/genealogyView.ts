@@ -10,11 +10,10 @@ export class GenealogyView {
     private containerElementWrapper: HTMLElement;
     private jsPlumbInst: jsPlumbInstance;
     private depthInput: HTMLInputElement;
-    private descendantsButton: HTMLElement;
-    private ancestorsButton: HTMLElement;
+    private timeSettingsInput: HTMLSelectElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
-    private redrawButton: HTMLElement;
+    private drawTreeButton: HTMLElement;
     private connectionParameters: ConnectParams;
 
     private timelineContainerWrapper: HTMLElement;
@@ -85,15 +84,15 @@ export class GenealogyView {
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
-        this.ancestorsButton = document.createElement("button");
-        this.ancestorsButton.innerHTML = languageData["ancestorsButtonText"];
-        this.ancestorsButton.id = "ancestors-button";
-        optionsContainer.appendChild(this.ancestorsButton);
-
-        this.descendantsButton = document.createElement("button");
-        this.descendantsButton.innerHTML = languageData["descendantsButtonText"];
-        this.descendantsButton.id = "descendants-button";
-        optionsContainer.appendChild(this.descendantsButton);
+        this.timeSettingsInput = document.createElement("select");
+        let options: string[] = ["ascendancy", "descendancy"];
+        optionsContainer.appendChild(this.timeSettingsInput);
+        for (const option of options) {
+            let optionElement: HTMLOptionElement = document.createElement("option");
+            optionElement.value = option;
+            optionElement.text = option;
+            this.timeSettingsInput.appendChild(optionElement);
+        }
 
         const depthInputLabel = document.createElement("label");
         depthInputLabel.innerHTML = languageData["depthInputLabelText"];
@@ -119,9 +118,9 @@ export class GenealogyView {
         this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
         parentElement.appendChild(this.zoomOutButton);
 
-        this.redrawButton = document.createElement("button");
-        this.redrawButton.innerText = "Redraw tree";
-        parentElement.appendChild(this.redrawButton);
+        this.drawTreeButton = document.createElement("button");
+        this.drawTreeButton.innerText = "Redraw tree";
+        parentElement.appendChild(this.drawTreeButton);
 
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
@@ -287,12 +286,8 @@ export class GenealogyView {
         return this.depthInput;
     }
 
-    public getDescendantsButton(): HTMLElement {
-        return this.descendantsButton;
-    }
-
-    public getAncestorsButton(): HTMLElement {
-        return this.ancestorsButton;
+    public getTimeSelectElement(): HTMLSelectElement {
+        return this.timeSettingsInput;
     }
 
     public getContainer(): HTMLElement {
@@ -303,7 +298,7 @@ export class GenealogyView {
         return this.jsPlumbInst;
     }
 
-    public getRedrawButton(): HTMLElement {
-        return this.redrawButton;
+    public getDrawTreeButton(): HTMLElement {
+        return this.drawTreeButton;
     }
 }
