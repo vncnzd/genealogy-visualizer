@@ -176,8 +176,12 @@ export class GenealogyView {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
         this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear * this.scale;
-        this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);    }
+        this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);    
+    }
 
+    public clearContainer(): void {
+        this.containerElement.innerHTML = "";
+    }
 
     private addZoomEventListeners() {
         this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {

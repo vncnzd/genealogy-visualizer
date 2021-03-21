@@ -77,6 +77,7 @@ export class GenealogyController {
     }
 
     private drawDescendants(): void {
+        this.genealogyView.clearContainer();
         let personViews: Map<string, PersonView> = new Map<string, PersonView>();
         this.instantiateViewsAndControllersForDescendantsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
         this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
@@ -84,6 +85,7 @@ export class GenealogyController {
     }
 
     private drawAncestors(): void {
+        this.genealogyView.clearContainer();
         let personViews: Map<string, PersonView> = new Map<string, PersonView>();
         this.instantiateViewsAndControllersForAncestorsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
         this.genealogyView.displayAncestors(this.genealogy.getRootPerson(), personViews);
