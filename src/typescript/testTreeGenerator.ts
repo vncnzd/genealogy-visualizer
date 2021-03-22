@@ -82,21 +82,21 @@ export class TestTreeGenerator {
         child0.getDatesOfDeath().push(new Date("0250-01-01"));
         root.getChildren().push(child0);
 
-        // let child00: Person = new Person("child 00");
-        // child00.setName(child00.getId());
-        // child00.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
-        // child00.getDatesOfBirth().push(new Date("0200-01-01"));
-        // child00.getDatesOfDeath().push(new Date("0290-01-01"));
-        // child0.getChildren().push(child00);
+        let child00: Person = new Person("child 00");
+        child00.setName(child00.getId());
+        child00.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child00.getDatesOfBirth().push(new Date("0200-01-01"));
+        child00.getDatesOfDeath().push(new Date("0290-01-01"));
+        child0.getChildren().push(child00);
 
-        // let child01: Person = new Person("child 01");
-        // child01.setName(child01.getId());
-        // child01.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
-        // child01.getDatesOfBirth().push(new Date("0210-01-01"));
-        // child01.getDatesOfDeath().push(new Date("0240-01-01"));
-        // child0.getChildren().push(child01);
+        let child01: Person = new Person("child 01");
+        child01.setName(child01.getId());
+        child01.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        child01.getDatesOfBirth().push(new Date("0210-01-01"));
+        child01.getDatesOfDeath().push(new Date("0240-01-01"));
+        child0.getChildren().push(child01);
 
-        // let child010: Person = new Person("child 01");
+        // let child010: Person = new Person("child 010"); // TODO fix this!
         // child010.setName(child010.getId());
         // child010.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
         // child010.getDatesOfBirth().push(new Date("0230-01-01"));
@@ -144,6 +144,94 @@ export class TestTreeGenerator {
         child3.getDatesOfBirth().push(new Date("0200-01-01"));
         child3.getDatesOfDeath().push(new Date("0240-01-01"));
         root.getChildren().push(child3);
+
+        // let child4: Person = new Person("child 4");
+        // child4.setName(child4.getId());
+        // child4.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        // child4.getDatesOfBirth().push(new Date("0200-01-01"));
+        // child4.getDatesOfDeath().push(new Date("0240-01-01"));
+        // root.getChildren().push(child4);
+
+        return root;
+    }
+
+    public static getExampleDescendantsTreeTwo(): Person {
+        let root: Person = new Person("root");
+        root.setName(root.getId());
+        root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        root.setDescription("Testdescription of root person");
+        root.getDatesOfBirth().push(new Date("0160-01-01"));
+        root.getDatesOfDeath().push(new Date("0220-01-01"));
+
+        let child0: Person = new Person("child 0");
+        child0.setName(child0.getId());
+        child0.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child0.getDatesOfBirth().push(new Date("0180-01-01"));
+        child0.getDatesOfDeath().push(new Date("0250-01-01"));
+        root.getChildren().push(child0);
+
+        let child00: Person = new Person("child 00");
+        child00.setName(child00.getId());
+        child00.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child00.getDatesOfBirth().push(new Date("0200-01-01"));
+        child00.getDatesOfDeath().push(new Date("0290-01-01"));
+        child0.getChildren().push(child00);
+
+        let child01: Person = new Person("child 01");
+        child01.setName(child01.getId());
+        child01.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        child01.getDatesOfBirth().push(new Date("0210-01-01"));
+        child01.getDatesOfDeath().push(new Date("0240-01-01"));
+        child0.getChildren().push(child01);
+        
+        let child2: Person = new Person("child 2");
+        child2.setName(child2.getId());
+        child2.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child2.getDatesOfBirth().push(new Date("0200-01-01"));
+        child2.getDatesOfDeath().push(new Date("0240-01-01"));
+        root.getChildren().push(child2);
+
+        let child1: Person = new Person("child 1");
+        child1.setName(child1.getId());
+        child1.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child1.getDatesOfBirth().push(new Date("0190-01-01"));
+        child1.getDatesOfDeath().push(new Date("0220-01-01"));
+        root.getChildren().push(child1);
+
+        let child10: Person = new Person("child 10");
+        child10.setName(child10.getId());
+        child10.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child10.getDatesOfBirth().push(new Date("0230-01-01"));
+        child10.getDatesOfDeath().push(new Date("0270-01-01"));
+        child1.getChildren().push(child10);
+
+        let child11: Person = new Person("child 11");
+        child11.setName(child11.getId());
+        child11.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child11.getDatesOfBirth().push(new Date("0190-01-01"));
+        child11.getDatesOfDeath().push(new Date("0280-01-01"));
+        child1.getChildren().push(child11);
+
+        let child12: Person = new Person("child 12");
+        child12.setName(child12.getId());
+        child12.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child12.getDatesOfBirth().push(new Date("0190-01-01"));
+        child12.getDatesOfDeath().push(new Date("0280-01-01"));
+        child1.getChildren().push(child12);
+
+        // let child2: Person = new Person("child 2");
+        // child2.setName(child2.getId());
+        // child2.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        // child2.getDatesOfBirth().push(new Date("0200-01-01"));
+        // child2.getDatesOfDeath().push(new Date("0240-01-01"));
+        // root.getChildren().push(child2);
+
+        // let child3: Person = new Person("child 3");
+        // child3.setName(child3.getId());
+        // child3.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        // child3.getDatesOfBirth().push(new Date("0200-01-01"));
+        // child3.getDatesOfDeath().push(new Date("0240-01-01"));
+        // root.getChildren().push(child3);
 
         // let child4: Person = new Person("child 4");
         // child4.setName(child4.getId());
