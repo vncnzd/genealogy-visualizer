@@ -54,6 +54,10 @@ p {
     input {
         width: 100%;
     }
+
+    input:focus + table {
+        display: table;
+    }
 }
 
 #search-results-table {
@@ -63,6 +67,8 @@ p {
     background-color: white;
     border: 1px solid grey;
     width: 100%;
+    display: none;
+    user-select: none;
 }
 
 .display-flex {
@@ -202,7 +208,7 @@ button.delete-button {
         padding: 0.5rem;
         border-radius: 0.5rem;
         font-size: 0.8rem;
-    } 
+    }
 }
 
 .hidden {
