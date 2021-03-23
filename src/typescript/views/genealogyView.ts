@@ -14,7 +14,7 @@ export class GenealogyView {
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
     private drawTreeButton: HTMLElement;
-    private connectionParameters: ConnectParams;
+    private redrawTreeButton: HTMLElement;
 
     private timelineContainerWrapper: HTMLElement;
     private timelineContainer: HTMLElement;
@@ -27,8 +27,6 @@ export class GenealogyView {
     private transformX: number = 0;
     private transformY: number = 0
     private zoomFactor: number;
-
-    // private personViews: Map<string, PersonView>;
 
     constructor(parentElement: HTMLElement, languageData: Object) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
@@ -119,8 +117,12 @@ export class GenealogyView {
         parentElement.appendChild(this.zoomOutButton);
 
         this.drawTreeButton = document.createElement("button");
-        this.drawTreeButton.innerText = "Redraw tree";
+        this.drawTreeButton.innerText = "Draw new tree";
         parentElement.appendChild(this.drawTreeButton);
+
+        this.redrawTreeButton = document.createElement("button");
+        this.redrawTreeButton.innerText = "Redraw tree";
+        parentElement.appendChild(this.redrawTreeButton);
 
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
@@ -166,12 +168,14 @@ export class GenealogyView {
     }
 
     public displayAncestors(rootPerson: Person, personViews: Map<string, PersonView>) {
+        this.jsPlumbInst.reset();
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
         this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
     }
 
     public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
+        this.jsPlumbInst.reset();
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
         this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
@@ -318,5 +322,9 @@ export class GenealogyView {
 
     public getDrawTreeButton(): HTMLElement {
         return this.drawTreeButton;
+    }
+
+    public getRedrawTreeButton(): HTMLElement {
+        return this.redrawTreeButton;
     }
 }

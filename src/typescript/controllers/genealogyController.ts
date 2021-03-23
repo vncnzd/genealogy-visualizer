@@ -41,11 +41,6 @@ export class GenealogyController {
             this.genealogy.setDepth(depth);
         });
 
-
-        this.genealogyView.getTimeSelectElement().addEventListener("change", (event: Event): void => {
-            
-        });
-
         this.genealogyView.getDrawTreeButton().addEventListener("click", (event: MouseEvent) => {
             let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
             var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
@@ -59,6 +54,20 @@ export class GenealogyController {
                     this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
                         this.drawDescendants();
                     });
+                    break;
+            }
+        });
+
+        this.genealogyView.getRedrawTreeButton().addEventListener("click", (event: MouseEvent) => {
+            let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
+            var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
+
+            switch (timeOption) {
+                case "ascendancy":
+                    this.drawAncestors();
+                    break;
+                case "descendancy":
+                    this.drawDescendants();
                     break;
             }
         });
