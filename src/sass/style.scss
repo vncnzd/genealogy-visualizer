@@ -65,15 +65,11 @@ p {
 }
 
 .duplicates-button {
-    margin-top: 0.5rem;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
     color: white;
     border: none;
     transition: background-color 0.25s ease;
+    outline: none;
 }
 
 .male button {
@@ -104,13 +100,9 @@ p {
 
 button.delete-button {
     background-color: $alert-color;
-    padding: 0.25rem 1rem;
     border-color: darken($color: $alert-color, $amount: 20);
-    border-radius: 1rem;
     color: white;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
     outline: none;
 
     &:hover {
@@ -143,6 +135,10 @@ button.delete-button {
 
 .female > .additional-info-container {
     border-color: darken($female-color, 30%);
+}
+
+.justify-content-space-between {
+    justify-content: space-between;
 }
 
 .person-container {
@@ -184,6 +180,21 @@ button.delete-button {
         .additional-info-container {
             opacity: 100;
         }
+    } 
+}
+
+.person-button-container {
+    display: flex;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+    padding: 5px;
+
+    button {
+        padding: 0.5rem;
+        border-radius: 0.5rem;
     } 
 }
 
@@ -241,8 +252,9 @@ button.delete-button {
 .person-name {
     font-weight: bold;
     text-align: center;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 00.25rem;
+    margin-bottom: 0.25rem;
+    font-size: 1.3rem;
 }
 
 .search-row {
