@@ -250,46 +250,74 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
         let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
 
-        // refactor, only collect the min death year and max birth year for level!
-        let minDeathYearOfLevel: number = Math.min(...this.deathYearsOfLevel[level]);
-        let maxBirthYearOfLevel: number = Math.max(...this.birthYearsOfLevel[level]);
+        let averageBirthYearOfLevel: number = Math.round(this.birthYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.birthYearsOfLevel[level].length);
+        let averageDeathYearOfLevel: number = Math.round(this.deathYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.deathYearsOfLevel[level].length);
+        let middleYear = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2
 
-        if (this.drawAncestors) {
-            if (yearOfBirth == null) {
-                yearOfBirth = minDeathYearOfLevel - node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
-            }
-            if (yearOfDeath == null) {
-                yearOfDeath = minDeathYearOfLevel;
-            }
-
-            this.positionLifeline(yearOfBirth, yearOfDeath, node);
-
-            let birthYearMinDeathYearDifference: number = minDeathYearOfLevel - yearOfBirth;
-            let yearDifferenceInPx: number = birthYearMinDeathYearDifference * this.pixelPerYear;
-            let relativeYPositionOfLifelineBox: number = yearDifferenceInPx  - node.personView.getLifelineBoxHeightInPx();
-
-            this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
-            let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
-            this.checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node);
-        } else {
-            if (yearOfBirth == null) {
-                yearOfBirth = maxBirthYearOfLevel;
-            }
-            if (yearOfDeath == null) {
-                yearOfDeath = maxBirthYearOfLevel + node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
-            }
-
-            this.positionLifeline(yearOfBirth, yearOfDeath, node);
-
-            let birthYearMaxBirthYearDifference: number = maxBirthYearOfLevel - yearOfBirth;
-            let yearDifferenceInPx: number = birthYearMaxBirthYearDifference * this.pixelPerYear;
-            let relativeYPositionOfLifelineBox: number = yearDifferenceInPx;
-
-            this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
-            let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
-            this.checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node);
+        if (yearOfBirth == null) {
+            yearOfBirth = middleYear - (node.personView.getLifelineBoxHeightInPx() / 2) / this.pixelPerYear;
         }
+        if (yearOfDeath == null) {
+            yearOfDeath = middleYear + (node.personView.getLifelineBoxHeightInPx() / 2) / this.pixelPerYear;
+        }
+
+        this.positionLifeline(yearOfBirth, yearOfDeath, node);
+        
+        let yearsFromBirthToMiddle: number = middleYear - yearOfBirth;
+        let yearsFromBirthToMiddleInPx: number = yearsFromBirthToMiddle * this.pixelPerYear;
+        yearsFromBirthToMiddleInPx -= node.personView.getLifelineBoxHeightInPx() / 2;
+
+        this.positionLifelineBoxAndPersonBox(yearsFromBirthToMiddleInPx, node);
+
+        let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
+        this.checkLifelineBoxHeight(lifelineHeight, yearsFromBirthToMiddleInPx, node);
     }
+
+    // // not part of the original algorithm
+    // private positionNodeVertically(node: WalkerNode, level: number): void {
+    //     let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
+    //     let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+
+    //     // refactor, only collect the min death year and max birth year for level!
+    //     let minDeathYearOfLevel: number = Math.a(...this.deathYearsOfLevel[level]);
+    //     let maxBirthYearOfLevel: number = Math.max(...this.birthYearsOfLevel[level]);
+
+    //     if (this.drawAncestors) {
+    //         if (yearOfBirth == null) {
+    //             yearOfBirth = minDeathYearOfLevel - node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
+    //         }
+    //         if (yearOfDeath == null) {
+    //             yearOfDeath = minDeathYearOfLevel;
+    //         }
+
+    //         this.positionLifeline(yearOfBirth, yearOfDeath, node);
+
+    //         let birthYearMinDeathYearDifference: number = minDeathYearOfLevel - yearOfBirth;
+    //         let yearDifferenceInPx: number = birthYearMinDeathYearDifference * this.pixelPerYear;
+    //         let relativeYPositionOfLifelineBox: number = yearDifferenceInPx  - node.personView.getLifelineBoxHeightInPx();
+
+    //         this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
+    //         let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
+    //         this.checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node);
+    //     } else {
+    //         if (yearOfBirth == null) {
+    //             yearOfBirth = maxBirthYearOfLevel;
+    //         }
+    //         if (yearOfDeath == null) {
+    //             yearOfDeath = maxBirthYearOfLevel + node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
+    //         }
+
+    //         this.positionLifeline(yearOfBirth, yearOfDeath, node);
+
+    //         let birthYearMaxBirthYearDifference: number = maxBirthYearOfLevel - yearOfBirth;
+    //         let yearDifferenceInPx: number = birthYearMaxBirthYearDifference * this.pixelPerYear;
+    //         let relativeYPositionOfLifelineBox: number = yearDifferenceInPx;
+
+    //         this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
+    //         let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
+    //         this.checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node);
+    //     }
+    // }
 
     private positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox: number, node: WalkerNode): void {
         node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
