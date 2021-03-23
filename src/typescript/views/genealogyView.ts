@@ -135,10 +135,10 @@ export class GenealogyView {
         this.jsPlumbInst = jsPlumb.getInstance();
         this.jsPlumbInst.setContainer(this.containerElement);
 
-        this.addTimeline();
+        this.addTimelineElements();
     }
 
-    private addTimeline() {
+    private addTimelineElements() {
         this.timelineContainerWrapper = document.createElement("div");
         this.timelineContainerWrapper.id = "timeline-container-wrapper";
         this.containerElementWrapper.appendChild(this.timelineContainerWrapper);
@@ -146,8 +146,12 @@ export class GenealogyView {
         this.timelineContainer = document.createElement("div");
         this.timelineContainer.id = "timeline-container";
         this.timelineContainerWrapper.appendChild(this.timelineContainer);
+    }
 
-        for (let year = -5000; year < new Date().getFullYear(); year+= 5) {
+    public adjustTimelineSpan(minYear: number, maxYear: number): void {
+        this.timelineContainer.innerHTML = "";
+
+        for (let year = minYear; year < maxYear; year+= 5) {
             const lineContainer: HTMLElement = document.createElement("div");
             this.timelineContainer.appendChild(lineContainer);
             lineContainer.style.top = `${year * this.pixelPerYear}px`
@@ -168,6 +172,7 @@ export class GenealogyView {
     }
 
     public displayAncestors(rootPerson: Person, personViews: Map<string, PersonView>) {
+        this.adjustTimelineSpan(rootPerson.getDatesOfBirth()[0].getFullYear() - 1000, rootPerson.getDatesOfBirth()[0].getFullYear() + 1000);
         this.jsPlumbInst.reset();
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);

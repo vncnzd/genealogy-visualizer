@@ -30,7 +30,7 @@ export class TestTreeGenerator {
 
         let grandMother: Person = new Person("grandmother0");
         grandMother.setName(grandMother.getId());
-        // grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
+        grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
         // grandMother.getDatesOfDeath().push(new Date("0080-01-01"));
         grandMother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
 
