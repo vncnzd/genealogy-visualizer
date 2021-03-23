@@ -5,6 +5,7 @@ $lifeline-color: #e3ecf6;
 $darker-lifeline-color: #c0c9d2;
 $alert-color: #dc3545;
 $search-background: #212529;
+$options-background: #6c757d;
 
 // z-indices
 
@@ -28,10 +29,20 @@ p {
     margin: 0;
 }
 
+#top-bar {
+    height: 4rem;
+}
+
+#options-bar {
+    height: 4rem;
+}
+
+#jsplumb-container-wrapper {
+    height: calc(100vh - 8rem);
+}
+
 #jsplumb-container-wrapper {
     position: relative;
-    border: black 5px solid;
-    border-radius: 5px;
     overflow: hidden;
     cursor: move;
     background-color: white;
@@ -84,16 +95,16 @@ p {
     user-select: none;
 }
 
-#current-root-person-wrapper {
+#options-bar {
     display: flex;
     justify-content: center;
+    background-color: $options-background;
 }
 
 #current-root-person-container {
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: white;
     text-align: center;
-    background-color: $search-background;
     padding-left: 2rem;
     padding-right: 2rem;
     padding-bottom: 1rem;

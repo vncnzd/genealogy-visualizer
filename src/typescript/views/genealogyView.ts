@@ -80,13 +80,13 @@ export class GenealogyView {
     }
 
     private initializeHTMLElements(parentElement: HTMLElement, languageData: Object): void {
-        let currentRootPersonContainerWrapper = document.createElement("div");
-        currentRootPersonContainerWrapper.id = "current-root-person-wrapper";
-        parentElement.appendChild(currentRootPersonContainerWrapper);
+        let optionsBar = document.createElement("div");
+        optionsBar.id = "options-bar";
+        parentElement.appendChild(optionsBar);
 
         let currentRootPersonContainer = document.createElement("div");
         currentRootPersonContainer.id = "current-root-person-container";
-        currentRootPersonContainerWrapper.appendChild(currentRootPersonContainer);
+        optionsBar.appendChild(currentRootPersonContainer);
 
         let currentRootPersonLabel: HTMLElement = document.createElement("div");
         currentRootPersonLabel.textContent = "Current Root Person:";
@@ -96,8 +96,8 @@ export class GenealogyView {
         this.currentRootPersonElement.textContent = "Henry VIII";
         currentRootPersonContainer.appendChild(this.currentRootPersonElement);
 
-        const optionsContainer: HTMLElement = document.createElement("div");
-        parentElement.appendChild(optionsContainer);
+        let optionsContainer: HTMLElement = document.createElement("div");
+        optionsBar.appendChild(optionsContainer);
 
         this.timeSettingsInput = document.createElement("select");
         let options: string[] = ["ascendancy", "descendancy"];
@@ -123,23 +123,29 @@ export class GenealogyView {
         this.depthInput.value = "4";
         optionsContainer.appendChild(this.depthInput);
 
+        let zoomButtonsContainer: HTMLElement = document.createElement("div");
+        optionsBar.appendChild(zoomButtonsContainer);
+
         this.zoomInButton = document.createElement("button");
         this.zoomInButton.id = "zoom-in-button";
         this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
-        parentElement.appendChild(this.zoomInButton);
+        zoomButtonsContainer.appendChild(this.zoomInButton);
 
         this.zoomOutButton = document.createElement("button");
         this.zoomOutButton.id = "zoom-out-button";
         this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
-        parentElement.appendChild(this.zoomOutButton);
+        zoomButtonsContainer.appendChild(this.zoomOutButton);
+
+        let drawTreeButtonContainer: HTMLElement = document.createElement("div");
+        optionsBar.appendChild(drawTreeButtonContainer);
 
         this.drawTreeButton = document.createElement("button");
         this.drawTreeButton.innerText = "Draw new tree";
-        parentElement.appendChild(this.drawTreeButton);
+        drawTreeButtonContainer.appendChild(this.drawTreeButton);
 
         this.redrawTreeButton = document.createElement("button");
         this.redrawTreeButton.innerText = "Redraw tree";
-        parentElement.appendChild(this.redrawTreeButton);
+        drawTreeButtonContainer.appendChild(this.redrawTreeButton);
 
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
