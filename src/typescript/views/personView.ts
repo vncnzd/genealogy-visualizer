@@ -87,16 +87,17 @@ export class PersonView {
         dateContainer.appendChild(this.deathInputElement);
 
         let buttonContainer: HTMLElement = document.createElement("div");
-        buttonContainer.classList.add("display-flex");
+        buttonContainer.classList.add("person-button-container");
         this.boxElement.appendChild(buttonContainer);
+        
+        this.duplicatesButton = this.createDuplicatesButtonElement();
+        buttonContainer.appendChild(this.duplicatesButton);
 
         this.deleteButtonElement = document.createElement("button");
         this.deleteButtonElement.innerText = "Delete";
         this.deleteButtonElement.classList.add("delete-button");
-        this.boxElement.appendChild(this.deleteButtonElement);
+        buttonContainer.appendChild(this.deleteButtonElement);
 
-        this.duplicatesButton = this.createDuplicatesButtonElement();
-        buttonContainer.append(this.duplicatesButton);
 
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
