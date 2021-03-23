@@ -150,6 +150,9 @@ export class GenealogyView {
 
     public adjustTimelineSpan(minYear: number, maxYear: number): void {
         this.timelineContainer.innerHTML = "";
+        minYear = Math.ceil(minYear / 100) * 100;
+        maxYear = Math.ceil(maxYear / 100) * 100
+
 
         for (let year = minYear; year < maxYear; year+= 5) {
             const lineContainer: HTMLElement = document.createElement("div");
@@ -180,6 +183,7 @@ export class GenealogyView {
     }
 
     public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
+        this.adjustTimelineSpan(rootPerson.getDatesOfBirth()[0].getFullYear() - 1000, rootPerson.getDatesOfBirth()[0].getFullYear() + 1000);
         this.jsPlumbInst.reset();
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
