@@ -168,15 +168,29 @@ export class GenealogyView {
     public displayAncestors(rootPerson: Person, personViews: Map<string, PersonView>) {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
-        this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear * this.scale;
-        this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
+        this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
     }
 
     public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
-        this.transformY -= rootPerson.getDatesOfBirth()[0].getFullYear() * this.pixelPerYear * this.scale;
-        this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);    
+        this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
+    }
+
+    public translateToPositionOfPersonView(personView: PersonView): void {
+        let wrapperWidth: number = this.containerElementWrapper.offsetWidth;
+        let wrapperHeight: number = this.containerElementWrapper.offsetHeight;
+
+        // Translate the container so that the personview is in the top left corner.
+        this.transformY = -personView.getOffsetTopInPx() * this.scale;
+        this.transformX = -personView.getOffsetLeftInPx() * this.scale;
+
+        // Center the personview in the containerWrapper.
+        this.transformX += wrapperWidth / 2 - personView.getWidthInPx() * this.scale / 2;
+        this.transformY += wrapperHeight / 2 - personView.getHeightInPx() * this.scale / 2;
+
+        // Translate and scale accordingly to the new values.
+        this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
     }
 
     public clearContainer(): void {

@@ -94,21 +94,6 @@ p {
     }
 }
 
-.expand-button {
-    display: block;
-    width: 2rem;
-    height: 2rem;
-    margin-top: 0.5rem;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 1rem;
-    border: none;
-    color: white;
-    transition: transform 0.5s ease;
-    position: relative;
-    outline: none;
-}
-
 .turn-180 {
     transform: rotate(180deg);
 }
@@ -193,6 +178,13 @@ button.delete-button {
     right: 0;
     margin-left: auto;
     margin-right: auto;
+
+    &:hover {
+        @extend .z-index-6;
+        .additional-info-container {
+            opacity: 100;
+        }
+    } 
 }
 
 .hidden {
