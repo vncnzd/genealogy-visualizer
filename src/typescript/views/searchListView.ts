@@ -7,18 +7,19 @@ export class SearchListView {
     private currentSelectedRowElement: HTMLElement;
 
     constructor(parentElement: HTMLElement, languageData: Object) {
+        let containerElement: HTMLElement = document.createElement("div");
+        containerElement.id = "search-container";
+        parentElement.appendChild(containerElement);
+
         this.searchInputElement = document.createElement("input");
         this.searchInputElement.setAttribute("placeholder", "Name of the person");
-        parentElement.appendChild(this.searchInputElement);
+        containerElement.appendChild(this.searchInputElement);
         this.searchInputElement.setAttribute("type", "search");
 
-        // this.searchButtonElement = document.createElement("button");
-        // parentElement.appendChild(this.searchButtonElement);
-        // this.searchButtonElement.innerHTML = languageData["searchButtonText"];
 
         this.searchResultTableElement = document.createElement("table");
         this.searchResultTableElement.id = "search-results-table";
-        parentElement.appendChild(this.searchResultTableElement);
+        containerElement.appendChild(this.searchResultTableElement);
     }
 
     public updateList(searchPeople: Array<Person>) {

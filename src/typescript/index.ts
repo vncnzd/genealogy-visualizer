@@ -25,7 +25,7 @@ const queryHelper: QueryHelper = new QueryHelper(languageManager.getCurrentLangu
 const personDatabase: PersonDatabase = new WikidataPersonDatabase(queryHelper, sparqlQueryDispatcher);
 
 // html elements
-const searchListContainer: HTMLElement = document.querySelector("#search-container");
+const searchListContainer: HTMLElement = document.querySelector("#top-bar");
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
 // models, views, controllers
