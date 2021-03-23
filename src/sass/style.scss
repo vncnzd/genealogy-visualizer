@@ -34,8 +34,6 @@ p {
     border-radius: 5px;
     overflow: hidden;
     cursor: move;
-    margin-left: 1rem;
-    margin-right: 1rem;
     background-color: white;
 }
 
@@ -69,6 +67,10 @@ p {
     input:focus + table {
         display: table;
     }
+
+    table:hover {
+        display: table;
+    }
 }
 
 #search-results-table {
@@ -80,6 +82,23 @@ p {
     width: 100%;
     display: none;
     user-select: none;
+}
+
+#current-root-person-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+#current-root-person-container {
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+    background-color: $search-background;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-bottom: 1rem;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
 }
 
 .display-flex {

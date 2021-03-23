@@ -13,9 +13,8 @@ export class SearchListView {
 
         this.searchInputElement = document.createElement("input");
         this.searchInputElement.setAttribute("placeholder", "Name of the person");
-        containerElement.appendChild(this.searchInputElement);
         this.searchInputElement.setAttribute("type", "search");
-
+        containerElement.appendChild(this.searchInputElement);
 
         this.searchResultTableElement = document.createElement("table");
         this.searchResultTableElement.id = "search-results-table";
@@ -41,15 +40,6 @@ export class SearchListView {
             descriptionDataElement.appendChild(descriptionDataTextNode);
             rowElement.appendChild(descriptionDataElement);
         }
-    }
-
-    public markElementAsSelected(element: HTMLElement): void {
-        if (this.currentSelectedRowElement != null) {
-            this.currentSelectedRowElement.classList.remove("selected-row");
-        }
-
-        this.currentSelectedRowElement = element;
-        this.currentSelectedRowElement.classList.add("selected-row");
     }
 
     public setValueOfInputField(value: string): void {

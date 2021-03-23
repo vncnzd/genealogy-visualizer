@@ -19,10 +19,6 @@ export class SearchListController {
     }
 
     private addSearchEventListener(): void {
-        // this.searchListView.getSearchButtonElement().addEventListener("click", () => {
-        //     this.startSearchForPerson(this.searchListView.getSearchInputElement().value);
-        // });
-
         this.searchListView.getSearchInputElement().addEventListener("input", (event: Event) => {
             let input: HTMLInputElement = <HTMLInputElement> event.target;
             this.startSearchForPerson(input.value);
@@ -50,6 +46,7 @@ export class SearchListController {
 
     private addSelectionEventListener(element: HTMLElement): void {
         element.addEventListener("click", (event: Event) => {
+            console.log("click");
             let rowElement: HTMLElement = <HTMLElement> event.currentTarget;
             let id: string = rowElement.dataset.id;
             let selectedPerson: Person = this.searchList.findPersonInSearchResultPeople(id);

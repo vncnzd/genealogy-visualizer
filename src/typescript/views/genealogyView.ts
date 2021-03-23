@@ -15,6 +15,7 @@ export class GenealogyView {
     private zoomOutButton: HTMLElement;
     private drawTreeButton: HTMLElement;
     private redrawTreeButton: HTMLElement;
+    private currentRootPersonElement: HTMLElement;
 
     private timelineContainerWrapper: HTMLElement;
     private timelineContainer: HTMLElement;
@@ -79,6 +80,22 @@ export class GenealogyView {
     }
 
     private initializeHTMLElements(parentElement: HTMLElement, languageData: Object): void {
+        let currentRootPersonContainerWrapper = document.createElement("div");
+        currentRootPersonContainerWrapper.id = "current-root-person-wrapper";
+        parentElement.appendChild(currentRootPersonContainerWrapper);
+
+        let currentRootPersonContainer = document.createElement("div");
+        currentRootPersonContainer.id = "current-root-person-container";
+        currentRootPersonContainerWrapper.appendChild(currentRootPersonContainer);
+
+        let currentRootPersonLabel: HTMLElement = document.createElement("div");
+        currentRootPersonLabel.textContent = "Current Root Person:";
+        currentRootPersonContainer.appendChild(currentRootPersonLabel);
+
+        this.currentRootPersonElement = document.createElement("div");
+        this.currentRootPersonElement.textContent = "Henry VIII";
+        currentRootPersonContainer.appendChild(this.currentRootPersonElement);
+
         const optionsContainer: HTMLElement = document.createElement("div");
         parentElement.appendChild(optionsContainer);
 
@@ -309,6 +326,10 @@ export class GenealogyView {
                 this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
             }
         });
+    }
+
+    public setCurrentRootPerson(person: Person): void {
+        this.currentRootPersonElement.textContent = person.getName();
     }
 
     // getters and setters

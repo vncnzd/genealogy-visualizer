@@ -25,7 +25,7 @@ const queryHelper: QueryHelper = new QueryHelper(languageManager.getCurrentLangu
 const personDatabase: PersonDatabase = new WikidataPersonDatabase(queryHelper, sparqlQueryDispatcher);
 
 // html elements
-const searchListContainer: HTMLElement = document.querySelector("#top-bar");
+const searchListWrapper: HTMLElement = document.querySelector("#top-bar");
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
 // models, views, controllers
@@ -34,5 +34,5 @@ const genealogyView: GenealogyView = new GenealogyView(genealogyContainer, langu
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
-const searchListView: SearchListView = new SearchListView(searchListContainer, languageManager.getCurrentLanguageData());
+const searchListView: SearchListView = new SearchListView(searchListWrapper, languageManager.getCurrentLanguageData());
 const searchListController = new SearchListController(searchList, searchListView, genealogyController, personDatabase);

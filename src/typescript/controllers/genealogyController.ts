@@ -115,5 +115,6 @@ export class GenealogyController {
 
     public setRootPerson(person: Person): void {
         this.genealogy.setRootPerson(person);
+        this.genealogyView.setCurrentRootPerson(person);
     }
 }
