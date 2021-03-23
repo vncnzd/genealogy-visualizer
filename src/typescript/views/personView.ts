@@ -12,7 +12,6 @@ export class PersonView {
     private boxElement: HTMLElement;
     private duplicatesButton: HTMLElement;
     private deleteButtonElement: HTMLElement;
-    private expandButtonElement: HTMLElement;
     private additionalInfoContainerElement: HTMLElement;
     private birthInputElement: HTMLInputElement;
     private deathInputElement: HTMLInputElement;
@@ -102,9 +101,6 @@ export class PersonView {
         this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
-        this.expandButtonElement = this.createExpandButton();
-        buttonContainer.appendChild(this.expandButtonElement);
-
         this.additionalInfoContainerElement = this.createAdditionalInfoContainer();
         this.boxElement.appendChild(this.additionalInfoContainerElement);
 
@@ -127,13 +123,6 @@ export class PersonView {
         let additionalInfoContainer: HTMLElement = document.createElement("div");
         additionalInfoContainer.classList.add("additional-info-container");
         return additionalInfoContainer;
-    }
-
-    private createExpandButton(): HTMLElement {
-        let expandButton: HTMLElement = document.createElement("button");
-        expandButton.classList.add("expand-button");
-        expandButton.innerText = "➔";
-        return expandButton;
     }
 
     private createDuplicatesButtonElement(): HTMLElement {
@@ -317,10 +306,6 @@ export class PersonView {
 
     public getLifelineBoundHeightInPx(): number {
         return this.lifeLineBoundHeightInPx;
-    }
-
-    public getExpandButtonElement(): HTMLElement {
-        return this.expandButtonElement;
     }
 
     public getAdditionalInfoContainerElement(): HTMLElement {

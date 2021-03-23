@@ -10,7 +10,6 @@ export class PersonController {
         this.personView = personView;
 
         this.addDuplicatesButtonEventListener();
-        this.addExpandButtonEeventListener();
         this.addDeleteButtonEventListener();
         this.addBirthInputEventListener();
         this.addDeathInputEventListener();
@@ -27,18 +26,6 @@ export class PersonController {
                 const stroke: HTMLElement = <HTMLElement> strokesFromPersonElement[i];
                 stroke.classList.toggle("hidden");
             }
-        });
-    }
-
-    private addExpandButtonEeventListener(): void {
-        let expandButton: HTMLElement = this.personView.getExpandButtonElement();
-        let additionalInfoContainer: HTMLElement = this.personView.getAdditionalInfoContainerElement();
-        let personBox: HTMLElement = this.personView.getPersonBox();
-
-        expandButton.addEventListener("click", (event: MouseEvent) => {
-            expandButton.classList.toggle("turn-180");
-            additionalInfoContainer.classList.toggle("opacity-100");
-            personBox.classList.toggle("z-index-6");
         });
     }
 
