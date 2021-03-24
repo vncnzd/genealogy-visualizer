@@ -26,9 +26,9 @@ export class GenealogyController {
         
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
 
-        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
-        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
+        // let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        // this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        // this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
         
         // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -51,14 +51,14 @@ export class GenealogyController {
                     this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
                         this.drawAncestors();
                         this.genealogyView.setVisibilityOfLoader(false);
-                        this.genealogyView.setRedrawButtonToActive();
+                        this.genealogyView.setActivityOfRedrawButton(true);
                     });
                     break;
                 case "descendancy":
                     this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
                         this.drawDescendants();
                         this.genealogyView.setVisibilityOfLoader(false);
-                        this.genealogyView.setRedrawButtonToActive();
+                        this.genealogyView.setActivityOfRedrawButton(true);
                     });
                     break;
             }
@@ -125,5 +125,6 @@ export class GenealogyController {
     public setRootPerson(person: Person): void {
         this.genealogy.setRootPerson(person);
         this.genealogyView.setCurrentRootPerson(person);
+        this.genealogyView.setActivityOfRedrawButton(false);
     }
 }

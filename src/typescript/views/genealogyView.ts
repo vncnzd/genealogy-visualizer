@@ -235,8 +235,12 @@ export class GenealogyView {
         this.addDragAndDropEventListenerToPersonViews(personViews);
     }
 
-    public setRedrawButtonToActive(): void {
-        this.redrawTreeButton.classList.add("active");
+    public setActivityOfRedrawButton(isActive: boolean): void {
+        if (isActive) {
+            this.redrawTreeButton.classList.add("active");
+        } else {
+            this.redrawTreeButton.classList.remove("active");
+        }
     }
 
     public translateToPositionOfPersonView(personView: PersonView): void {
