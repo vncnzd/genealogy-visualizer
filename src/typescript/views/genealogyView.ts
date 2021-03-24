@@ -16,6 +16,7 @@ export class GenealogyView {
     private drawTreeButton: HTMLElement;
     private redrawTreeButton: HTMLElement;
     private currentRootPersonElement: HTMLElement;
+    private loaderElement: HTMLElement;
 
     private timelineContainerWrapper: HTMLElement;
     private timelineContainer: HTMLElement;
@@ -155,6 +156,11 @@ export class GenealogyView {
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
         parentElement.appendChild(this.containerElementWrapper);
+
+        this.loaderElement = document.createElement("div");
+        this.loaderElement.classList.add("loader");
+        this.loaderElement.classList.add("hidden");
+        this.containerElementWrapper.appendChild(this.loaderElement);
         
         this.containerElement = document.createElement("div");
         this.containerElement.id = "jsplumb-container";
@@ -199,6 +205,14 @@ export class GenealogyView {
             number.appendChild(numberText);
 
             lineContainer.appendChild(number);
+        }
+    }
+
+    public setVisibilityOfLoader(isVisible: boolean): void {
+        if (isVisible) {
+            this.loaderElement.classList.remove("hidden");
+        } else {
+            this.loaderElement.classList.add("hidden");
         }
     }
 

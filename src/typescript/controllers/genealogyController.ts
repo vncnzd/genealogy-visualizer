@@ -26,9 +26,9 @@ export class GenealogyController {
         
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
 
-        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
-        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
+        // let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        // this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        // this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
         
         // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -42,6 +42,7 @@ export class GenealogyController {
         });
 
         this.genealogyView.getDrawTreeButton().addEventListener("click", (event: MouseEvent) => {
+            this.genealogyView.setVisibilityOfLoader(true);
             let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
             var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
 
@@ -49,28 +50,33 @@ export class GenealogyController {
                 case "ascendancy":
                     this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
                         this.drawAncestors();
+                        this.genealogyView.setVisibilityOfLoader(false);
+                        this.genealogyView.setRedrawButtonToActive();
                     });
                     break;
                 case "descendancy":
                     this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
                         this.drawDescendants();
+                        this.genealogyView.setVisibilityOfLoader(false);
+                        this.genealogyView.setRedrawButtonToActive();
                     });
                     break;
             }
-
-            this.genealogyView.setRedrawButtonToActive();
         });
 
         this.genealogyView.getRedrawTreeButton().addEventListener("click", (event: MouseEvent) => {
+            this.genealogyView.setVisibilityOfLoader(true);
             let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
             var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
 
             switch (timeOption) {
                 case "ascendancy":
                     this.drawAncestors();
+                    this.genealogyView.setVisibilityOfLoader(false);
                     break;
                 case "descendancy":
                     this.drawDescendants();
+                    this.genealogyView.setVisibilityOfLoader(false);
                     break;
             }
         });
