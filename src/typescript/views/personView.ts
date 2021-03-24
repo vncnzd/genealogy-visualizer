@@ -15,6 +15,7 @@ export class PersonView {
     private additionalInfoContainerElement: HTMLElement;
     private birthInputElement: HTMLInputElement;
     private deathInputElement: HTMLInputElement;
+    private dragAndDropButtonElement: HTMLElement;
 
     private lifeLineBoundTop: HTMLElement;
     private lifeline: HTMLElement;
@@ -89,6 +90,11 @@ export class PersonView {
         let buttonContainer: HTMLElement = document.createElement("div");
         buttonContainer.classList.add("person-button-container");
         this.boxElement.appendChild(buttonContainer);
+
+        this.dragAndDropButtonElement = document.createElement("div");
+        this.dragAndDropButtonElement.classList.add("drag-and-drop-button");
+        this.dragAndDropButtonElement.textContent = "⬌"
+        buttonContainer.appendChild(this.dragAndDropButtonElement);
         
         this.duplicatesButton = this.createDuplicatesButtonElement();
         buttonContainer.appendChild(this.duplicatesButton);
@@ -323,5 +329,9 @@ export class PersonView {
 
     public getBirthInputElement(): HTMLInputElement {
         return this.birthInputElement;
+    }
+
+    public getDragAndDropButtonElement(): HTMLElement {
+        return this.dragAndDropButtonElement;
     }
 }

@@ -26,6 +26,7 @@ export class GenealogyView {
 
     private scale = 1;
     private isPaning: boolean = false;
+    private isDragginPersonView: boolean = false;
     private transformX: number = 0;
     private transformY: number = 0
     private zoomFactor: number;
@@ -222,6 +223,7 @@ export class GenealogyView {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
         this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
+        this.test(personViews);
     }
 
     public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
@@ -330,6 +332,31 @@ export class GenealogyView {
         });
     }
 
+    private test(personViews: Map<string, PersonView>) {
+        personViews.forEach((personView: PersonView, id: string) => {
+            const dragAndDropButton: HTMLElement = personView.getDragAndDropButtonElement();
+            let isDraggingThisPersonView: boolean = false;
+
+            dragAndDropButton.addEventListener("mousedown", (mouseEvent: MouseEvent) => {
+                this.isDragginPersonView = true;
+                isDraggingThisPersonView = true;
+            });
+
+            this.containerElementWrapper.addEventListener("mousemove", (mouseEvent: MouseEvent) => {
+                if (isDraggingThisPersonView) {
+                    personView.setOffsetLeftInPx(personView.getOffsetLeftInPx() + mouseEvent.movementX / this.scale);
+                    this.jsPlumbInst.revalidate(id);
+                }
+            });
+
+            this.containerElementWrapper.addEventListener("mouseup", (mouseEvent: MouseEvent) => {
+                // gets executed for all person views...not good.
+                isDraggingThisPersonView = false;
+                this.isDragginPersonView = false;
+            });
+        });
+    }
+
     private translateAndScaleContainerAndTimeline(x: number, y: number, scale: number): void {
         this.containerElement.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${x}, ${y})`;
         this.timelineContainerWrapper.style.transform = `matrix(${scale}, 0, 0, ${scale}, 0, ${y})`;
@@ -345,7 +372,7 @@ export class GenealogyView {
         });
     
         this.containerElementWrapper.addEventListener("mousemove", (event: MouseEvent) => {
-            if (this.isPaning) {
+            if (this.isPaning && !this.isDragginPersonView) {
                 let xDifference = event.movementX;
                 let yDifference = event.movementY;
     

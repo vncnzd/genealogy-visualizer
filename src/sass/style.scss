@@ -229,6 +229,7 @@ button.delete-button {
     border-style: solid;
     border-radius: 10px;
     border-width: 5px;
+    visibility: hidden;
     opacity: 0;
     transition: opacity 0.5s ease;
 }
@@ -288,6 +289,7 @@ button.delete-button {
         @extend .z-index-6;
         .additional-info-container {
             opacity: 100;
+            visibility: visible;
         }
     } 
 }
@@ -385,10 +387,38 @@ button.delete-button {
     animation: spin 2s linear infinite;
 }
   
-  @keyframes spin {
+@keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
+}
+
+.drag-and-drop-button {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.6rem;
+    border-radius: 2rem;
+    text-align: center;
+}
+
+.male .drag-and-drop-button {
+    background-color: darken($male-color, 10%);
+    color: darken($male-color, 20%);
+
+    &:hover {
+        background-color: darken($male-color, 20%);
+        color: darken($male-color, 30%);
+    }
+}
+
+.female .drag-and-drop-button {
+    background-color: darken($female-color, 10%);
+    color: darken($female-color, 20%);
+
+    &:hover {
+        background-color: darken($female-color, 20%);
+        color: darken($female-color, 30%);
+    }
+}
 
 .search-row {
     border: 1px solid #d4d4d4;
