@@ -7,7 +7,7 @@ export class Genealogy {
     private people: Map<string, Person>;
     private duplicates: Map<string, Person[]>
     private personDatabase: PersonDatabase;
-    private depth: number;
+    private numberOfGenerations: number;
     private genealogyType: GenealogyType;
 
     constructor(personDatabase: PersonDatabase) {
@@ -19,32 +19,20 @@ export class Genealogy {
 
     public getRelatedPeopleOfRootPerson(): Promise<Map<String, Person>> {
         this.people.clear(); // See if it is necessary to clear the map everytime or if one could reuse already fetched people.
+        this.duplicates.clear();
 
         switch (this.genealogyType) {
             case GenealogyType.Ancestors:
-                return this.getParentsOfPersonRecursively(this.rootPerson, this.people, this.depth);
-            case GenealogyType.Ancestors:
-            
-                break;
+                return this.getAncestorsOfPersonRecursively(this.rootPerson, this.people, this.numberOfGenerations);
+            case GenealogyType.Descendants:
+                return this.getDescendantsOfPersonRecursively(this.rootPerson, this.people, this.numberOfGenerations);
             default:
                 console.warn("No Genealogy Type selected.") // Maybe throw an error in this case.
                 break;
         }
     }
 
-    public getAncestorsOfRootPerson(depth: number): Promise<Map<String, Person>> {
-        this.people = new Map<string, Person>();
-        this.people.set(this.rootPerson.getId(), this.rootPerson);
-        return this.getParentsOfPersonRecursively(this.rootPerson, this.people, depth);
-    }
-
-    public getDescendantsOfRootPerson(depth: number): Promise<Map<string, Person>> {
-        // Think about reusing the map, but this makes trouble if the depth is higher than before
-        this.people = new Map<string, Person>();
-        return this.getChildrenOfPersonRecursively(this.rootPerson, this.people, depth);
-    }
-
-    public async getParentsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+    private async getAncestorsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
         relatedPeople.set(currentPerson.getId(), currentPerson);
         
         if (depth > 0) {
@@ -65,12 +53,12 @@ export class Genealogy {
                     currentPerson.setParent(parent);
                     parent.getChildren().push(currentPerson);
 
-                    promises.push(this.getParentsOfPersonRecursively(parent, relatedPeople, depth - 1)); // Maybe? Better to clone?
+                    promises.push(this.getAncestorsOfPersonRecursively(parent, relatedPeople, depth - 1)); // Maybe? Better to clone?
                 } else {
                     currentPerson.setParent(parent);
                     parent.getChildren().push(currentPerson);
 
-                    promises.push(this.getParentsOfPersonRecursively(parent, relatedPeople, depth - 1));
+                    promises.push(this.getAncestorsOfPersonRecursively(parent, relatedPeople, depth - 1));
                 }
             }
 
@@ -78,7 +66,9 @@ export class Genealogy {
         }
     }
 
-    private async getChildrenOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+    private async getDescendantsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+        relatedPeople.set(currentPerson.getId(), currentPerson);
+        
         if (depth > 0) {
             let children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getBaseId());
             let promises: Promise<Map<string, Person>>[] = [];
@@ -95,12 +85,10 @@ export class Genealogy {
                     duplicatesForId.push(child);
 
                     currentPerson.getChildren().push(child);
-                    relatedPeople.set(child.getId(), child);
-                    promises.push(this.getChildrenOfPersonRecursively(child, relatedPeople, depth - 1));
+                    promises.push(this.getDescendantsOfPersonRecursively(child, relatedPeople, depth - 1));
                 } else {
                     currentPerson.getChildren().push(child);
-                    relatedPeople.set(child.getId(), child);
-                    promises.push(this.getChildrenOfPersonRecursively(child, relatedPeople, depth - 1));
+                    promises.push(this.getDescendantsOfPersonRecursively(child, relatedPeople, depth - 1));
                 }
             }
 
@@ -124,12 +112,12 @@ export class Genealogy {
         return this.duplicates;
     }
 
-    public getDepth(): number {
-        return this.depth;
+    public getNumberOfGenerations(): number {
+        return this.numberOfGenerations;
     }
 
-    public setDepth(depth: number): void {
-        this.depth = depth;
+    public setNumberOfGenerations(depth: number): void {
+        this.numberOfGenerations = depth;
     }
 
     public setGenealogyType(genealogyType: GenealogyType): void {

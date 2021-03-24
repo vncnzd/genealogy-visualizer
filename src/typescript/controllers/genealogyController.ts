@@ -15,7 +15,7 @@ export class GenealogyController {
         this.genealogyView = genealogyView;
 
         this.addEventListenersToInteractiveElements();
-        this.genealogy.setDepth(parseInt(genealogyView.getDepthInput().value));
+        this.genealogy.setNumberOfGenerations(parseInt(genealogyView.getDepthInput().value));
 
         
         
@@ -37,45 +37,52 @@ export class GenealogyController {
         // this.genealogyView.displayDescendants(rootPerson, personViews);
     }
 
+    public setRootPerson(person: Person): void {
+        this.genealogy.setRootPerson(person);
+        this.genealogyView.setCurrentRootPerson(person);
+        this.genealogyView.setActivityOfRedrawButton(false);
+    }
+
     private addEventListenersToInteractiveElements(): void {
         this.genealogyView.getDepthInput().addEventListener("change", this.setNumberOfGenerations.bind(this));
-        this.genealogyView.getDrawTreeButton().addEventListener("click", this.drawNewTree.bind(this));
+        this.genealogyView.getDrawTreeButton().addEventListener("click", this.getDataAndDrawTree.bind(this));
         this.genealogyView.getRedrawTreeButton().addEventListener("click", this.redrawTree.bind(this));
         this.genealogyView.getGenealogyTypeSelectElement().addEventListener("change", this.setGenealogyType.bind(this));
     }
 
-    private drawNewTree(event: MouseEvent): void {
-        this.genealogyView.setVisibilityOfLoader(true);
-        this.genealogy.getRelatedPeopleOfRootPerson().then((people: Map<string, Person>): void => {
-            switch (this.genealogy.getGenealogyType()) {
-                case GenealogyType.Ancestors:
-                    this.drawAncestors();
-                    break;
-                case GenealogyType.Descendants:
-                    this.drawDescendants();
-                    break;
-            }
+    private getDataAndDrawTree(event: MouseEvent): void {
+        this.genealogyView.setLoaderIsVisible(true);
 
-            this.genealogyView.setVisibilityOfLoader(false);
+        this.genealogy.getRelatedPeopleOfRootPerson().then((people: Map<string, Person>): void => {
+            this.drawTree(this.genealogy.getRootPerson(), this.genealogy.getGenealogyType());
             this.genealogyView.setActivityOfRedrawButton(true);
+        }).finally(() => {
+            this.genealogyView.setLoaderIsVisible(false);
         });
     }
 
-    private redrawTree(event: Event): void {
-        this.genealogyView.setVisibilityOfLoader(true);
-        let timeSelectElement: HTMLSelectElement = this.genealogyView.getGenealogyTypeSelectElement();
-        var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
+    private redrawTree(event: MouseEvent): void {
+        this.drawTree(this.genealogy.getRootPerson(), this.genealogy.getGenealogyType());
+    }
 
-        switch (timeOption) {
-            case "ascendancy":
-                this.drawAncestors();
-                this.genealogyView.setVisibilityOfLoader(false);
+    private drawTree(rootPerson: Person, genealogyType: GenealogyType): void {
+        this.genealogyView.clearContainer(); // Put this into the view
+
+        const personViews: Map<string, PersonView> = new Map<string, PersonView>();
+        
+        switch (genealogyType) {
+            case GenealogyType.Ancestors:
+                this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews); // Remove the old ones before?
+                this.genealogyView.displayAncestors(rootPerson, personViews);
                 break;
-            case "descendancy":
-                this.drawDescendants();
-                this.genealogyView.setVisibilityOfLoader(false);
+            case GenealogyType.Descendants:
+                this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
+                this.genealogyView.displayDescendants(rootPerson, personViews);
                 break;
         }
+
+        this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
+        this.addSettingRootPersonEventListenerToNameParagraphsOfPersonViews(personViews);
     }
 
     private setGenealogyType(event: Event): void {
@@ -90,32 +97,9 @@ export class GenealogyController {
         }
     }
 
-    private setNumberOfGenerations(event: Event): void {
-        let depth = parseInt((<HTMLInputElement> event.target).value);
-        this.genealogy.setDepth(depth);
-    }
-
-    private drawDescendants(): void {
-        this.genealogyView.clearContainer();
-        let personViews: Map<string, PersonView> = new Map<string, PersonView>();
-        this.addSetCurrentRootPersonEvenListenerToPersonView(personViews);
-        this.instantiateViewsAndControllersForDescendantsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
-        this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
-        this.genealogyView.displayDescendants(this.genealogy.getRootPerson(), personViews);
-    }
-
-    private drawAncestors(): void {
-        this.genealogyView.clearContainer();
-        let personViews: Map<string, PersonView> = new Map<string, PersonView>();
-        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
-        this.addSetCurrentRootPersonEvenListenerToPersonView(personViews);
-        this.genealogyView.displayAncestors(this.genealogy.getRootPerson(), personViews);
-        this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
-    }
-
     private instantiateViewsAndControllersForAncestorsAndAddItToMap(person: Person, personViews: Map<string, PersonView>) {
-        let personView: PersonView = new PersonView(person, this.genealogyView.getContainer(), this.genealogyView.getJSPlumbInstance());
-        let personController: PersonController = new PersonController(person, personView); // maybe add to list here.
+        const personView: PersonView = new PersonView(person, this.genealogyView.getContainer(), this.genealogyView.getJSPlumbInstance());
+        const personController: PersonController = new PersonController(person, personView);
 
         personViews.set(person.getId(), personView);
 
@@ -128,8 +112,9 @@ export class GenealogyController {
     }
 
     private instantiateViewsAndControllersForDescendantsAndAddItToMap(person: Person, personViews: Map<string, PersonView>) {
-        let personView: PersonView = new PersonView(person, this.genealogyView.getContainer(), this.genealogyView.getJSPlumbInstance());
-        let personController: PersonController = new PersonController(person, personView);
+        const personView: PersonView = new PersonView(person, this.genealogyView.getContainer(), this.genealogyView.getJSPlumbInstance());
+        const personController: PersonController = new PersonController(person, personView);
+        
         personViews.set(person.getId(), personView);
 
         for (const child of person.getChildren()) {
@@ -137,13 +122,7 @@ export class GenealogyController {
         }
     }
 
-    public setRootPerson(person: Person): void {
-        this.genealogy.setRootPerson(person);
-        this.genealogyView.setCurrentRootPerson(person);
-        this.genealogyView.setActivityOfRedrawButton(false);
-    }
-
-    private addSetCurrentRootPersonEvenListenerToPersonView(personViews: Map<string, PersonView>): void {
+    private addSettingRootPersonEventListenerToNameParagraphsOfPersonViews(personViews: Map<string, PersonView>): void {
         personViews.forEach((personView: PersonView, id: string) => {
             const nameElement: HTMLElement = personView.getNameParagraphElement();
             
@@ -152,5 +131,10 @@ export class GenealogyController {
                 this.setRootPerson(person);
             });
         });
+    }
+
+    private setNumberOfGenerations(event: Event): void {
+        const depth: number = parseInt((<HTMLInputElement> event.target).value);
+        this.genealogy.setNumberOfGenerations(depth);
     }
 }

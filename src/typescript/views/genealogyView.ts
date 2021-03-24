@@ -223,7 +223,7 @@ export class GenealogyView {
         }
     }
 
-    public setVisibilityOfLoader(isVisible: boolean): void {
+    public setLoaderIsVisible(isVisible: boolean): void {
         if (isVisible) {
             this.loaderElement.classList.remove("hidden");
         } else {
