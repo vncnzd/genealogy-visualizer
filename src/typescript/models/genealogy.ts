@@ -13,12 +13,12 @@ export class Genealogy {
     constructor(personDatabase: PersonDatabase) {
         this.people = new Map<string, Person>();
         this.duplicates = new Map<string, Person[]>();
+        this.genealogyType = GenealogyType.Ancestors; // Default.
         this.personDatabase = personDatabase;
-        this.genealogyType = GenealogyType.Ancestors;
     }
 
-    public getRelatedPeopleOfRootPerson(): Promise<Map<String, Person>> {
-        this.people.clear(); // See if it is necessary to clear the map everytime or if one could reuse already fetched people.
+    public getGenealogyOfCurrentPersonFromDatabase(): Promise<Map<String, Person>> {
+        this.people.clear();
         this.duplicates.clear();
 
         switch (this.genealogyType) {
@@ -27,72 +27,64 @@ export class Genealogy {
             case GenealogyType.Descendants:
                 return this.getDescendantsOfPersonRecursively(this.rootPerson, this.people, this.numberOfGenerations);
             default:
-                console.warn("No Genealogy Type selected.") // Maybe throw an error in this case.
-                break;
+                throw "No Genealogy Type selected. Abortion.";
         }
     }
 
-    private async getAncestorsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
-        relatedPeople.set(currentPerson.getId(), currentPerson);
+    private async getAncestorsOfPersonRecursively(currentPerson: Person, people: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+        people.set(currentPerson.getId(), currentPerson);
         
         if (depth > 0) {
-            let parents: Person[] = await this.personDatabase.getParentsOfPerson(currentPerson.getBaseId());
-            let promises: Promise<Map<string, Person>>[] = [];
+            const parents: Person[] = await this.personDatabase.getParentsOfPerson(currentPerson.getBaseId());
+            const promises: Promise<Map<string, Person>>[] = [];
 
             for (const parent of parents) {
-                if (relatedPeople.has(parent.getId())) {
+                if (people.has(parent.getId())) { // The current parent appears at least twice in the genealogy.
                     let duplicatesForId: Person[] = this.duplicates.get(parent.getId());
+
                     if (duplicatesForId == null) {
-                        duplicatesForId = [relatedPeople.get(parent.getId())];
+                        duplicatesForId = [people.get(parent.getId())];
                         this.duplicates.set(parent.getId(), duplicatesForId);
                     }
 
                     parent.setId(parent.getId(), duplicatesForId.length.toString());
                     duplicatesForId.push(parent);
-                    
-                    currentPerson.setParent(parent);
-                    parent.getChildren().push(currentPerson);
-
-                    promises.push(this.getAncestorsOfPersonRecursively(parent, relatedPeople, depth - 1)); // Maybe? Better to clone?
-                } else {
-                    currentPerson.setParent(parent);
-                    parent.getChildren().push(currentPerson);
-
-                    promises.push(this.getAncestorsOfPersonRecursively(parent, relatedPeople, depth - 1));
                 }
+
+                currentPerson.setParent(parent);
+                parent.getChildren().push(currentPerson);
+                promises.push(this.getAncestorsOfPersonRecursively(parent, people, depth - 1));
             }
 
-            return Promise.all(promises).then(() => { return relatedPeople });
+            return Promise.all(promises).then(() => { return people });
         }
     }
 
-    private async getDescendantsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
-        relatedPeople.set(currentPerson.getId(), currentPerson);
+    private async getDescendantsOfPersonRecursively(currentPerson: Person, people: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+        people.set(currentPerson.getId(), currentPerson);
         
         if (depth > 0) {
-            let children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getBaseId());
-            let promises: Promise<Map<string, Person>>[] = [];
+            const children: Person[] = await this.personDatabase.getChildrenOfPerson(currentPerson.getBaseId());
+            const promises: Promise<Map<string, Person>>[] = [];
 
             for (const child of children) {
-                if (relatedPeople.has(child.getId())) {
+                if (people.has(child.getId())) { // The current child appears at least twice in the genealogy.
                     let duplicatesForId: Person[] = this.duplicates.get(child.getId());
+
                     if (duplicatesForId == null) {
-                        duplicatesForId = [relatedPeople.get(child.getId())];
+                        duplicatesForId = [people.get(child.getId())];
                         this.duplicates.set(child.getId(), duplicatesForId);
                     }
 
                     child.setId(child.getId(), duplicatesForId.length.toString());
                     duplicatesForId.push(child);
-
-                    currentPerson.getChildren().push(child);
-                    promises.push(this.getDescendantsOfPersonRecursively(child, relatedPeople, depth - 1));
-                } else {
-                    currentPerson.getChildren().push(child);
-                    promises.push(this.getDescendantsOfPersonRecursively(child, relatedPeople, depth - 1));
                 }
+
+                currentPerson.getChildren().push(child);
+                promises.push(this.getDescendantsOfPersonRecursively(child, people, depth - 1));
             }
 
-            return Promise.all(promises).then(() => { return relatedPeople });
+            return Promise.all(promises).then(() => { return people });
         }
     }
 

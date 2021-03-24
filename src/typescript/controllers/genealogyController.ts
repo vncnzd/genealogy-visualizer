@@ -53,7 +53,7 @@ export class GenealogyController {
     private getDataAndDrawTree(event: MouseEvent): void {
         this.genealogyView.setLoaderIsVisible(true);
 
-        this.genealogy.getRelatedPeopleOfRootPerson().then((people: Map<string, Person>): void => {
+        this.genealogy.getGenealogyOfCurrentPersonFromDatabase().then((people: Map<string, Person>): void => {
             this.drawTree(this.genealogy.getRootPerson(), this.genealogy.getGenealogyType());
             this.genealogyView.setActivityOfRedrawButton(true);
         }).finally(() => {

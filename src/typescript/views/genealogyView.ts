@@ -106,12 +106,12 @@ export class GenealogyView {
         displayOptionsContainer.appendChild(directionContainer);
 
         let directionLabel = document.createElement("label");
-        directionLabel.innerHTML = "Direction";
+        directionLabel.innerHTML = "Type";
         // directionLabel.setAttribute("for", "depth-input");
         directionContainer.appendChild(directionLabel);
 
         this.directionInput = document.createElement("select");
-        let options: string[] = ["ascendancy", "descendancy"];
+        let options: string[] = ["Ancestors", "Descendants"];
         for (const option of options) {
             let optionElement: HTMLOptionElement = document.createElement("option");
             optionElement.value = option;
