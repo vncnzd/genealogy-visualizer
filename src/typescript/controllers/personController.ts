@@ -8,57 +8,50 @@ export class PersonController {
     constructor(person: Person, personView: PersonView) {
         this.person = person;
         this.personView = personView;
-
-        this.addDuplicatesButtonEventListener();
-        this.addDeleteButtonEventListener();
-        this.addBirthInputEventListener();
-        this.addDeathInputEventListener();
+        this.addEventListeners();
     };
 
-    private addDuplicatesButtonEventListener(): void {
-        let duplicatesButton: HTMLElement = this.personView.getDuplicatesButtonElement();
-        duplicatesButton.addEventListener("click", (event: MouseEvent) => {
-            let baseId: string = this.person.getId().split("-")[0]; 
-            let querySelector: string = `.duplicates-stroke-from-${this.person.getId()}, .duplicates-stroke-${baseId}`;
-            let strokesFromPersonElement: NodeList = document.querySelectorAll(querySelector);
-
-            for (let i = 0; i < strokesFromPersonElement.length; i++) {
-                const stroke: HTMLElement = <HTMLElement> strokesFromPersonElement[i];
-                stroke.classList.toggle("hidden");
-            }
-        });
+    private addEventListeners(): void {
+        this.personView.getDuplicatesButtonElement().addEventListener("click", this.toggleDuplicatesConection.bind(this));
+        this.personView.getDeleteButtonElement().addEventListener("click", this.removePersonAndView.bind(this));
+        this.personView.getBirthInputElement().addEventListener("click", this.setBirthYear.bind(this));
+        this.personView.getDeathInputElement().addEventListener("click", this.setDeathYear.bind(this));
     }
 
-    private addDeleteButtonEventListener(): void {
-        let deleteButton: HTMLElement = this.personView.getDeleteButtonElement();
+    private toggleDuplicatesConection(): void {
+        const baseId: string = this.person.getBaseId();
+        const querySelector: string = `.duplicates-stroke-from-${this.person.getId()}, .duplicates-stroke-${baseId}`;
 
-        deleteButton.addEventListener("click", (event: MouseEvent) => {
-            this.person.delete();
-            this.personView.delete();
-        });
+        const strokesFromPersonElement: NodeList = document.querySelectorAll(querySelector);
+
+        for (let i = 0; i < strokesFromPersonElement.length; i++) {
+            const stroke: HTMLElement = <HTMLElement> strokesFromPersonElement[i];
+            stroke.classList.toggle("hidden");
+        }
     }
 
-    private addBirthInputEventListener(): void {
-        let birthInput: HTMLInputElement = this.personView.getBirthInputElement();
-
-        birthInput.addEventListener("change", (event: Event): void => {
-            let year: number = birthInput.valueAsNumber;
-
-            if (this.person.getDatesOfBirth().length > 0) {
-                this.person.getDatesOfBirth()[0].setFullYear(year);
-            }
-        });
+    private removePersonAndView(): void {
+        this.person.delete();
+        this.personView.delete();
     }
 
-    private addDeathInputEventListener(): void {
-        let deathInput: HTMLInputElement = this.personView.getDeathInputElement();
+    private setBirthYear(): void {
+        let year: number = this.personView.getBirthInputElement().valueAsNumber;
 
-        deathInput.addEventListener("change", (event: Event): void => {
-            let year: number = deathInput.valueAsNumber;
+        if (this.person.getDatesOfBirth().length == 0) {
+            this.person.getDatesOfBirth().push(new Date());
+        }
 
-            if (this.person.getDatesOfDeath().length > 0) {
-                this.person.getDatesOfDeath()[0].setFullYear(year);
-            }
-        });
+        this.person.getDatesOfBirth()[0].setFullYear(year);
+    }
+
+    private setDeathYear(): void {
+        let year: number = this.personView.getDeathInputElement().valueAsNumber;
+
+        if (this.person.getDatesOfDeath().length == 0) {
+            this.person.getDatesOfDeath().push(new Date());
+        }
+
+        this.person.getDatesOfDeath()[0].setFullYear(year);
     }
 }

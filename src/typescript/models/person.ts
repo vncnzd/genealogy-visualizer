@@ -33,10 +33,12 @@ export class Person {
             let indexOfThisPerson: number = this.father.getChildren().indexOf(this);
             this.father.setChildren(this.father.getChildren().splice(indexOfThisPerson, 1));
         }
+        
         if (this.mother != null) {
             let indexOfThisPerson: number = this.mother.getChildren().indexOf(this);
             this.mother.setChildren(this.mother.getChildren().splice(indexOfThisPerson, 1));
         }
+
         for (const child of this.children) {
             if (child.father == this) {
                 child.father = null;
