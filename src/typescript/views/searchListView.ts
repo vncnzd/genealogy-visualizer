@@ -21,7 +21,7 @@ export class SearchListView {
         containerElement.appendChild(this.searchResultTableElement);
     }
 
-    public updateList(searchPeople: Array<Person>) {
+    public setSuggestionList(searchPeople: Array<Person>) {
         this.searchResultTableElement.innerHTML = ''; // empties the html list
 
         for (const person of searchPeople) {

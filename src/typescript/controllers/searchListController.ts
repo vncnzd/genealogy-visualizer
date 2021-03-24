@@ -15,53 +15,43 @@ export class SearchListController {
         this.searchListView = searchListView;
         this.genealogyController = genealogyController;
         this.personDatabase = personDatabase;
-        this.addSearchEventListener();
+        this.searchListView.getSearchInputElement().addEventListener("input", this.startSearchForPerson.bind(this));
     }
 
-    private addSearchEventListener(): void {
-        this.searchListView.getSearchInputElement().addEventListener("input", (event: Event) => {
-            let input: HTMLInputElement = <HTMLInputElement> event.target;
-            this.startSearchForPerson(input.value);
-        });
-    }
+    private startSearchForPerson(event: Event): void {
+        const input: HTMLInputElement = <HTMLInputElement> event.target;
+        const inputValue: string = input.value;
 
-    private startSearchForPerson(searchValue: string): void {
-        this.personDatabase.findPersonByLabel(searchValue, 20).then((people: Person[]) => {
+        this.personDatabase.findPersonByLabel(inputValue, 20).then((foundPeople: Person[]): void => {
             this.searchList.clearSearchResultPeople();
-            this.searchList.getSearchResultPeople().push.apply(this.searchList.getSearchResultPeople(), people);
+            this.searchList.getSearchResultPeople().push(...foundPeople);
 
-            this.searchListView.updateList(people);
+            this.searchListView.setSuggestionList(foundPeople);
             this.addEventListenersToResultTableRows();
         });
     }
 
     private addEventListenersToResultTableRows(): void {
-        let tableChildNodes: NodeList = this.searchListView.getResultTableElement().childNodes;
+        const tableChildNodes: NodeList = this.searchListView.getResultTableElement().childNodes;
 
         for (let index: number = 0; index < tableChildNodes.length; index++) {
             const rowElement: HTMLElement = <HTMLElement> tableChildNodes[index];
-            this.addSelectionEventListener(rowElement);
+            rowElement.addEventListener("click", this.setSeletedAsRootPerson.bind(this));
         }
     }
 
-    private addSelectionEventListener(element: HTMLElement): void {
-        element.addEventListener("click", (event: Event) => {
-            console.log("click");
-            let rowElement: HTMLElement = <HTMLElement> event.currentTarget;
-            let id: string = rowElement.dataset.id;
-            let selectedPerson: Person = this.searchList.findPersonInSearchResultPeople(id);
+    private setSeletedAsRootPerson(event: Event): void {
+        const rowElement: HTMLElement = <HTMLElement> event.currentTarget;
+        const id: string = rowElement.dataset.id;
+        const selectedPerson: Person = this.searchList.findPersonInSearchResultPeople(id);
 
-            if (selectedPerson != undefined) {
-                this.searchList.setSelectedPerson(selectedPerson);
-                this.searchListView.setValueOfInputField(selectedPerson.getName());
-                this.searchListView.emptySearchResultsTable();
-                console.log("Selected Person:")
-                console.log(selectedPerson);
-              
-                this.genealogyController.setRootPerson(selectedPerson);             
-            } else {
-                console.error("Selected Person was not found in memory");
-            }
-        });
+        if (selectedPerson != null) {
+            this.searchList.setSelectedPerson(selectedPerson);
+            this.searchListView.setValueOfInputField(selectedPerson.getName());
+            this.searchListView.emptySearchResultsTable();
+            this.genealogyController.setRootPerson(selectedPerson);             
+        } else {
+            console.error("Selected Person was not found in memory");
+        }
     }
 }
