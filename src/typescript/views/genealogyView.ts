@@ -137,14 +137,19 @@ export class GenealogyView {
         zoomButtonsContainer.appendChild(this.zoomOutButton);
 
         let drawTreeButtonContainer: HTMLElement = document.createElement("div");
+        drawTreeButtonContainer.id = "draw-tree-button-container";
         optionsBar.appendChild(drawTreeButtonContainer);
 
         this.drawTreeButton = document.createElement("button");
         this.drawTreeButton.innerText = "Draw new tree";
+        this.drawTreeButton.classList.add("draw-tree-button");
+        this.drawTreeButton.id = "draw-new-tree-button"
         drawTreeButtonContainer.appendChild(this.drawTreeButton);
 
         this.redrawTreeButton = document.createElement("button");
         this.redrawTreeButton.innerText = "Redraw tree";
+        this.redrawTreeButton.classList.add("draw-tree-button");
+        this.redrawTreeButton.id = "redraw-tree-button"
         drawTreeButtonContainer.appendChild(this.redrawTreeButton);
 
         this.containerElementWrapper = document.createElement("div");
@@ -211,6 +216,10 @@ export class GenealogyView {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
         this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
+    }
+
+    public setRedrawButtonToActive(): void {
+        this.redrawTreeButton.classList.add("active");
     }
 
     public translateToPositionOfPersonView(personView: PersonView): void {

@@ -44,6 +44,7 @@ export class GenealogyController {
         this.genealogyView.getDrawTreeButton().addEventListener("click", (event: MouseEvent) => {
             let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
             var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
+
             switch (timeOption) {
                 case "ascendancy":
                     this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
@@ -56,6 +57,8 @@ export class GenealogyController {
                     });
                     break;
             }
+
+            this.genealogyView.setRedrawButtonToActive();
         });
 
         this.genealogyView.getRedrawTreeButton().addEventListener("click", (event: MouseEvent) => {
