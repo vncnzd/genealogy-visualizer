@@ -223,7 +223,7 @@ export class GenealogyView {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
         this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
-        this.test(personViews);
+        this.addDragAndDropEventListenerToPersonViews(personViews);
     }
 
     public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
@@ -232,6 +232,7 @@ export class GenealogyView {
         let drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
         this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
+        this.addDragAndDropEventListenerToPersonViews(personViews);
     }
 
     public setRedrawButtonToActive(): void {
@@ -332,7 +333,7 @@ export class GenealogyView {
         });
     }
 
-    private test(personViews: Map<string, PersonView>) {
+    private addDragAndDropEventListenerToPersonViews(personViews: Map<string, PersonView>) {
         personViews.forEach((personView: PersonView, id: string) => {
             const dragAndDropButton: HTMLElement = personView.getDragAndDropButtonElement();
             let isDraggingThisPersonView: boolean = false;
