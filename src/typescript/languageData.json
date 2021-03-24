@@ -13,7 +13,7 @@
         "descendantsButtonText": "Descendants",
         "ancestorsButtonText": "Ancestors",
         "searchButtonText": "Search",
-        "depthInputLabelText": "Depth",
+        "depthInputLabelText": "Number of generations",
         "zoomInButtonText": "Zoom in",
         "zoomOutButtonText": "Zoom out" 
     }

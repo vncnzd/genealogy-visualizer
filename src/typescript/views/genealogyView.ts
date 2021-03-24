@@ -9,8 +9,8 @@ export class GenealogyView {
     private containerElement: HTMLElement;
     private containerElementWrapper: HTMLElement;
     private jsPlumbInst: jsPlumbInstance;
-    private depthInput: HTMLInputElement;
-    private timeSettingsInput: HTMLSelectElement;
+    private numberOfGenerationsInput: HTMLInputElement;
+    private directionInput: HTMLSelectElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
     private drawTreeButton: HTMLElement;
@@ -44,8 +44,6 @@ export class GenealogyView {
     }
 
     public connectDuplicates(duplicates: Map<string, Person[]>, personViews: Map<string, PersonView>): void {
-        console.log(duplicates);
-
         duplicates.forEach((duplicatesList: Person[], id: string) => {
             for (let i = 0; i < duplicatesList.length; i++) {
                 const duplicateOne: Person = duplicatesList[i];
@@ -91,52 +89,54 @@ export class GenealogyView {
         optionsBar.appendChild(currentRootPersonContainer);
 
         let currentRootPersonLabel: HTMLElement = document.createElement("div");
-        currentRootPersonLabel.textContent = "Current Root Person:";
+        currentRootPersonLabel.id = "current-person-label";
+        currentRootPersonLabel.textContent = "Current Root Person";
         currentRootPersonContainer.appendChild(currentRootPersonLabel);
 
         this.currentRootPersonElement = document.createElement("div");
-        this.currentRootPersonElement.textContent = "Henry VIII";
+        this.currentRootPersonElement.id = "current-root-person-name"
         currentRootPersonContainer.appendChild(this.currentRootPersonElement);
 
-        let optionsContainer: HTMLElement = document.createElement("div");
-        optionsBar.appendChild(optionsContainer);
+        let displayOptionsContainer: HTMLElement = document.createElement("div");
+        displayOptionsContainer.id = "display-options-container";
+        optionsBar.appendChild(displayOptionsContainer);
 
-        this.timeSettingsInput = document.createElement("select");
+        let directionContainer: HTMLElement = document.createElement("div");
+        directionContainer.id = "direction-container";
+        displayOptionsContainer.appendChild(directionContainer);
+
+        let directionLabel = document.createElement("label");
+        directionLabel.innerHTML = "Direction";
+        // directionLabel.setAttribute("for", "depth-input");
+        directionContainer.appendChild(directionLabel);
+
+        this.directionInput = document.createElement("select");
         let options: string[] = ["ascendancy", "descendancy"];
-        optionsContainer.appendChild(this.timeSettingsInput);
         for (const option of options) {
             let optionElement: HTMLOptionElement = document.createElement("option");
             optionElement.value = option;
             optionElement.text = option;
-            this.timeSettingsInput.appendChild(optionElement);
+            this.directionInput.appendChild(optionElement);
         }
+        directionContainer.appendChild(this.directionInput);
 
-        const depthInputLabel = document.createElement("label");
-        depthInputLabel.innerHTML = languageData["depthInputLabelText"];
-        depthInputLabel.setAttribute("for", "depth-input");
-        optionsContainer.appendChild(depthInputLabel);
+        let numberOfGenerationsContainer: HTMLElement = document.createElement("div");
+        numberOfGenerationsContainer.id = "number-of-generations-container";
+        displayOptionsContainer.appendChild(numberOfGenerationsContainer);
 
-        this.depthInput = document.createElement("input");
-        this.depthInput.type = "number";
-        this.depthInput.name = "depth-input";
-        this.depthInput.id = "depth-input";
-        this.depthInput.max = "50";
-        this.depthInput.min = "1";
-        this.depthInput.value = "4";
-        optionsContainer.appendChild(this.depthInput);
+        const numberOfGenerationsInputLabel = document.createElement("label");
+        numberOfGenerationsInputLabel.innerHTML = languageData["depthInputLabelText"];
+        numberOfGenerationsInputLabel.setAttribute("for", "depth-input");
+        numberOfGenerationsContainer.appendChild(numberOfGenerationsInputLabel);
 
-        let zoomButtonsContainer: HTMLElement = document.createElement("div");
-        optionsBar.appendChild(zoomButtonsContainer);
-
-        this.zoomInButton = document.createElement("button");
-        this.zoomInButton.id = "zoom-in-button";
-        this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
-        zoomButtonsContainer.appendChild(this.zoomInButton);
-
-        this.zoomOutButton = document.createElement("button");
-        this.zoomOutButton.id = "zoom-out-button";
-        this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
-        zoomButtonsContainer.appendChild(this.zoomOutButton);
+        this.numberOfGenerationsInput = document.createElement("input");
+        this.numberOfGenerationsInput.type = "number";
+        this.numberOfGenerationsInput.name = "depth-input";
+        this.numberOfGenerationsInput.id = "depth-input";
+        this.numberOfGenerationsInput.max = "50";
+        this.numberOfGenerationsInput.min = "1";
+        this.numberOfGenerationsInput.value = "4";
+        numberOfGenerationsContainer.appendChild(this.numberOfGenerationsInput);
 
         let drawTreeButtonContainer: HTMLElement = document.createElement("div");
         drawTreeButtonContainer.id = "draw-tree-button-container";
@@ -153,6 +153,20 @@ export class GenealogyView {
         this.redrawTreeButton.classList.add("draw-tree-button");
         this.redrawTreeButton.id = "redraw-tree-button"
         drawTreeButtonContainer.appendChild(this.redrawTreeButton);
+
+        let zoomButtonsContainer: HTMLElement = document.createElement("div");
+        zoomButtonsContainer.id = "zoom-button-container";
+        optionsBar.appendChild(zoomButtonsContainer);
+
+        this.zoomInButton = document.createElement("button");
+        this.zoomInButton.id = "zoom-in-button";
+        this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
+        zoomButtonsContainer.appendChild(this.zoomInButton);
+
+        this.zoomOutButton = document.createElement("button");
+        this.zoomOutButton.id = "zoom-out-button";
+        this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
+        zoomButtonsContainer.appendChild(this.zoomOutButton);
 
         this.containerElementWrapper = document.createElement("div");
         this.containerElementWrapper.id = "jsplumb-container-wrapper";
@@ -396,11 +410,11 @@ export class GenealogyView {
     // getters and setters
 
     public getDepthInput(): HTMLInputElement {
-        return this.depthInput;
+        return this.numberOfGenerationsInput;
     }
 
     public getTimeSelectElement(): HTMLSelectElement {
-        return this.timeSettingsInput;
+        return this.directionInput;
     }
 
     public getContainer(): HTMLElement {

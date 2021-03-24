@@ -10,6 +10,7 @@ export class PersonView {
     private rootElement: HTMLElement;
     private containerElement: HTMLElement;
     private boxElement: HTMLElement;
+    private nameParagraphElement: HTMLElement;
     private duplicatesButton: HTMLElement;
     private deleteButtonElement: HTMLElement;
     private additionalInfoContainerElement: HTMLElement;
@@ -67,8 +68,8 @@ export class PersonView {
         this.addSexOrGenderCSSClassesToElement(this.boxElement, person.getSexOrGender());
         this.containerElement.appendChild(this.boxElement);
 
-        let nameParagraphElement: HTMLElement = this.createTextParagraphElement(person.getName(), ["person-name"]);
-        this.boxElement.appendChild(nameParagraphElement);
+        this.nameParagraphElement = this.createTextParagraphElement(person.getName(), ["person-name"]);
+        this.boxElement.appendChild(this.nameParagraphElement);
 
         let dateContainer: HTMLElement = document.createElement("div");
         dateContainer.classList.add("date-container");
@@ -333,5 +334,9 @@ export class PersonView {
 
     public getDragAndDropButtonElement(): HTMLElement {
         return this.dragAndDropButtonElement;
+    }
+
+    public getNameParagraphElement(): HTMLElement {
+        return this.nameParagraphElement;
     }
 }

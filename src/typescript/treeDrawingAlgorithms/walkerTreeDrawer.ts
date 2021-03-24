@@ -146,7 +146,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private secondWalk(node: WalkerNode, offset: number, level: number) {
-        console.log(node.person.getName() + ": " + (node.preliminaryXPosition + offset));
         // The offset takes care of placing the root node at x position 0 and placing all other nodes accordingly.
         node.personView.setOffsetLeftInPx(node.preliminaryXPosition + offset);
         node.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);

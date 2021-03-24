@@ -26,9 +26,9 @@ export class GenealogyController {
         
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
 
-        // let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
-        // this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        // this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
+        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
         
         // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -85,6 +85,7 @@ export class GenealogyController {
     private drawDescendants(): void {
         this.genealogyView.clearContainer();
         let personViews: Map<string, PersonView> = new Map<string, PersonView>();
+        this.addSetCurrentRootPersonEvenListenerToPersonView(personViews);
         this.instantiateViewsAndControllersForDescendantsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
         this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
         this.genealogyView.displayDescendants(this.genealogy.getRootPerson(), personViews);
@@ -94,6 +95,7 @@ export class GenealogyController {
         this.genealogyView.clearContainer();
         let personViews: Map<string, PersonView> = new Map<string, PersonView>();
         this.instantiateViewsAndControllersForAncestorsAndAddItToMap(this.genealogy.getRootPerson(), personViews);
+        this.addSetCurrentRootPersonEvenListenerToPersonView(personViews);
         this.genealogyView.displayAncestors(this.genealogy.getRootPerson(), personViews);
         this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
     }
@@ -126,5 +128,16 @@ export class GenealogyController {
         this.genealogy.setRootPerson(person);
         this.genealogyView.setCurrentRootPerson(person);
         this.genealogyView.setActivityOfRedrawButton(false);
+    }
+
+    private addSetCurrentRootPersonEvenListenerToPersonView(personViews: Map<string, PersonView>): void {
+        personViews.forEach((personView: PersonView, id: string) => {
+            const nameElement: HTMLElement = personView.getNameParagraphElement();
+            
+            nameElement.addEventListener("click", (mouseEvent: MouseEvent): void => {
+                let person: Person = this.genealogy.getPeople().get(id);
+                this.setRootPerson(person);
+            });
+        });
     }
 }
