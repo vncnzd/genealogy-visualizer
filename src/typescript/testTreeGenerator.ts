@@ -4,7 +4,7 @@ import { SexOrGenderId } from "./sexOrGenderId";
 
 export class TestTreeGenerator {
     public static getAncestorsExampleTree(): Person {
-        let root: Person = new Person("root");
+        let root: Person = new Person("root, the longest name you have ever seen");
         root.setName(root.getId());
         root.getDatesOfBirth().push(new Date("0100-01-01"));
         root.getDatesOfDeath().push(new Date("0150-01-01"));
