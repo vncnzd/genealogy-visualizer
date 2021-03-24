@@ -1,3 +1,4 @@
+import { GenealogyType } from "../genealogyType";
 import { Genealogy } from "../models/genealogy";
 import { Person } from "../models/person";
 import { TestTreeGenerator } from "../testTreeGenerator";
@@ -8,15 +9,16 @@ import { PersonController } from "./personController";
 export class GenealogyController {
     private genealogy: Genealogy;
     private genealogyView: GenealogyView;
-    private personControllers: PersonController[];
 
     constructor(genealogy: Genealogy, genealogyView: GenealogyView) {
         this.genealogy = genealogy;
         this.genealogyView = genealogyView;
-        this.personControllers = [];
-        this.addEventListenersToButtonsAndInput();
+
+        this.addEventListenersToInteractiveElements();
         this.genealogy.setDepth(parseInt(genealogyView.getDepthInput().value));
 
+        
+        
         // test code
         let personViews: Map<string, PersonView> = new Map<string, PersonView>();
 
@@ -35,51 +37,62 @@ export class GenealogyController {
         // this.genealogyView.displayDescendants(rootPerson, personViews);
     }
 
-    private addEventListenersToButtonsAndInput(): void {
-        this.genealogyView.getDepthInput().addEventListener("change", (event: Event): void => {
-            let depth = parseInt((<HTMLInputElement> event.target).value);
-            this.genealogy.setDepth(depth);
-        });
+    private addEventListenersToInteractiveElements(): void {
+        this.genealogyView.getDepthInput().addEventListener("change", this.setNumberOfGenerations.bind(this));
+        this.genealogyView.getDrawTreeButton().addEventListener("click", this.drawNewTree.bind(this));
+        this.genealogyView.getRedrawTreeButton().addEventListener("click", this.redrawTree.bind(this));
+        this.genealogyView.getGenealogyTypeSelectElement().addEventListener("change", this.setGenealogyType.bind(this));
+    }
 
-        this.genealogyView.getDrawTreeButton().addEventListener("click", (event: MouseEvent) => {
-            this.genealogyView.setVisibilityOfLoader(true);
-            let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
-            var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
-
-            switch (timeOption) {
-                case "ascendancy":
-                    this.genealogy.getAncestorsOfRootPerson(this.genealogy.getDepth()).then((ancestors: Map<string, Person>) => {
-                        this.drawAncestors();
-                        this.genealogyView.setVisibilityOfLoader(false);
-                        this.genealogyView.setActivityOfRedrawButton(true);
-                    });
-                    break;
-                case "descendancy":
-                    this.genealogy.getDescendantsOfRootPerson(this.genealogy.getDepth()).then((descendants: Map<string, Person>) => {
-                        this.drawDescendants();
-                        this.genealogyView.setVisibilityOfLoader(false);
-                        this.genealogyView.setActivityOfRedrawButton(true);
-                    });
-                    break;
-            }
-        });
-
-        this.genealogyView.getRedrawTreeButton().addEventListener("click", (event: MouseEvent) => {
-            this.genealogyView.setVisibilityOfLoader(true);
-            let timeSelectElement: HTMLSelectElement = this.genealogyView.getTimeSelectElement();
-            var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
-
-            switch (timeOption) {
-                case "ascendancy":
+    private drawNewTree(event: MouseEvent): void {
+        this.genealogyView.setVisibilityOfLoader(true);
+        this.genealogy.getRelatedPeopleOfRootPerson().then((people: Map<string, Person>): void => {
+            switch (this.genealogy.getGenealogyType()) {
+                case GenealogyType.Ancestors:
                     this.drawAncestors();
-                    this.genealogyView.setVisibilityOfLoader(false);
                     break;
-                case "descendancy":
+                case GenealogyType.Descendants:
                     this.drawDescendants();
-                    this.genealogyView.setVisibilityOfLoader(false);
                     break;
             }
+
+            this.genealogyView.setVisibilityOfLoader(false);
+            this.genealogyView.setActivityOfRedrawButton(true);
         });
+    }
+
+    private redrawTree(event: Event): void {
+        this.genealogyView.setVisibilityOfLoader(true);
+        let timeSelectElement: HTMLSelectElement = this.genealogyView.getGenealogyTypeSelectElement();
+        var timeOption: string = timeSelectElement.options[timeSelectElement.selectedIndex].text;
+
+        switch (timeOption) {
+            case "ascendancy":
+                this.drawAncestors();
+                this.genealogyView.setVisibilityOfLoader(false);
+                break;
+            case "descendancy":
+                this.drawDescendants();
+                this.genealogyView.setVisibilityOfLoader(false);
+                break;
+        }
+    }
+
+    private setGenealogyType(event: Event): void {
+        const selectElement: HTMLSelectElement = <HTMLSelectElement> event.target;
+        switch (selectElement.selectedIndex) {
+            case 0:
+                this.genealogy.setGenealogyType(GenealogyType.Ancestors);
+                break;
+            case 1:
+                this.genealogy.setGenealogyType(GenealogyType.Descendants);
+                break;
+        }
+    }
+
+    private setNumberOfGenerations(event: Event): void {
+        let depth = parseInt((<HTMLInputElement> event.target).value);
+        this.genealogy.setDepth(depth);
     }
 
     private drawDescendants(): void {

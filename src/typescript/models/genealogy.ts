@@ -1,3 +1,4 @@
+import { GenealogyType } from "../genealogyType";
 import { PersonDatabase } from "../personDatabase";
 import { Person } from "./person";
 
@@ -7,11 +8,28 @@ export class Genealogy {
     private duplicates: Map<string, Person[]>
     private personDatabase: PersonDatabase;
     private depth: number;
+    private genealogyType: GenealogyType;
 
     constructor(personDatabase: PersonDatabase) {
         this.people = new Map<string, Person>();
         this.duplicates = new Map<string, Person[]>();
         this.personDatabase = personDatabase;
+        this.genealogyType = GenealogyType.Ancestors;
+    }
+
+    public getRelatedPeopleOfRootPerson(): Promise<Map<String, Person>> {
+        this.people.clear(); // See if it is necessary to clear the map everytime or if one could reuse already fetched people.
+
+        switch (this.genealogyType) {
+            case GenealogyType.Ancestors:
+                return this.getParentsOfPersonRecursively(this.rootPerson, this.people, this.depth);
+            case GenealogyType.Ancestors:
+            
+                break;
+            default:
+                console.warn("No Genealogy Type selected.") // Maybe throw an error in this case.
+                break;
+        }
     }
 
     public getAncestorsOfRootPerson(depth: number): Promise<Map<String, Person>> {
@@ -27,6 +45,8 @@ export class Genealogy {
     }
 
     public async getParentsOfPersonRecursively(currentPerson: Person, relatedPeople: Map<string, Person>, depth: number = 1): Promise<Map<string, Person>> {
+        relatedPeople.set(currentPerson.getId(), currentPerson);
+        
         if (depth > 0) {
             let parents: Person[] = await this.personDatabase.getParentsOfPerson(currentPerson.getBaseId());
             let promises: Promise<Map<string, Person>>[] = [];
@@ -44,12 +64,12 @@ export class Genealogy {
                     
                     currentPerson.setParent(parent);
                     parent.getChildren().push(currentPerson);
-                    relatedPeople.set(parent.getId(), parent);
+
                     promises.push(this.getParentsOfPersonRecursively(parent, relatedPeople, depth - 1)); // Maybe? Better to clone?
                 } else {
                     currentPerson.setParent(parent);
                     parent.getChildren().push(currentPerson);
-                    relatedPeople.set(parent.getId(), parent);
+
                     promises.push(this.getParentsOfPersonRecursively(parent, relatedPeople, depth - 1));
                 }
             }
@@ -110,5 +130,13 @@ export class Genealogy {
 
     public setDepth(depth: number): void {
         this.depth = depth;
+    }
+
+    public setGenealogyType(genealogyType: GenealogyType): void {
+        this.genealogyType = genealogyType;
+    }
+
+    public getGenealogyType(): GenealogyType {
+        return this.genealogyType;
     }
 }

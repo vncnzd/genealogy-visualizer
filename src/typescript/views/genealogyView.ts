@@ -135,7 +135,7 @@ export class GenealogyView {
         this.numberOfGenerationsInput.id = "depth-input";
         this.numberOfGenerationsInput.max = "50";
         this.numberOfGenerationsInput.min = "1";
-        this.numberOfGenerationsInput.value = "4";
+        this.numberOfGenerationsInput.value = "3";
         numberOfGenerationsContainer.appendChild(this.numberOfGenerationsInput);
 
         let drawTreeButtonContainer: HTMLElement = document.createElement("div");
@@ -413,7 +413,7 @@ export class GenealogyView {
         return this.numberOfGenerationsInput;
     }
 
-    public getTimeSelectElement(): HTMLSelectElement {
+    public getGenealogyTypeSelectElement(): HTMLSelectElement {
         return this.directionInput;
     }
 
