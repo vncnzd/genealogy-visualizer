@@ -14,7 +14,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         this.sparqlQueryDispatcher = sparqlQueryDispatcher;
     }
 
-    public getFatherOfPerson(id: string): Promise<Person> {
+    public getFatherOfPersonWithId(id: string): Promise<Person> {
         const query = this.queryHelper.getFatherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
@@ -25,7 +25,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public getMotherOfPerson(id: string): Promise<Person> {
+    public getMotherOfPersonWithId(id: string): Promise<Person> {
         const query = this.queryHelper.getMotherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
@@ -36,8 +36,8 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public getParentsOfPerson(id: string): Promise<Array<Person>> {
-        let query: string = this.queryHelper.getParentsQuery(id);
+    public getParentsOfPersonWithId(id: string): Promise<Array<Person>> {
+        const query: string = this.queryHelper.getParentsQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -45,7 +45,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public getChildrenOfPerson(id: string): Promise<Person[]> {
+    public getChildrenOfPersonWithId(id: string): Promise<Person[]> {
         const query = this.queryHelper.getChildrenQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
@@ -54,8 +54,8 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public findPersonByLabel(label: string, limitForNumberOfPeople: number): Promise<Person[]> {
-        const query = this.queryHelper.getEntitySearchQuery(label, limitForNumberOfPeople);
+    public findPersonByLabel(label: string, resultLimit: number): Promise<Person[]> {
+        const query = this.queryHelper.getEntitySearchQuery(label, resultLimit);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -64,7 +64,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getFirstPersonFromArray(people: Person[]): Person {
-        if (people[0] !== undefined) {
+        if (people[0] != null) {
             return people[0]; 
         } else {
             return null;
@@ -72,11 +72,11 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getListOfPeopleFromResponse(responseObject: Object): Person[] {
-        let results: Object = responseObject["results"]["bindings"];
-        let people: Person[] = [];
-        let itemVariable = this.queryHelper.getItemVariable();
+        const results: Object = responseObject["results"]["bindings"];
+        const people: Person[] = [];
+        const itemVariable = this.queryHelper.getItemVariable();
 
-        for (const result of Object.values(results)) { // TODO: don't forget to add babel to webpack
+        for (const result of Object.values(results)) {
             if (result.hasOwnProperty(itemVariable)) {
                 const id: string = this.getIdFromResponse(result);
                 const name: string = this.getNameFromResponse(result);
@@ -85,9 +85,10 @@ export class WikidataPersonDatabase implements PersonDatabase {
                 const dateOfBirth: Date =  this.getDateOfBirthFromResponseEntry(result);
                 const dateOfDeath: Date = this.getDateOfDeathFromResponseEntry(result);
                 
-                if (!people.find(element => element.getId() === id)) {
+                const alreadyProcessedPerson: Person = people.find((element: Person): boolean => element.getId() == id);
+                if (alreadyProcessedPerson == null) { 
+                    // Create a new Person.
                     let person: Person = new Person(id);
-
                     person.setName(name);
                     person.setDescription(description);
                     if (dateOfBirth != null) person.getDatesOfBirth().push(dateOfBirth);
@@ -95,14 +96,13 @@ export class WikidataPersonDatabase implements PersonDatabase {
                     person.setSexOrGender(sexOrGender);
                     people.push(person);
                 } else {
-                    let person: Person = people.find(element => element.getId() === id);
-
-                    if (person.getDatesOfBirth().find(element => element.getTime() !== dateOfBirth.getTime())) {
-                        person.getDatesOfBirth().push(dateOfBirth);
+                    // Add the new dates to the alreadyProcessedPerson.
+                    if (dateOfBirth != null && !alreadyProcessedPerson.getDatesOfBirth().some((element: Date): boolean => element.getTime() == dateOfBirth.getTime())) {
+                        alreadyProcessedPerson.getDatesOfBirth().push(dateOfBirth);
                     }
 
-                    if (person.getDatesOfDeath().find(element => element.getTime() !== dateOfDeath.getTime())) {
-                        person.getDatesOfDeath().push(dateOfDeath);
+                    if (dateOfDeath != null && !alreadyProcessedPerson.getDatesOfDeath().some((element: Date): boolean => element.getTime() == dateOfDeath.getTime())) {
+                        alreadyProcessedPerson.getDatesOfDeath().push(dateOfDeath);
                     }
                 }
             }
@@ -112,14 +112,15 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getIdFromResponse(response: object): string {
-        let itemVariable: string = this.queryHelper.getItemVariable();
+        const itemVariable: string = this.queryHelper.getItemVariable();
         let id: string;
 
         if (response.hasOwnProperty(itemVariable)) {
             let itemAdress: string = response[itemVariable]["value"];
-            id= itemAdress.split("/").pop(); // because item returns a string of format {endpoint}/entity/{id}
+            id = itemAdress.split("/").pop(); // Because the item returns a string of format {endpoint}/entity/{id}
         } else {
-            throw "Item has no id";
+            console.log(response);
+            throw "Item has no id.";
         }
 
         return id;
@@ -147,16 +148,14 @@ export class WikidataPersonDatabase implements PersonDatabase {
 
     private getSexOrGenderFromResponse(responseEntry: object): SexOrGender {
         if (responseEntry.hasOwnProperty("sexOrGender")) {
-            let sexOrGenderWikidataId: string = responseEntry["sexOrGender"]["value"].split("/").pop();
-            let sexOrGenderLabel: string = responseEntry["sexOrGenderLabel"]["value"];
-
-            // Maybe put the getSexOrGenderIdForWikidataId method into this class since it is very specific.
-            let sexOrGenderId: SexOrGenderId = SexOrGender.getSexOrGenderIdForWikidataId(sexOrGenderWikidataId);
+            const sexOrGenderWikidataId: string = responseEntry["sexOrGender"]["value"].split("/").pop();
+            const sexOrGenderLabel: string = responseEntry["sexOrGenderLabel"]["value"];
+            const sexOrGenderId: SexOrGenderId = this.getSexOrGenderIdForWikidataId(sexOrGenderWikidataId);
             
             if (sexOrGenderId != null) {
                 return new SexOrGender(sexOrGenderId, sexOrGenderLabel);
             } else {
-                throw `No fitting sex or gender identifier found for wikidata id: ${sexOrGenderWikidataId} ${sexOrGenderLabel}`;
+                console.warn( `No fitting sex or gender identifier found for wikidata id: ${sexOrGenderWikidataId} ${sexOrGenderLabel}`);
             }
         } else {
             console.info("Response entry has no sex or gender.");
@@ -165,9 +164,26 @@ export class WikidataPersonDatabase implements PersonDatabase {
         }
     }
 
+    public getSexOrGenderIdForWikidataId(sexOrGenderWikidataId: string): SexOrGenderId {
+        switch (sexOrGenderWikidataId) {
+            case "Q6581097":
+                return SexOrGenderId.male;
+            case "Q6581072":
+                return SexOrGenderId.female;
+            case "Q1097630":
+                return  SexOrGenderId.intersex;
+            case "Q1052281":
+                return  SexOrGenderId.transgenderFemale;
+            case "Q2449503":
+                return SexOrGenderId.transgenderMale;
+            default:
+                return null;
+        }
+    }
+
     private getDateOfBirthFromResponseEntry(responseEntry: object): Date {
         if (responseEntry.hasOwnProperty("dateOfBirth")) {
-            let dateOfBirth: string = responseEntry["dateOfBirth"]["value"];
+            const dateOfBirth: string = responseEntry["dateOfBirth"]["value"];
             return this.getValidDateOrNull(dateOfBirth);
         } else {
             return null;
@@ -176,7 +192,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
 
     private getDateOfDeathFromResponseEntry(responseEntry: object): Date {
         if (responseEntry.hasOwnProperty("dateOfDeath")) {
-            let dateOfDeath: string = responseEntry["dateOfDeath"]["value"];
+            const dateOfDeath: string = responseEntry["dateOfDeath"]["value"];
             return this.getValidDateOrNull(dateOfDeath);
         } else {
             return null;
@@ -184,11 +200,12 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getValidDateOrNull(dateString: string): Date {
-        let date: Date = new Date(dateString);
-        if (!isNaN(date.getTime())) {
-            return date;
-        } else {
+        const date: Date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
             return null;
+        } else {
+            return date;
         }
     }
 }
