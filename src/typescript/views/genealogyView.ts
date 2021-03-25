@@ -4,6 +4,7 @@ import { PersonView } from "./personView";
 import { Position } from "../position"
 import { TreeDrawer } from "../treeDrawingAlgorithms/treeDrawer";
 import { WalkerTreeDrawer } from "../treeDrawingAlgorithms/walkerTreeDrawer";
+import { LanguageManager } from "../LanguageManager";
 
 export class GenealogyView {
     private containerElement: HTMLElement;
@@ -13,7 +14,7 @@ export class GenealogyView {
     private directionInput: HTMLSelectElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
-    private drawTreeButton: HTMLElement;
+    private drawNewTreeButton: HTMLElement;
     private redrawTreeButton: HTMLElement;
     private currentRootPersonElement: HTMLElement;
     private loaderElement: HTMLElement;
@@ -31,14 +32,14 @@ export class GenealogyView {
     private transformY: number = 0
     private zoomFactor: number;
 
-    constructor(parentElement: HTMLElement, languageData: Object) {
+    constructor(parentElement: HTMLElement) {
         this.timelineLineContainers = new Array<HTMLElement>(6000);
         this.timelineWidthInPx = 50;
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
         // this.personViews = new Map<string, PersonView>();
 
-        this.initializeHTMLElements(parentElement, languageData);
+        this.initializeHTMLElements(parentElement, LanguageManager.getInstance().getCurrentLanguageData());
         this.addZoomEventListeners();
         this.addPanningEventListeners();
     }
@@ -90,7 +91,7 @@ export class GenealogyView {
 
         let currentRootPersonLabel: HTMLElement = document.createElement("div");
         currentRootPersonLabel.id = "current-person-label";
-        currentRootPersonLabel.textContent = "Current Root Person";
+        currentRootPersonLabel.textContent = languageData["currentRootPerson"];
         currentRootPersonContainer.appendChild(currentRootPersonLabel);
 
         this.currentRootPersonElement = document.createElement("div");
@@ -106,12 +107,12 @@ export class GenealogyView {
         displayOptionsContainer.appendChild(directionContainer);
 
         let directionLabel = document.createElement("label");
-        directionLabel.innerHTML = "Type";
+        directionLabel.innerHTML = languageData["genealogyTypeLabel"];
         // directionLabel.setAttribute("for", "depth-input");
         directionContainer.appendChild(directionLabel);
 
         this.directionInput = document.createElement("select");
-        let options: string[] = ["Ancestors", "Descendants"];
+        let options: string[] = [languageData["ancestors"], languageData["descendants"]];
         for (const option of options) {
             let optionElement: HTMLOptionElement = document.createElement("option");
             optionElement.value = option;
@@ -125,7 +126,7 @@ export class GenealogyView {
         displayOptionsContainer.appendChild(numberOfGenerationsContainer);
 
         const numberOfGenerationsInputLabel = document.createElement("label");
-        numberOfGenerationsInputLabel.innerHTML = languageData["depthInputLabelText"];
+        numberOfGenerationsInputLabel.innerHTML = languageData["numberOfGenerationsInputLabel"];
         numberOfGenerationsInputLabel.setAttribute("for", "depth-input");
         numberOfGenerationsContainer.appendChild(numberOfGenerationsInputLabel);
 
@@ -142,14 +143,14 @@ export class GenealogyView {
         drawTreeButtonContainer.id = "draw-tree-button-container";
         optionsBar.appendChild(drawTreeButtonContainer);
 
-        this.drawTreeButton = document.createElement("button");
-        this.drawTreeButton.innerText = "Draw new tree";
-        this.drawTreeButton.classList.add("draw-tree-button");
-        this.drawTreeButton.id = "draw-new-tree-button"
-        drawTreeButtonContainer.appendChild(this.drawTreeButton);
+        this.drawNewTreeButton = document.createElement("button");
+        this.drawNewTreeButton.innerText = languageData["drawNewTree"];
+        this.drawNewTreeButton.classList.add("draw-tree-button");
+        this.drawNewTreeButton.id = "draw-new-tree-button"
+        drawTreeButtonContainer.appendChild(this.drawNewTreeButton);
 
         this.redrawTreeButton = document.createElement("button");
-        this.redrawTreeButton.innerText = "Redraw tree";
+        this.redrawTreeButton.innerText = languageData["redrawTree"];
         this.redrawTreeButton.classList.add("draw-tree-button");
         this.redrawTreeButton.id = "redraw-tree-button"
         drawTreeButtonContainer.appendChild(this.redrawTreeButton);
@@ -426,7 +427,7 @@ export class GenealogyView {
     }
 
     public getDrawTreeButton(): HTMLElement {
-        return this.drawTreeButton;
+        return this.drawNewTreeButton;
     }
 
     public getRedrawTreeButton(): HTMLElement {

@@ -1,20 +1,30 @@
 {
-    "de": {
-        "title": "Genealogie",
-        "descendantsButtonText": "Nachfahren",
-        "ancestorsButtonText": "Vorfahren",
-        "searchButtonText": "Suchen",
-        "depthInputLabelText": "Tiefe",
-        "zoomInButtonText": "Reinzoomen",
-        "zoomOutButtonText": "Rauszoomen" 
-    },
     "en": {
         "title": "Genealogy",
-        "descendantsButtonText": "Descendants",
-        "ancestorsButtonText": "Ancestors",
-        "searchButtonText": "Search",
-        "depthInputLabelText": "Number of generations",
+        "currentRootPerson": "Current Root Person",
+        "ancestors": "Ancestors",
+        "descendants": "Descendants",
+        "genealogyTypeLabel": "Type",
+        "numberOfGenerationsInputLabel": "Number Of Generations",
         "zoomInButtonText": "Zoom in",
-        "zoomOutButtonText": "Zoom out" 
+        "zoomOutButtonText": "Zoom out",
+        "delete": "Delete",
+        "drawNewTree": "Draw new tree",
+        "redrawTree": "Redraw",
+        "nameOfThePerson": "Name of the person"
+    },
+    "de": {
+        "title": "Genealogie",
+        "currentRootPerson": "Aktuelle Wurzel",
+        "ancestors": "Vorfahren",
+        "descendants": "Nachfahren",
+        "genealogyTypeLabel": "Typ",
+        "numberOfGenerationsInputLabel": "Generationen",
+        "zoomInButtonText": "Heranzoomen",
+        "zoomOutButtonText": "Herauszoomen",
+        "delete": "Löschen",
+        "drawNewTree": "Zeichne neu",
+        "redrawTree": "Aktualisiere",
+        "nameOfThePerson": "Name der Person"
     }
 }

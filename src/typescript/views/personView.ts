@@ -101,7 +101,7 @@ export class PersonView {
         buttonContainer.appendChild(this.duplicatesButton);
 
         this.deleteButtonElement = document.createElement("button");
-        this.deleteButtonElement.innerText = "Delete";
+        this.deleteButtonElement.innerText = LanguageManager.getInstance().getCurrentLanguageData()["delete"];
         this.deleteButtonElement.classList.add("delete-button");
         buttonContainer.appendChild(this.deleteButtonElement);
 

@@ -2,8 +2,19 @@ import * as languageData from './languageData.json';
 import { LanguageIdentifier } from './languageIdentifier';
 
 export class LanguageManager {
+    private static instance: LanguageManager;
     private currentLanguageId: LanguageIdentifier;
     private currentLanguageData: Object;
+
+    private constructor() {}
+
+    public static getInstance(): LanguageManager {
+        if (LanguageManager.instance == null) {
+            LanguageManager.instance = new LanguageManager();
+        }
+
+        return LanguageManager.instance;
+    }
 
     public setlanguage(languageParameter) {
         switch (languageParameter) {

@@ -13,8 +13,7 @@ import { LanguageManager } from './LanguageManager';
 
 const urlParameters: URLSearchParams = new URLSearchParams(window.location.search);
 const languageParameter: string = urlParameters.get("lang");
-
-const languageManager: LanguageManager = new LanguageManager();
+const languageManager: LanguageManager = LanguageManager.getInstance();
 languageManager.setlanguage(languageParameter);
 
 const endpointUrl: string = 'https://query.wikidata.org/sparql';
@@ -30,9 +29,9 @@ const genealogyContainer: HTMLElement = document.querySelector("#genealogy-conta
 
 // models, views, controllers
 const genealogy: Genealogy = new Genealogy(personDatabase);
-const genealogyView: GenealogyView = new GenealogyView(genealogyContainer, languageManager.getCurrentLanguageData());
+const genealogyView: GenealogyView = new GenealogyView(genealogyContainer);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
 const searchList: SearchList = new SearchList();
-const searchListView: SearchListView = new SearchListView(searchListWrapper, languageManager.getCurrentLanguageData());
+const searchListView: SearchListView = new SearchListView(searchListWrapper);
 const searchListController = new SearchListController(searchList, searchListView, genealogyController, personDatabase);

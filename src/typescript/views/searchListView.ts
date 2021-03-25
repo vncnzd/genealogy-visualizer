@@ -1,3 +1,4 @@
+import { LanguageManager } from "../LanguageManager";
 import { Person } from "../models/person";
 
 export class SearchListView {
@@ -6,13 +7,13 @@ export class SearchListView {
     private searchResultTableElement: HTMLElement;
     private currentSelectedRowElement: HTMLElement;
 
-    constructor(parentElement: HTMLElement, languageData: Object) {
+    constructor(parentElement: HTMLElement) {
         let containerElement: HTMLElement = document.createElement("div");
         containerElement.id = "search-container";
         parentElement.appendChild(containerElement);
 
         this.searchInputElement = document.createElement("input");
-        this.searchInputElement.setAttribute("placeholder", "Name of the person");
+        this.searchInputElement.setAttribute("placeholder", LanguageManager.getInstance().getCurrentLanguageData()["nameOfThePerson"]);
         this.searchInputElement.setAttribute("type", "search");
         containerElement.appendChild(this.searchInputElement);
 
