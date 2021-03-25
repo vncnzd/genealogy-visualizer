@@ -11,7 +11,9 @@
         "delete": "Delete",
         "drawNewTree": "Draw new tree",
         "redrawTree": "Redraw",
-        "nameOfThePerson": "Name of the person"
+        "nameOfThePerson": "Name of the person",
+        "germanButton": "German",
+        "englishButton": "English"
     },
     "de": {
         "title": "Genealogie",
@@ -25,6 +27,8 @@
         "delete": "Löschen",
         "drawNewTree": "Zeichne neu",
         "redrawTree": "Aktualisiere",
-        "nameOfThePerson": "Name der Person"
+        "nameOfThePerson": "Name der Person",
+        "germanButton": "Deutsch",
+        "englishButton": "Englisch"
     }
 }

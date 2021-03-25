@@ -198,6 +198,24 @@ button {
     flex-direction: column;
 }
 
+#language-button-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    margin-left: 10px;
+    
+    a {
+        color: white;
+        font-size: 0.9rem;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
 .draw-tree-button {
     width: 10rem;
     padding: 0.4rem;

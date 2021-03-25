@@ -5,6 +5,8 @@ export class SearchListView {
     private searchInputElement: HTMLInputElement;
     private searchButtonElement: HTMLElement;
     private searchResultTableElement: HTMLElement;
+    private germanLinkElement: HTMLElement;
+    private englishLinkElement: HTMLElement;
     private currentSelectedRowElement: HTMLElement;
 
     constructor(parentElement: HTMLElement) {
@@ -20,6 +22,20 @@ export class SearchListView {
         this.searchResultTableElement = document.createElement("table");
         this.searchResultTableElement.id = "search-results-table";
         containerElement.appendChild(this.searchResultTableElement);
+
+        const languageButtonContainer: HTMLElement = document.createElement("div");
+        languageButtonContainer.id = "language-button-container";
+        parentElement.appendChild(languageButtonContainer);
+
+        this.englishLinkElement = document.createElement("a");
+        this.englishLinkElement.setAttribute("href", window.location.origin + window.location.pathname);
+        this.englishLinkElement.innerText = LanguageManager.getInstance().getCurrentLanguageData()["englishButton"];
+        languageButtonContainer.appendChild(this.englishLinkElement);
+
+        this.germanLinkElement = document.createElement("a");
+        this.germanLinkElement.setAttribute("href", window.location.href + "?lang=de");
+        this.germanLinkElement.innerText = LanguageManager.getInstance().getCurrentLanguageData()["germanButton"];
+        languageButtonContainer.appendChild(this.germanLinkElement);
     }
 
     public setSuggestionList(searchPeople: Array<Person>) {
