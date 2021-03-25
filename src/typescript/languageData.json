@@ -13,7 +13,8 @@
         "redrawTree": "Redraw",
         "nameOfThePerson": "Name of the person",
         "germanButton": "German",
-        "englishButton": "English"
+        "englishButton": "English",
+        "duplicates": "Show duplicates"
     },
     "de": {
         "title": "Genealogie",
@@ -29,6 +30,7 @@
         "redrawTree": "Aktualisiere",
         "nameOfThePerson": "Name der Person",
         "germanButton": "Deutsch",
-        "englishButton": "Englisch"
+        "englishButton": "Englisch",
+        "duplicates": "Duplikate"
     }
 }

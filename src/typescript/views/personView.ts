@@ -3,11 +3,13 @@ import { LanguageManager } from "../LanguageManager";
 import { Person } from "../models/person";
 import { SexOrGender } from "../sexOrGender";
 import { SexOrGenderId } from "../sexOrGenderId";
+import { View } from "./View";
 
-export class PersonView {
+export class PersonView extends View {
     private boxWidthInPx: number;
     private boxHeightInPx: number;
-    private rootElement: HTMLElement;
+
+    private parentElement: HTMLElement;
     private containerElement: HTMLElement;
     private boxElement: HTMLElement;
     private nameParagraphElement: HTMLElement;
@@ -24,22 +26,23 @@ export class PersonView {
     private lifelineBox: HTMLElement;
     private lifelineBoxWidthInPx: number;
     private lifelineBoxHeightInPx: number;
-    private lifelineBoxBorderHeightInPx: number
+    private lifelineBoxBorderWidthInPx: number
     private lifeLineBoundHeightInPx: number;
     
     private jsPlumbInst: jsPlumbInstance;
 
     constructor(person: Person, rootElement: HTMLElement, jsPlumbInst: jsPlumbInstance) {
-        this.rootElement = rootElement;
-        this.jsPlumbInst = jsPlumbInst;
+        super();
         this.boxWidthInPx = 230;
         this.boxHeightInPx = 150;
-
         this.lifeLineBoundHeightInPx = 15;
-        this.lifelineBoxBorderHeightInPx = 15;
-        this.lifelineBoxWidthInPx = this.boxWidthInPx + this.lifelineBoxBorderHeightInPx * 2;
-        this.lifelineBoxHeightInPx = this.boxHeightInPx + this.lifelineBoxBorderHeightInPx * 2;
-        this.createPersonNode(person);
+        this.lifelineBoxBorderWidthInPx = 15;
+        this.lifelineBoxWidthInPx = this.boxWidthInPx + this.lifelineBoxBorderWidthInPx * 2;
+        this.lifelineBoxHeightInPx = this.boxHeightInPx + this.lifelineBoxBorderWidthInPx * 2;
+        
+        this.parentElement = rootElement;
+        this.jsPlumbInst = jsPlumbInst;
+        this.initializeHTMLElements(person, rootElement);
     }
 
     public delete(): void {
@@ -47,32 +50,42 @@ export class PersonView {
         this.jsPlumbInst.remove(this.boxElement);
     }
 
-    private createPersonNode(person: Person): void {
-        this.containerElement = document.createElement("div");
-        this.containerElement.classList.add("person-container");
-        this.containerElement.style.width = this.lifelineBoxWidthInPx + "px";
-        this.rootElement.appendChild(this.containerElement);
+    public toggleVisibilityOfDuplicatesButton(): void {
+        this.duplicatesButton.classList.toggle("hidden");
+    }
 
-        this.lifeLineBoundTop = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
+    public hideLifelineBox(): void {
+        this.lifelineBox.style.visibility = "hidden";
+    }
+
+    private initializeHTMLElements(person: Person, rootElement: HTMLElement): void {
+        this.containerElement = this.createHTMLElement("div", ["person-container"]);
+        this.containerElement.style.width = this.lifelineBoxWidthInPx + "px";
+        rootElement.appendChild(this.containerElement);
+
+        this.lifeLineBoundTop = this.createHTMLElement("div", ["lifeline", "lifeline-bound"]);
+        this.lifeLineBoundTop.style.height = this.lifeLineBoundHeightInPx + "px";
         this.containerElement.appendChild(this.lifeLineBoundTop);
 
-        this.lifeline = this.createLifelineElement(["lifeline-line"]);
+        this.lifeline = this.createHTMLElement("div", ["lifeline", "lifeline-line"]);
         this.containerElement.appendChild(this.lifeline);
 
-        this.lifelineBox = this.createLifelineBoxElement();
+        this.lifelineBox = this.createHTMLElement("div", ["lifeline-box"]);
         this.lifelineBox.style.width = this.lifelineBoxWidthInPx + "px";
         this.lifelineBox.style.height = this.lifelineBoxHeightInPx + "px";
         this.containerElement.appendChild(this.lifelineBox);
 
-        this.boxElement = this.createBoxElement(person, this.boxWidthInPx, this.boxHeightInPx);
+        this.boxElement = this.createHTMLElement("div", ["person-box"], person.getId());
+        this.boxElement.style.width = this.boxWidthInPx + "px";
+        this.boxElement.style.height = this.boxHeightInPx + "px";
         this.addSexOrGenderCSSClassesToElement(this.boxElement, person.getSexOrGender());
         this.containerElement.appendChild(this.boxElement);
 
-        this.nameParagraphElement = this.createTextParagraphElement(person.getName(), ["person-name"]);
+        this.nameParagraphElement = this.createHTMLElement("p", ["person-name"]);
+        this.nameParagraphElement.appendChild(document.createTextNode(person.getName()));
         this.boxElement.appendChild(this.nameParagraphElement);
 
-        let dateContainer: HTMLElement = document.createElement("div");
-        dateContainer.classList.add("date-container");
+        let dateContainer: HTMLElement = this.createHTMLElement("div", ["date-container"]);
         this.boxElement.appendChild(dateContainer);
 
         this.birthInputElement = this.createNumberInputElement(["birth-and-death-input"]);
@@ -80,7 +93,7 @@ export class PersonView {
         if (person.getDatesOfBirth()[0] != null) this.birthInputElement.valueAsNumber = person.getDatesOfBirth()[0].getFullYear();
         dateContainer.appendChild(this.birthInputElement);
 
-        let minusDiv: HTMLElement = document.createElement("div");
+        let minusDiv: HTMLElement = this.createHTMLElement("div");
         minusDiv.appendChild(document.createTextNode("-"));
         dateContainer.appendChild(minusDiv);
 
@@ -88,68 +101,39 @@ export class PersonView {
         if (person.getDatesOfDeath()[0] != null) this.deathInputElement.valueAsNumber =  person.getDatesOfDeath()[0].getFullYear();
         dateContainer.appendChild(this.deathInputElement);
 
-        let buttonContainer: HTMLElement = document.createElement("div");
-        buttonContainer.classList.add("person-button-container");
+        let buttonContainer: HTMLElement = this.createHTMLElement("div", ["person-button-container"]);
         this.boxElement.appendChild(buttonContainer);
 
-        this.dragAndDropButtonElement = document.createElement("div");
-        this.dragAndDropButtonElement.classList.add("drag-and-drop-button");
+        this.dragAndDropButtonElement = this.createHTMLElement("div", ["drag-and-drop-button"]);
         this.dragAndDropButtonElement.textContent = "⬌"
         buttonContainer.appendChild(this.dragAndDropButtonElement);
         
-        this.duplicatesButton = this.createDuplicatesButtonElement();
+        this.duplicatesButton = this.createHTMLElement("button", ["duplicates-button", "hidden"]);
+        this.duplicatesButton.innerText = LanguageManager.getInstance().getCurrentLanguageData()["duplicates"]
         buttonContainer.appendChild(this.duplicatesButton);
 
-        this.deleteButtonElement = document.createElement("button");
+        this.deleteButtonElement = this.createHTMLElement("button", ["delete-button"]);
         this.deleteButtonElement.innerText = LanguageManager.getInstance().getCurrentLanguageData()["delete"];
-        this.deleteButtonElement.classList.add("delete-button");
         buttonContainer.appendChild(this.deleteButtonElement);
 
-
-        this.lifeLineBoundBottom = this.createLifelineBoundElement(this.lifeLineBoundHeightInPx);
+        this.lifeLineBoundBottom = this.createHTMLElement("div", ["lifeline", "lifeline-bound"])
+        this.lifeLineBoundBottom.style.height = this.lifeLineBoundHeightInPx + "px";
         this.containerElement.appendChild(this.lifeLineBoundBottom);
 
-        this.additionalInfoContainerElement = this.createAdditionalInfoContainer();
+        this.additionalInfoContainerElement = this.createHTMLElement("div", ["additional-info-container"]);
         this.boxElement.appendChild(this.additionalInfoContainerElement);
 
-        let descriptionParagraph: HTMLElement = document.createElement("p");
-        descriptionParagraph.appendChild(new Text(person.getDescription()));
+        let descriptionParagraph: HTMLElement = this.createHTMLElement("p");
+        descriptionParagraph.appendChild(document.createTextNode(person.getDescription()));
         this.additionalInfoContainerElement.appendChild(descriptionParagraph);
 
-        let wikidataLink: HTMLElement = document.createElement("a");
+        let wikidataLink: HTMLElement = this.createHTMLElement("a");
         wikidataLink.innerText = "https://www.wikidata.org/wiki/" + person.getBaseId();
         wikidataLink.setAttribute("href", "https://www.wikidata.org/wiki/" + person.getBaseId());
         wikidataLink.setAttribute("target", "_blank");
         this.additionalInfoContainerElement.appendChild(wikidataLink);
 
         this.setCssClassesForBirthAndDeathDate(person.getDatesOfBirth()[0], person.getDatesOfDeath()[0]);
-
-        // this.jsPlumbInst.draggable(this.containerElement);
-    }
-
-    private createAdditionalInfoContainer(): HTMLElement {
-        let additionalInfoContainer: HTMLElement = document.createElement("div");
-        additionalInfoContainer.classList.add("additional-info-container");
-        return additionalInfoContainer;
-    }
-
-    private createDuplicatesButtonElement(): HTMLElement {
-        let duplicatesButton: HTMLElement = document.createElement("button");
-        duplicatesButton.classList.add("duplicates-button");
-        duplicatesButton.classList.toggle("hidden");
-        duplicatesButton.innerText = "Show duplicates"; // TODO get text for different languages
-        return duplicatesButton;
-    }
-
-    public toggleVisibilityOfDuplicatesButton(): void {
-        this.duplicatesButton.classList.toggle("hidden");
-    }
-
-    private createLifelineBoxElement(): HTMLElement {
-        let lifelineBoxElement: HTMLElement = document.createElement("div");
-        lifelineBoxElement.classList.add("lifeline-box");
-
-        return lifelineBoxElement;
     }
 
     private createNumberInputElement(cssClasses: string[]): HTMLInputElement {
@@ -163,15 +147,6 @@ export class PersonView {
         return numberInputElement;
     }
 
-    private createTextParagraphElement(text: string, cssClasses: string[]): HTMLElement {
-        let paragraphElement: HTMLElement = document.createElement("p");
-        for (const cssClass of cssClasses) {
-            paragraphElement.classList.add(cssClass);
-        }
-        paragraphElement.appendChild(document.createTextNode(text));
-        return paragraphElement;
-    }
-
     private addSexOrGenderCSSClassesToElement(htmlElement: HTMLElement, sexOrGender: SexOrGender): void {
         if (sexOrGender != null) {
             if (sexOrGender.getSexOrGenderId() === SexOrGenderId.male) {
@@ -182,38 +157,6 @@ export class PersonView {
         } else {
             htmlElement.classList.add("unknown-gender");
         }
-    }
-
-    private createBoxElement(person: Person, boxWidthInPx: number, boxHeightInPx: number): HTMLElement {
-        let boxElement: HTMLElement = document.createElement("div");
-        boxElement.classList.add("person-box");
-        boxElement.id = person.getId();
-        boxElement.style.width = boxWidthInPx + "px";
-        boxElement.style.height = boxHeightInPx + "px";
-        
-        return boxElement;
-    }
-
-    private createLifelineElement(cssClasses: string[]): HTMLElement{
-        let lifeline: HTMLElement = document.createElement("div");
-        lifeline.classList.add("lifeline");
-        for (const className of cssClasses) {
-            lifeline.classList.add(className);
-        }
-
-        return lifeline;
-    }
-
-    private createLifelineBoundElement(heightInPixel: number): HTMLElement {
-        let lifelineBound: HTMLElement = document.createElement("div");
-        lifelineBound.classList.add("lifeline", "lifeline-bound");
-        lifelineBound.style.height = heightInPixel + "px";
-
-        return lifelineBound;
-    }
-
-    public hideLifelineBox(): void {
-        this.lifelineBox.style.visibility = "hidden";
     }
 
     private setCssClassesForBirthAndDeathDate(birthdate: Date, deathdate: Date): void {
@@ -257,6 +200,7 @@ export class PersonView {
 
     public setHeightInPx(height: number): void {
         let minHeight: number = this.boxHeightInPx + 2 * this.lifeLineBoundHeightInPx;
+        
         if (height >= minHeight) {
             this.containerElement.style.height = height + "px";
         } else {
@@ -277,7 +221,7 @@ export class PersonView {
     }
 
     public getLifelineBoxBorderHeightInPx(): number {
-        return this.lifelineBoxBorderHeightInPx;
+        return this.lifelineBoxBorderWidthInPx;
     }
 
     public getOffsetLeftInPx(): number {
@@ -301,7 +245,7 @@ export class PersonView {
     }
 
     public remove(): void {
-        this.rootElement.removeChild(this.containerElement);
+        this.parentElement.removeChild(this.containerElement);
     }
 
     public getBoxHeight(): number {
