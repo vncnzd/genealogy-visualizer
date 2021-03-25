@@ -11,9 +11,9 @@ import { PersonDatabase } from './personDatabase';
 import { WikidataPersonDatabase } from './wikiDataPersonDatabase';
 import { LanguageManager } from './LanguageManager';
 
+const languageManager: LanguageManager = LanguageManager.getInstance();
 const urlParameters: URLSearchParams = new URLSearchParams(window.location.search);
 const languageParameter: string = urlParameters.get("lang");
-const languageManager: LanguageManager = LanguageManager.getInstance();
 languageManager.setlanguage(languageParameter);
 
 const endpointUrl: string = 'https://query.wikidata.org/sparql';
@@ -27,7 +27,7 @@ const personDatabase: PersonDatabase = new WikidataPersonDatabase(queryHelper, s
 const searchListWrapper: HTMLElement = document.querySelector("#top-bar");
 const genealogyContainer: HTMLElement = document.querySelector("#genealogy-container");
 
-// models, views, controllers
+// models, views and controllers
 const genealogy: Genealogy = new Genealogy(personDatabase);
 const genealogyView: GenealogyView = new GenealogyView(genealogyContainer);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
