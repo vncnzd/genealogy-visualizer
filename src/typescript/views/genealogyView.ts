@@ -5,8 +5,10 @@ import { Position } from "../position"
 import { TreeDrawer } from "../treeDrawingAlgorithms/treeDrawer";
 import { WalkerTreeDrawer } from "../treeDrawingAlgorithms/walkerTreeDrawer";
 import { LanguageManager } from "../LanguageManager";
+import { View } from "./View";
+import { GenealogyType } from "../genealogyType";
 
-export class GenealogyView {
+export class GenealogyView extends View {
     private containerElement: HTMLElement;
     private containerElementWrapper: HTMLElement;
     private jsPlumbInst: jsPlumbInstance;
@@ -33,13 +35,13 @@ export class GenealogyView {
     private zoomFactor: number;
 
     constructor(parentElement: HTMLElement) {
-        this.timelineLineContainers = new Array<HTMLElement>(6000);
+        super();
+        this.timelineLineContainers = [];
         this.timelineWidthInPx = 50;
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
-        // this.personViews = new Map<string, PersonView>();
 
-        this.initializeHTMLElements(parentElement, LanguageManager.getInstance().getCurrentLanguageData());
+        this.initializeHTMLElements(parentElement);
         this.addZoomEventListeners();
         this.addPanningEventListeners();
     }
@@ -80,52 +82,47 @@ export class GenealogyView {
         });
     }
 
-    private initializeHTMLElements(parentElement: HTMLElement, languageData: Object): void {
-        let optionsBar = document.createElement("div");
-        optionsBar.id = "options-bar";
+    private initializeHTMLElements(parentElement: HTMLElement): void {
+        const languageData: Object = LanguageManager.getInstance().getCurrentLanguageData();
+
+        const optionsBar = this.createHTMLElement("div", [], "options-bar");
         parentElement.appendChild(optionsBar);
 
-        let currentRootPersonContainer = document.createElement("div");
-        currentRootPersonContainer.id = "current-root-person-container";
+        const currentRootPersonContainer = this.createHTMLElement("div", [], "current-root-person-container");
         optionsBar.appendChild(currentRootPersonContainer);
 
-        let currentRootPersonLabel: HTMLElement = document.createElement("div");
-        currentRootPersonLabel.id = "current-person-label";
+        const currentRootPersonLabel: HTMLElement = this.createHTMLElement("div", [], "current-person-label");
         currentRootPersonLabel.textContent = languageData["currentRootPerson"];
         currentRootPersonContainer.appendChild(currentRootPersonLabel);
 
-        this.currentRootPersonElement = document.createElement("div");
-        this.currentRootPersonElement.id = "current-root-person-name"
+        this.currentRootPersonElement = this.createHTMLElement("div", [], "current-root-person-name");
         currentRootPersonContainer.appendChild(this.currentRootPersonElement);
 
-        let displayOptionsContainer: HTMLElement = document.createElement("div");
-        displayOptionsContainer.id = "display-options-container";
+        const displayOptionsContainer: HTMLElement = this.createHTMLElement("div", [], "display-options-container");
         optionsBar.appendChild(displayOptionsContainer);
 
-        let directionContainer: HTMLElement = document.createElement("div");
-        directionContainer.id = "direction-container";
+        const directionContainer: HTMLElement = this.createHTMLElement("div", [], "direction-container");
         displayOptionsContainer.appendChild(directionContainer);
 
-        let directionLabel = document.createElement("label");
+        const directionLabel = this.createHTMLElement("label");
         directionLabel.innerHTML = languageData["genealogyTypeLabel"];
         // directionLabel.setAttribute("for", "depth-input");
         directionContainer.appendChild(directionLabel);
 
         this.directionInput = document.createElement("select");
-        let options: string[] = [languageData["ancestors"], languageData["descendants"]];
+        const options: string[] = [languageData["ancestors"], languageData["descendants"]];
         for (const option of options) {
-            let optionElement: HTMLOptionElement = document.createElement("option");
+            const optionElement: HTMLOptionElement = document.createElement("option");
             optionElement.value = option;
             optionElement.text = option;
             this.directionInput.appendChild(optionElement);
         }
         directionContainer.appendChild(this.directionInput);
 
-        let numberOfGenerationsContainer: HTMLElement = document.createElement("div");
-        numberOfGenerationsContainer.id = "number-of-generations-container";
+        const numberOfGenerationsContainer: HTMLElement = this.createHTMLElement("div", [], "number-of-generations-container");
         displayOptionsContainer.appendChild(numberOfGenerationsContainer);
 
-        const numberOfGenerationsInputLabel = document.createElement("label");
+        const numberOfGenerationsInputLabel = this.createHTMLElement("label");
         numberOfGenerationsInputLabel.innerHTML = languageData["numberOfGenerationsInputLabel"];
         numberOfGenerationsInputLabel.setAttribute("for", "depth-input");
         numberOfGenerationsContainer.appendChild(numberOfGenerationsInputLabel);
@@ -139,89 +136,68 @@ export class GenealogyView {
         this.numberOfGenerationsInput.value = "3";
         numberOfGenerationsContainer.appendChild(this.numberOfGenerationsInput);
 
-        let drawTreeButtonContainer: HTMLElement = document.createElement("div");
-        drawTreeButtonContainer.id = "draw-tree-button-container";
+        const drawTreeButtonContainer: HTMLElement = this.createHTMLElement("div", [], "draw-tree-button-container");
         optionsBar.appendChild(drawTreeButtonContainer);
 
-        this.drawNewTreeButton = document.createElement("button");
+        this.drawNewTreeButton = this.createHTMLElement("button", ["draw-tree-button"], "draw-new-tree-button");
         this.drawNewTreeButton.innerText = languageData["drawNewTree"];
-        this.drawNewTreeButton.classList.add("draw-tree-button");
-        this.drawNewTreeButton.id = "draw-new-tree-button"
         drawTreeButtonContainer.appendChild(this.drawNewTreeButton);
 
-        this.redrawTreeButton = document.createElement("button");
+        this.redrawTreeButton = this.createHTMLElement("button", ["draw-tree-button"], "redraw-tree-button");
         this.redrawTreeButton.innerText = languageData["redrawTree"];
-        this.redrawTreeButton.classList.add("draw-tree-button");
-        this.redrawTreeButton.id = "redraw-tree-button"
         drawTreeButtonContainer.appendChild(this.redrawTreeButton);
 
-        let zoomButtonsContainer: HTMLElement = document.createElement("div");
-        zoomButtonsContainer.id = "zoom-button-container";
+        const zoomButtonsContainer: HTMLElement = this.createHTMLElement("div", [], "zoom-button-container");
         optionsBar.appendChild(zoomButtonsContainer);
 
-        this.zoomInButton = document.createElement("button");
-        this.zoomInButton.id = "zoom-in-button";
+        this.zoomInButton = this.createHTMLElement("button", [], "zoom-in-button");
         this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
         zoomButtonsContainer.appendChild(this.zoomInButton);
 
-        this.zoomOutButton = document.createElement("button");
-        this.zoomOutButton.id = "zoom-out-button";
+        this.zoomOutButton = this.createHTMLElement("button", [], "zoom-out-button");
         this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
         zoomButtonsContainer.appendChild(this.zoomOutButton);
 
-        this.containerElementWrapper = document.createElement("div");
-        this.containerElementWrapper.id = "jsplumb-container-wrapper";
+        this.containerElementWrapper = this.createHTMLElement("div", [], "jsplumb-container-wrapper");
         parentElement.appendChild(this.containerElementWrapper);
 
-        this.loaderElement = document.createElement("div");
-        this.loaderElement.classList.add("loader");
-        this.loaderElement.classList.add("hidden");
+        this.loaderElement = this.createHTMLElement("div", ["loader", "hidden"]);
         this.containerElementWrapper.appendChild(this.loaderElement);
         
-        this.containerElement = document.createElement("div");
-        this.containerElement.id = "jsplumb-container";
+        this.containerElement = this.createHTMLElement("div", [], "jsplumb-container");
         this.containerElementWrapper.appendChild(this.containerElement);
 
         this.jsPlumbInst = jsPlumb.getInstance();
         this.jsPlumbInst.setContainer(this.containerElement);
 
-        this.addTimelineElements();
-    }
-
-    private addTimelineElements() {
-        this.timelineContainerWrapper = document.createElement("div");
-        this.timelineContainerWrapper.id = "timeline-container-wrapper";
+        this.timelineContainerWrapper = this.createHTMLElement("div", [], "timeline-container-wrapper");
         this.containerElementWrapper.appendChild(this.timelineContainerWrapper);
 
-        this.timelineContainer = document.createElement("div");
-        this.timelineContainer.id = "timeline-container";
+        this.timelineContainer = this.createHTMLElement("div", [], "timeline-container");
         this.timelineContainerWrapper.appendChild(this.timelineContainer);
     }
 
-    public adjustTimelineSpan(minYear: number, maxYear: number): void {
-        this.timelineContainer.innerHTML = "";
-        minYear = Math.ceil(minYear / 100) * 100;
-        maxYear = Math.ceil(maxYear / 100) * 100
+    private rebuildTimelineAndScale(minYear: number, maxYear: number, roundValue: number = 100): void {
+        this.removeAllChildElements(this.timelineContainer);
+        minYear = Math.floor(minYear / roundValue) * roundValue;
+        maxYear = Math.ceil(maxYear / roundValue) * roundValue;
 
-
-        for (let year = minYear; year < maxYear; year+= 5) {
-            const lineContainer: HTMLElement = document.createElement("div");
+        for (let year = minYear; year < maxYear; year += 5) {
+            const lineContainer: HTMLElement = this.createHTMLElement("div", ["timeline-line-container"]);
             this.timelineContainer.appendChild(lineContainer);
             lineContainer.style.top = `${year * this.pixelPerYear}px`
-            lineContainer.classList.add("timeline-line-container");
             this.timelineLineContainers.push(lineContainer);
 
-            const line: HTMLElement = document.createElement("div");
-            line.classList.add("timeline-line");
+            const line: HTMLElement = this.createHTMLElement("div", ["timeline-line"]);
             lineContainer.appendChild(line);
 
-            const number: HTMLElement = document.createElement("div");
-            number.classList.add("timeline-number");
-            const numberText: Text = document.createTextNode("" + year)
-            number.appendChild(numberText);
+            const number: HTMLElement = this.createHTMLElement("div", ["timeline-number"]);
+            number.appendChild(document.createTextNode(year.toString()));
 
             lineContainer.appendChild(number);
         }
+
+        this.adjustTimelineScale(this.scale);
     }
 
     public setLoaderIsVisible(isVisible: boolean): void {
@@ -232,25 +208,59 @@ export class GenealogyView {
         }
     }
 
-    public displayAncestors(rootPerson: Person, personViews: Map<string, PersonView>) {
-        this.adjustTimelineSpan(rootPerson.getDatesOfBirth()[0].getFullYear() - 1000, rootPerson.getDatesOfBirth()[0].getFullYear() + 1000);
+    public drawGenealogyTree(rootPerson: Person, personViews: Map<string, PersonView>, genealogyType: GenealogyType): void {
         this.jsPlumbInst.reset();
-        let drawer: TreeDrawer = new WalkerTreeDrawer();
-        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, true);
-        this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
+
+        const timelineBounds: [number, number] = this.getTimespanForGenealogy(rootPerson);
+        this.rebuildTimelineAndScale(timelineBounds[0] - 500, timelineBounds[1] + 500);
+        
+        const drawer: TreeDrawer = new WalkerTreeDrawer();
+        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, genealogyType);
+
+        this.translateToPositionOfRootPersonView(personViews.get(rootPerson.getId()));
         this.addDragAndDropEventListenerToPersonViews(personViews);
     }
 
-    public displayDescendants(rootPerson: Person, personViews: Map<string, PersonView>) {
-        this.adjustTimelineSpan(rootPerson.getDatesOfBirth()[0].getFullYear() - 1000, rootPerson.getDatesOfBirth()[0].getFullYear() + 1000);
-        this.jsPlumbInst.reset();
-        let drawer: TreeDrawer = new WalkerTreeDrawer();
-        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, false);
-        this.translateToPositionOfPersonView(personViews.get(rootPerson.getId()));
-        this.addDragAndDropEventListenerToPersonViews(personViews);
+    public getTimespanForGenealogy(rootPerson: Person): [number, number] {
+        let minYear: number = Number.MAX_VALUE; // Stupid?
+        let maxYear: number = Number.MIN_VALUE;
+
+        getMinYear(rootPerson);
+        getMaxYear(rootPerson);
+
+        return [minYear, maxYear];
+
+        function getMinYear(person: Person): void {
+            if (person.getDatesOfBirth().length > 0) {
+                const yearOfBirth: number = person.getDatesOfBirth()[0].getFullYear();
+                if (yearOfBirth < minYear) {
+                    minYear = yearOfBirth;
+                }
+            }
+
+            if (person.getFather() != null) {
+                getMinYear(person.getFather());
+            }
+            if (person.getMother() != null) {
+                getMinYear(person.getMother());
+            }
+        }
+
+        function getMaxYear(person: Person): void {
+            if (person.getDatesOfDeath().length > 0) {
+                const yearOfDeath: number = person.getDatesOfDeath()[0].getFullYear();
+                if (yearOfDeath > maxYear) {
+                    maxYear = yearOfDeath;
+                }
+            }
+
+            for (const child of person.getChildren()) {
+                getMaxYear(child);
+            }
+        }
     }
 
-    public setActivityOfRedrawButton(isActive: boolean): void {
+    public setIsActivityOfRedrawButton(isActive: boolean): void {
         if (isActive) {
             this.redrawTreeButton.classList.add("active");
         } else {
@@ -258,7 +268,7 @@ export class GenealogyView {
         }
     }
 
-    public translateToPositionOfPersonView(personView: PersonView): void {
+    public translateToPositionOfRootPersonView(personView: PersonView): void {
         let wrapperWidth: number = this.containerElementWrapper.offsetWidth;
         let wrapperHeight: number = this.containerElementWrapper.offsetHeight;
 

@@ -1,4 +1,5 @@
 import { ConnectParams, jsPlumbInstance } from "jsplumb";
+import { GenealogyType } from "../genealogyType";
 import { Person } from "../models/person";
 import { PersonView } from "../views/personView";
 import { TreeDrawer } from "./treeDrawer";
@@ -10,20 +11,24 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private jsPlumbInst: jsPlumbInstance;
     private deathYearsOfLevel: number[][];
     private birthYearsOfLevel: number[][];
-    private drawAncestors: boolean;
 
-    run(rootPerson: Person, personViewsMap: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, drawAncestors: boolean): void {
+    run(rootPerson: Person, personViewsMap: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, genealogyType: GenealogyType): void {
         this.pixelPerYear = pixelPerYear;
         this.jsPlumbInst = jsPlumbInst;
         this.deathYearsOfLevel = [];
         this.birthYearsOfLevel = [];
-        this.drawAncestors = drawAncestors;
         
         let rootNode: WalkerNode;
-        if (drawAncestors) {
-            rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap, 0);
-        } else {
-            rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap, 0);
+
+        switch (genealogyType) {
+            case GenealogyType.Ancestors:
+                rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap, 0);
+                break;
+            case GenealogyType.Descendants:
+                rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap, 0);
+                break;   
+            default:
+                break;
         }
         
         this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;

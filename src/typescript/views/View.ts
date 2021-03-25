@@ -9,4 +9,8 @@ export abstract class View {
 
         return element;
     };
+
+    protected removeAllChildElements(element: HTMLElement): void {
+        element.innerHTML = "";
+    }
 }

@@ -30,7 +30,7 @@ export class GenealogyController {
 
         let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
         this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.displayAncestors(TestTreeGenerator.getAncestorsExampleTree(), personViews);
+        this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors);
         
         // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -40,7 +40,7 @@ export class GenealogyController {
     public setRootPerson(person: Person): void {
         this.genealogy.setRootPerson(person);
         this.genealogyView.setCurrentRootPerson(person);
-        this.genealogyView.setActivityOfRedrawButton(false);
+        this.genealogyView.setIsActivityOfRedrawButton(false);
     }
 
     private addEventListenersToInteractiveElements(): void {
@@ -55,7 +55,7 @@ export class GenealogyController {
 
         this.genealogy.getGenealogyOfCurrentPersonFromDatabase().then((people: Map<string, Person>): void => {
             this.drawTree(this.genealogy.getRootPerson(), this.genealogy.getGenealogyType());
-            this.genealogyView.setActivityOfRedrawButton(true);
+            this.genealogyView.setIsActivityOfRedrawButton(true);
         }).finally(() => {
             this.genealogyView.setLoaderIsVisible(false);
         });
@@ -67,20 +67,18 @@ export class GenealogyController {
 
     private drawTree(rootPerson: Person, genealogyType: GenealogyType): void {
         this.genealogyView.clearContainer(); // Put this into the view
-
         const personViews: Map<string, PersonView> = new Map<string, PersonView>();
         
         switch (genealogyType) {
             case GenealogyType.Ancestors:
                 this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews); // Remove the old ones before?
-                this.genealogyView.displayAncestors(rootPerson, personViews);
                 break;
             case GenealogyType.Descendants:
                 this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
-                this.genealogyView.displayDescendants(rootPerson, personViews);
                 break;
         }
 
+        this.genealogyView.drawGenealogyTree(rootPerson, personViews, genealogyType);
         this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
         this.addSettingRootPersonEventListenerToNameParagraphsOfPersonViews(personViews);
     }
