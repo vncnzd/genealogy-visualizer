@@ -9,8 +9,6 @@ export class SexOrGender {
         this.sexOrGenderLabel = sexOrGenderLabel;
     }
 
-    // getters and setters
-
     public getSexOrGenderId(): SexOrGenderId {
         return this.sexOrGenderId;
     }

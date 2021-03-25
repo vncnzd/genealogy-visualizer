@@ -127,20 +127,20 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getNameFromResponse(response: object): string {
-        let itemVariable: string = this.queryHelper.getItemVariable();
+        let itemLabelVariable: string = this.queryHelper.getItemLabelVariable();
 
-        if (response.hasOwnProperty(itemVariable + "Label")) {
-            return response[itemVariable + "Label"]["value"];
+        if (response.hasOwnProperty(itemLabelVariable)) {
+            return response[itemLabelVariable]["value"];
         } else {
             return "";
         }
     }
 
     private getDescriptionFromResponse(response: object): string {
-        let itemVariable: string = this.queryHelper.getItemVariable();
+        let itemDescriptionVariable: string = this.queryHelper.getItemDescriptionVariable();
 
-        if (response.hasOwnProperty(itemVariable + "Description")) {
-            return response[itemVariable + "Description"]["value"]
+        if (response.hasOwnProperty(itemDescriptionVariable)) {
+            return response[itemDescriptionVariable]["value"]
         } else {
             return "";
         }
@@ -148,8 +148,8 @@ export class WikidataPersonDatabase implements PersonDatabase {
 
     private getSexOrGenderFromResponse(responseEntry: object): SexOrGender {
         if (responseEntry.hasOwnProperty("sexOrGender")) {
-            const sexOrGenderWikidataId: string = responseEntry["sexOrGender"]["value"].split("/").pop();
-            const sexOrGenderLabel: string = responseEntry["sexOrGenderLabel"]["value"];
+            const sexOrGenderWikidataId: string = responseEntry[this.queryHelper.getSexOrGenderVariable()]["value"].split("/").pop();
+            const sexOrGenderLabel: string = responseEntry[this.queryHelper.getSexOrGenderLabelVariable()]["value"];
             const sexOrGenderId: SexOrGenderId = this.getSexOrGenderIdForWikidataId(sexOrGenderWikidataId);
             
             if (sexOrGenderId != null) {
@@ -182,8 +182,10 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getDateOfBirthFromResponseEntry(responseEntry: object): Date {
-        if (responseEntry.hasOwnProperty("dateOfBirth")) {
-            const dateOfBirth: string = responseEntry["dateOfBirth"]["value"];
+        const dateOfBirthVariable: string = this.queryHelper.getDateOfBirthVariable();
+
+        if (responseEntry.hasOwnProperty(dateOfBirthVariable)) {
+            const dateOfBirth: string = responseEntry[dateOfBirthVariable]["value"];
             return this.getValidDateOrNull(dateOfBirth);
         } else {
             return null;
@@ -191,8 +193,10 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getDateOfDeathFromResponseEntry(responseEntry: object): Date {
-        if (responseEntry.hasOwnProperty("dateOfDeath")) {
-            const dateOfDeath: string = responseEntry["dateOfDeath"]["value"];
+        const dateOfDeathVariable: string = this.queryHelper.getDateOfDeathVariable();
+
+        if (responseEntry.hasOwnProperty(dateOfDeathVariable)) {
+            const dateOfDeath: string = responseEntry[dateOfDeathVariable]["value"];
             return this.getValidDateOrNull(dateOfDeath);
         } else {
             return null;
