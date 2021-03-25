@@ -19,23 +19,14 @@ export class Person {
         this.children = [];
     }
 
-    // getters and setters
-    public setId(id: string, duplicateAddition: string = null): void {
-        if (duplicateAddition != null) {
-            this.id = id + "-" + duplicateAddition;
-        } else {
-            this.id = id;
-        }
-    }
-
-    public delete(): void {
+    public deleteAndRemoveReferences(): void {
         if (this.father != null) {
-            let indexOfThisPerson: number = this.father.getChildren().indexOf(this);
+            const indexOfThisPerson: number = this.father.getChildren().indexOf(this);
             this.father.setChildren(this.father.getChildren().splice(indexOfThisPerson, 1));
         }
         
         if (this.mother != null) {
-            let indexOfThisPerson: number = this.mother.getChildren().indexOf(this);
+            const indexOfThisPerson: number = this.mother.getChildren().indexOf(this);
             this.mother.setChildren(this.mother.getChildren().splice(indexOfThisPerson, 1));
         }
 
@@ -45,6 +36,15 @@ export class Person {
             } else if (child.mother == this) {
                 child.mother = null;
             }
+        }
+    }
+
+
+    public setId(id: string, duplicateAddition: string = null): void {
+        if (duplicateAddition != null) {
+            this.id = id + "-" + duplicateAddition;
+        } else {
+            this.id = id;
         }
     }
 

@@ -31,7 +31,7 @@ export class PersonController {
     }
 
     private removePersonAndView(): void {
-        this.person.delete();
+        this.person.deleteAndRemoveReferences();
         this.personView.delete();
     }
 
