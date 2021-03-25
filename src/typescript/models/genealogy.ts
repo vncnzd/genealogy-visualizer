@@ -40,15 +40,7 @@ export class Genealogy {
 
             for (const parent of parents) {
                 if (people.has(parent.getId())) { // The current parent appears at least twice in the genealogy.
-                    let duplicatesForId: Person[] = this.duplicates.get(parent.getId());
-
-                    if (duplicatesForId == null) {
-                        duplicatesForId = [people.get(parent.getId())];
-                        this.duplicates.set(parent.getId(), duplicatesForId);
-                    }
-
-                    parent.setId(parent.getId(), duplicatesForId.length.toString());
-                    duplicatesForId.push(parent);
+                    this.markAsDuplicate(parent, people);
                 }
 
                 currentPerson.setParent(parent);
@@ -69,23 +61,29 @@ export class Genealogy {
 
             for (const child of children) {
                 if (people.has(child.getId())) { // The current child appears at least twice in the genealogy.
-                    let duplicatesForId: Person[] = this.duplicates.get(child.getId());
-
-                    if (duplicatesForId == null) {
-                        duplicatesForId = [people.get(child.getId())];
-                        this.duplicates.set(child.getId(), duplicatesForId);
-                    }
-
-                    child.setId(child.getId(), duplicatesForId.length.toString());
-                    duplicatesForId.push(child);
+                    this.markAsDuplicate(child, people);
                 }
 
                 currentPerson.getChildren().push(child);
+                child.setParent(currentPerson);
                 promises.push(this.getDescendantsOfPersonRecursively(child, people, depth - 1));
             }
 
             return Promise.all(promises).then(() => { return people });
         }
+    }
+
+
+    private markAsDuplicate(person: Person,  people: Map<string, Person>): void {
+        let duplicatesForId: Person[] = this.duplicates.get(person.getId());
+
+        if (duplicatesForId == null) {
+            duplicatesForId = [people.get(person.getId())];
+            this.duplicates.set(person.getId(), duplicatesForId);
+        }
+
+        person.setId(person.getId(), duplicatesForId.length.toString());
+        duplicatesForId.push(person);
     }
 
     public setRootPerson(person: Person): void {
