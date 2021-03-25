@@ -6,7 +6,6 @@ export class SearchList {
 
     constructor() {
         this.searchResultPeople = [];
-        this.selectedPerson = null;
     }
 
     public clearSearchResultPeople(): void {
