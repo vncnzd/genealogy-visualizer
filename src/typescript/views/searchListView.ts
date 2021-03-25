@@ -7,15 +7,15 @@ export class SearchListView {
     private searchResultTableElement: HTMLElement;
     private germanLinkElement: HTMLElement;
     private englishLinkElement: HTMLElement;
-    private currentSelectedRowElement: HTMLElement;
 
     constructor(parentElement: HTMLElement) {
-        let containerElement: HTMLElement = document.createElement("div");
+        const languageManager: LanguageManager = LanguageManager.getInstance();
+        const containerElement: HTMLElement = document.createElement("div");
         containerElement.id = "search-container";
         parentElement.appendChild(containerElement);
 
         this.searchInputElement = document.createElement("input");
-        this.searchInputElement.setAttribute("placeholder", LanguageManager.getInstance().getCurrentLanguageData()["nameOfThePerson"]);
+        this.searchInputElement.setAttribute("placeholder", languageManager.getCurrentLanguageData()["nameOfThePerson"]);
         this.searchInputElement.setAttribute("type", "search");
         containerElement.appendChild(this.searchInputElement);
 
@@ -29,31 +29,31 @@ export class SearchListView {
 
         this.englishLinkElement = document.createElement("a");
         this.englishLinkElement.setAttribute("href", window.location.origin + window.location.pathname);
-        this.englishLinkElement.innerText = LanguageManager.getInstance().getCurrentLanguageData()["englishButton"];
+        this.englishLinkElement.innerText = languageManager.getCurrentLanguageData()["englishButton"];
         languageButtonContainer.appendChild(this.englishLinkElement);
 
         this.germanLinkElement = document.createElement("a");
         this.germanLinkElement.setAttribute("href", window.location.href + "?lang=de");
-        this.germanLinkElement.innerText = LanguageManager.getInstance().getCurrentLanguageData()["germanButton"];
+        this.germanLinkElement.innerText = languageManager.getCurrentLanguageData()["germanButton"];
         languageButtonContainer.appendChild(this.germanLinkElement);
     }
 
     public setSuggestionList(searchPeople: Array<Person>) {
-        this.searchResultTableElement.innerHTML = ''; // empties the html list
+        this.emptySearchResultsTable();
 
         for (const person of searchPeople) {
-            let rowElement: HTMLElement = document.createElement("tr");
+            const rowElement: HTMLElement = document.createElement("tr");
             rowElement.setAttribute('data-id', person.getId());
             rowElement.classList.add("search-row");
             this.searchResultTableElement.appendChild(rowElement);
 
-            let labelDataElement: HTMLElement = document.createElement("td");
-            let labelDataTextNode: Text = document.createTextNode(person.getName());
+            const labelDataElement: HTMLElement = document.createElement("td");
+            const labelDataTextNode: Text = document.createTextNode(person.getName());
             labelDataElement.appendChild(labelDataTextNode);
             rowElement.appendChild(labelDataElement);
 
-            let descriptionDataElement: HTMLElement = document.createElement("td");
-            let descriptionDataTextNode: Text = document.createTextNode(person.getDescription());
+            const descriptionDataElement: HTMLElement = document.createElement("td");
+            const descriptionDataTextNode: Text = document.createTextNode(person.getDescription());
             descriptionDataElement.appendChild(descriptionDataTextNode);
             rowElement.appendChild(descriptionDataElement);
         }
@@ -66,8 +66,6 @@ export class SearchListView {
     public emptySearchResultsTable(): void {
         this.searchResultTableElement.innerHTML = '';
     }
-
-    // getters and setters
 
     public getSearchInputElement(): HTMLInputElement {
         return this.searchInputElement;
