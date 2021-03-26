@@ -15,12 +15,13 @@ export class GenealogyController {
         this.genealogyView = genealogyView;
 
         this.addEventListenersToInteractiveElements();
-        this.genealogy.setNumberOfGenerations(parseInt(genealogyView.getDepthInput().value));
+        this.genealogy.setNumberOfGenerations(parseInt(genealogyView.getNumberOfGenerations().value));
 
         
         
         // test code
-        let personViews: Map<string, PersonView> = new Map<string, PersonView>();
+        const personViews: Map<string, PersonView> = new Map<string, PersonView>();
+        const duplicates: Map<string, Person[]> = new Map<string, Person[]>();
 
         // let rootPerson: Person = TestTreeGenerator.generateRandomDescedantsTree(3, "root", 500);
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -30,7 +31,7 @@ export class GenealogyController {
 
         let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
         this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors);
+        this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors, duplicates);
         
         // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -40,12 +41,12 @@ export class GenealogyController {
     public setRootPerson(person: Person): void {
         this.genealogy.setRootPerson(person);
         this.genealogyView.setCurrentRootPerson(person);
-        this.genealogyView.setIsActivityOfRedrawButton(false);
+        this.genealogyView.setIsActiveOfRedrawButton(false);
     }
 
     private addEventListenersToInteractiveElements(): void {
-        this.genealogyView.getDepthInput().addEventListener("change", this.setNumberOfGenerations.bind(this));
-        this.genealogyView.getDrawTreeButton().addEventListener("click", this.getDataAndDrawTree.bind(this));
+        this.genealogyView.getNumberOfGenerations().addEventListener("change", this.setNumberOfGenerations.bind(this));
+        this.genealogyView.getDrawNewTreeButton().addEventListener("click", this.getDataAndDrawTree.bind(this));
         this.genealogyView.getRedrawTreeButton().addEventListener("click", this.redrawTree.bind(this));
         this.genealogyView.getGenealogyTypeSelectElement().addEventListener("change", this.setGenealogyType.bind(this));
     }
@@ -55,7 +56,7 @@ export class GenealogyController {
 
         this.genealogy.getGenealogyOfCurrentPersonFromDatabase().then((people: Map<string, Person>): void => {
             this.drawTree(this.genealogy.getRootPerson(), this.genealogy.getGenealogyType());
-            this.genealogyView.setIsActivityOfRedrawButton(true);
+            this.genealogyView.setIsActiveOfRedrawButton(true);
         }).finally(() => {
             this.genealogyView.setLoaderIsVisible(false);
         });
@@ -78,8 +79,7 @@ export class GenealogyController {
                 break;
         }
 
-        this.genealogyView.drawGenealogyTree(rootPerson, personViews, genealogyType);
-        this.genealogyView.connectDuplicates(this.genealogy.getDuplicates(), personViews);
+        this.genealogyView.drawGenealogyTree(rootPerson, personViews, genealogyType, this.genealogy.getDuplicates());
         this.addSettingRootPersonEventListenerToNameParagraphsOfPersonViews(personViews);
     }
 

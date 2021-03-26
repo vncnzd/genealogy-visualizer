@@ -27,9 +27,10 @@ export class GenealogyView extends View {
     private timelineWidthInPx: number;
     private pixelPerYear: number;
 
-    private scale = 1;
+    private scale;
+    private minScale;
     private isPaning: boolean = false;
-    private isDragginPersonView: boolean = false;
+    private isDraggingAPersonNode: boolean = false;
     private transformX: number = 0;
     private transformY: number = 0
     private zoomFactor: number;
@@ -40,46 +41,12 @@ export class GenealogyView extends View {
         this.timelineWidthInPx = 50;
         this.pixelPerYear = 10;
         this.zoomFactor = 0.1;
+        this.scale = 1;
+        this.minScale = 0.1;
 
         this.initializeHTMLElements(parentElement);
         this.addZoomEventListeners();
         this.addPanningEventListeners();
-    }
-
-    public connectDuplicates(duplicates: Map<string, Person[]>, personViews: Map<string, PersonView>): void {
-        duplicates.forEach((duplicatesList: Person[], id: string) => {
-            for (let i = 0; i < duplicatesList.length; i++) {
-                const duplicateOne: Person = duplicatesList[i];
-                const personView: PersonView = personViews.get(duplicateOne.getId());
-                personView.toggleVisibilityOfDuplicatesButton();
-
-                for (let x = i + 1; x < duplicatesList.length; x++) {
-                    const duplicateTwo: Person = duplicatesList[x];
-                    const cssClass: string = "duplicates-stroke-" + id
-                    
-                    let connectionParameters: ConnectParams = {
-                        anchor: ["Right", "Left"],
-                        connector: [ "Straight", {}],
-                        endpoint: ["Dot", { cssClass: "hidden " + cssClass } ],
-                        deleteEndpointsOnDetach: false,
-                        detachable: false,
-                        // @ts-ignore
-                        paintStyle: { 
-                            stroke: "#ca0404",
-                            strokeWidth: 7,
-                            dashstyle: "6 4"
-                        },
-                        endpointStyles: [
-                            { fill:"#ca0404", cssClass: "test-endpoint"},
-                            { fill:"#ca0404", cssClass: "test-endpoint" }
-                        ],
-                        cssClass: "hidden " + cssClass
-                    };
-
-                    this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);
-                }
-            }
-        });
     }
 
     private initializeHTMLElements(parentElement: HTMLElement): void {
@@ -163,7 +130,7 @@ export class GenealogyView extends View {
 
         this.loaderElement = this.createHTMLElement("div", ["loader", "hidden"]);
         this.containerElementWrapper.appendChild(this.loaderElement);
-        
+
         this.containerElement = this.createHTMLElement("div", [], "jsplumb-container");
         this.containerElementWrapper.appendChild(this.containerElement);
 
@@ -175,6 +142,70 @@ export class GenealogyView extends View {
 
         this.timelineContainer = this.createHTMLElement("div", [], "timeline-container");
         this.timelineContainerWrapper.appendChild(this.timelineContainer);
+    }
+
+    public clearContainer(): void {
+        this.removeAllChildElements(this.containerElement);
+    }
+
+    public setLoaderIsVisible(isVisible: boolean): void {
+        if (isVisible) {
+            this.loaderElement.classList.remove("hidden");
+        } else {
+            this.loaderElement.classList.add("hidden");
+        }
+    }
+
+    public drawGenealogyTree(rootPerson: Person, personViews: Map<string, PersonView>, genealogyType: GenealogyType, duplicates: Map<string, Person[]>): void {
+        // Clearing the container has to be done in the calling method. Otherwise the new PersonView objects get removed aswell.
+        this.jsPlumbInst.reset();
+
+        const timelineBounds: [number, number] = this.getTimespanForGenealogy(rootPerson);
+        this.rebuildTimelineAndScale(timelineBounds[0] - 500, timelineBounds[1] + 500);
+
+        const drawer: TreeDrawer = new WalkerTreeDrawer();
+        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, genealogyType);
+
+        this.translateToPositionOfRootPersonView(personViews.get(rootPerson.getId()));
+        this.addDragAndDropEventListenerToPersonViews(personViews);
+        this.connectDuplicates(duplicates, personViews);
+    }
+
+    private connectDuplicates(duplicates: Map<string, Person[]>, personViews: Map<string, PersonView>): void {
+        const connectionParameters: ConnectParams = {
+            anchor: ["Right", "Left"],
+            connector: ["Straight", {}],
+            deleteEndpointsOnDetach: false,
+            detachable: false,
+            // @ts-ignore
+            paintStyle: {
+                stroke: "#ca0404",
+                strokeWidth: 7,
+                dashstyle: "6 4"
+            },
+            endpointStyles: [
+                { fill: "#ca0404" },
+                { fill: "#ca0404" }
+            ]
+        };
+
+        duplicates.forEach((duplicatesList: Person[], id: string) => {
+            for (let i = 0; i < duplicatesList.length; i++) {
+                const duplicateOne: Person = duplicatesList[i];
+                const personView: PersonView = personViews.get(duplicateOne.getId());
+                personView.toggleVisibilityOfDuplicatesButton();
+
+                for (let x = i + 1; x < duplicatesList.length; x++) {
+                    const duplicateTwo: Person = duplicatesList[x];
+                    const cssClass: string = "duplicates-stroke-" + id;
+
+                    connectionParameters["endpoint"] = ["Dot", { cssClass: "hidden " + cssClass }];
+                    connectionParameters["cssClass"] = "hidden " + cssClass;
+
+                    this.jsPlumbInst.connect({ source: duplicateOne.getId(), target: duplicateTwo.getId() }, connectionParameters);
+                }
+            }
+        });
     }
 
     private rebuildTimelineAndScale(minYear: number, maxYear: number, roundValue: number = 100): void {
@@ -200,33 +231,17 @@ export class GenealogyView extends View {
         this.adjustTimelineScale(this.scale);
     }
 
-    public setLoaderIsVisible(isVisible: boolean): void {
-        if (isVisible) {
-            this.loaderElement.classList.remove("hidden");
-        } else {
-            this.loaderElement.classList.add("hidden");
-        }
-    }
-
-    public drawGenealogyTree(rootPerson: Person, personViews: Map<string, PersonView>, genealogyType: GenealogyType): void {
-        this.jsPlumbInst.reset();
-
-        const timelineBounds: [number, number] = this.getTimespanForGenealogy(rootPerson);
-        this.rebuildTimelineAndScale(timelineBounds[0] - 500, timelineBounds[1] + 500);
-        
-        const drawer: TreeDrawer = new WalkerTreeDrawer();
-        drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, genealogyType);
-
-        this.translateToPositionOfRootPersonView(personViews.get(rootPerson.getId()));
-        this.addDragAndDropEventListenerToPersonViews(personViews);
-    }
-
-    public getTimespanForGenealogy(rootPerson: Person): [number, number] {
-        let minYear: number = Number.MAX_VALUE; // Stupid?
+    private getTimespanForGenealogy(rootPerson: Person): [number, number] {
+        let minYear: number = Number.MAX_VALUE;
         let maxYear: number = Number.MIN_VALUE;
 
         getMinYear(rootPerson);
         getMaxYear(rootPerson);
+
+        if (minYear == Number.MAX_VALUE && maxYear == Number.MIN_VALUE) {
+            minYear = 0;
+            maxYear = 0;
+        }
 
         return [minYear, maxYear];
 
@@ -260,7 +275,7 @@ export class GenealogyView extends View {
         }
     }
 
-    public setIsActivityOfRedrawButton(isActive: boolean): void {
+    public setIsActiveOfRedrawButton(isActive: boolean): void {
         if (isActive) {
             this.redrawTreeButton.classList.add("active");
         } else {
@@ -269,70 +284,68 @@ export class GenealogyView extends View {
     }
 
     public translateToPositionOfRootPersonView(personView: PersonView): void {
-        let wrapperWidth: number = this.containerElementWrapper.offsetWidth;
-        let wrapperHeight: number = this.containerElementWrapper.offsetHeight;
+        let containerWrapperWidth: number = this.containerElementWrapper.offsetWidth;
+        let containerWrapperHeight: number = this.containerElementWrapper.offsetHeight;
 
         // Translate the container so that the personview is in the top left corner.
         this.transformY = -personView.getOffsetTopInPx() * this.scale;
         this.transformX = -personView.getOffsetLeftInPx() * this.scale;
 
         // Center the personview in the containerWrapper.
-        this.transformX += wrapperWidth / 2 - personView.getWidthInPx() * this.scale / 2;
-        this.transformY += wrapperHeight / 2 - personView.getHeightInPx() * this.scale / 2;
+        this.transformX += containerWrapperWidth / 2 - personView.getWidthInPx() * this.scale / 2;
+        this.transformY += containerWrapperHeight / 2 - personView.getHeightInPx() * this.scale / 2;
 
-        // Translate and scale accordingly to the new values.
+        // Translate and scale the container and timeline accordingly.
         this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
-    }
-
-    public clearContainer(): void {
-        this.containerElement.innerHTML = "";
     }
 
     private addZoomEventListeners() {
         this.zoomOutButton.addEventListener("click", (event: MouseEvent) => {
-            const relativeMousePosition: Position = this.getRelativeMousePosition(event);
-            this.zoom(relativeMousePosition, -this.zoomFactor)
+            const centerOfWrapper: Position = new Position(this.containerElementWrapper.offsetWidth / 2, this.containerElementWrapper.offsetHeight / 2);
+            this.zoomBy(-this.zoomFactor, centerOfWrapper);
         });
 
         this.zoomInButton.addEventListener("click", (event: MouseEvent) => {
-            const relativeMousePosition: Position = this.getRelativeMousePosition(event);
-            this.zoom(relativeMousePosition, this.zoomFactor);
+            const centerOfWrapper: Position = new Position(this.containerElementWrapper.offsetWidth / 2, this.containerElementWrapper.offsetHeight / 2);
+            this.zoomBy(this.zoomFactor, centerOfWrapper);
         });
-        
+
         this.containerElementWrapper.addEventListener("wheel", (event: WheelEvent) => {
             const delta = Math.sign(event.deltaY);
-            const minimumScale = 0.2;
-
             const relativeMousePosition: Position = this.getRelativeMousePosition(event);
 
             if (delta > 0) {
-                if (this.scale > minimumScale) {
-                    this.zoom(relativeMousePosition, -this.zoomFactor);
-                }
+                // Zoom out.
+                this.zoomBy(-this.zoomFactor, relativeMousePosition);
             } else {
-                this.zoom(relativeMousePosition, this.zoomFactor);
+                // Zoom out.
+                this.zoomBy(this.zoomFactor, relativeMousePosition);
             }
         });
     }
 
-    private zoom(mousePosition: Position, zoomFactor: number) {
-        this.scaleAndTranslateElementsWithMousePosition(this.scale, this.scale + zoomFactor, mousePosition.x, mousePosition.y);
-        this.scale += zoomFactor;
+    private zoomBy(zoomFactor: number, relativeMousePosition: Position): void {
+        const newScale: number = this.scale + zoomFactor;
+
+        if (newScale > this.minScale) {
+            this.scaleAndTranslateElementsWithMousePosition(this.scale, newScale, relativeMousePosition.x, relativeMousePosition.y);
+            this.scale = newScale;
+        } 
     }
 
     private getRelativeMousePosition(mouseEvent: MouseEvent): Position {
-        let rect = this.containerElementWrapper.getBoundingClientRect();
-        let mousePositionX = mouseEvent.clientX - rect.left;
-        let mousePositionY = mouseEvent.clientY - rect.top;
+        const rect = this.containerElementWrapper.getBoundingClientRect();
+        const mousePositionX = mouseEvent.clientX - rect.left;
+        const mousePositionY = mouseEvent.clientY - rect.top;
 
         return new Position(mousePositionX, mousePositionY);
     }
 
     private scaleAndTranslateElementsWithMousePosition(currentScale: number, newScale: number, mousePositionX: number, mousePositionY: number): void {
-        let scaleRatio = newScale / currentScale;
+        const scaleRatio = newScale / currentScale;
 
-        let scaledMousePositionX = this.transformX + (mousePositionX - this.transformX) * scaleRatio;
-        let scaledMousePositionY = this.transformY + (mousePositionY- this.transformY) * scaleRatio;
+        const scaledMousePositionX = this.transformX + (mousePositionX - this.transformX) * scaleRatio;
+        const scaledMousePositionY = this.transformY + (mousePositionY - this.transformY) * scaleRatio;
 
         this.transformX += mousePositionX - scaledMousePositionX;
         this.transformY += mousePositionY - scaledMousePositionY;
@@ -344,13 +357,13 @@ export class GenealogyView extends View {
     private adjustTimelineScale(scale: number): void {
         this.timelineContainerWrapper.style.width = (this.timelineWidthInPx / scale) + "px";
         this.timelineContainerWrapper.style.fontSize = (1 / scale) + "rem";
-        
+
         this.timelineLineContainers.forEach((element: Element, index: number) => {
             const timelineLineContainer: HTMLElement = (element as HTMLElement);
-            const lineElement: HTMLElement = <HTMLElement> timelineLineContainer.children[0];
+            const lineElement: HTMLElement = <HTMLElement>timelineLineContainer.children[0];
 
             lineElement.style.height = (1 / scale) + "px";
-            
+
             if (index % 5 !== 0) {
                 if (scale <= 0.5) {
                     timelineLineContainer.style.visibility = "hidden";
@@ -368,7 +381,7 @@ export class GenealogyView extends View {
             let isDraggingThisPersonView: boolean = false;
 
             dragAndDropButton.addEventListener("mousedown", (mouseEvent: MouseEvent) => {
-                this.isDragginPersonView = true;
+                this.isDraggingAPersonNode = true;
                 isDraggingThisPersonView = true;
             });
 
@@ -380,9 +393,8 @@ export class GenealogyView extends View {
             });
 
             this.containerElementWrapper.addEventListener("mouseup", (mouseEvent: MouseEvent) => {
-                // gets executed for all person views...not good.
                 isDraggingThisPersonView = false;
-                this.isDragginPersonView = false;
+                this.isDraggingAPersonNode = false;
             });
         });
     }
@@ -396,18 +408,15 @@ export class GenealogyView extends View {
         this.containerElementWrapper.addEventListener("mousedown", (event: MouseEvent) => {
             this.isPaning = true;
         });
-            
+
         this.containerElementWrapper.addEventListener("mouseup", (event: MouseEvent) => {
             this.isPaning = false;
         });
-    
+
         this.containerElementWrapper.addEventListener("mousemove", (event: MouseEvent) => {
-            if (this.isPaning && !this.isDragginPersonView) {
-                let xDifference = event.movementX;
-                let yDifference = event.movementY;
-    
-                this.transformX += xDifference;
-                this.transformY += yDifference;
+            if (this.isPaning && !this.isDraggingAPersonNode) {
+                this.transformX += event.movementX;
+                this.transformY += event.movementY;
 
                 this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
             }
@@ -418,9 +427,7 @@ export class GenealogyView extends View {
         this.currentRootPersonElement.textContent = person.getName();
     }
 
-    // getters and setters
-
-    public getDepthInput(): HTMLInputElement {
+    public getNumberOfGenerations(): HTMLInputElement {
         return this.numberOfGenerationsInput;
     }
 
@@ -436,7 +443,7 @@ export class GenealogyView extends View {
         return this.jsPlumbInst;
     }
 
-    public getDrawTreeButton(): HTMLElement {
+    public getDrawNewTreeButton(): HTMLElement {
         return this.drawNewTreeButton;
     }
 
