@@ -18,30 +18,19 @@ export class WalkerTreeDrawer implements TreeDrawer {
         this.deathYearsOfLevel = [];
         this.birthYearsOfLevel = [];
         
-        let rootNode: WalkerNode;
-
-        switch (genealogyType) {
-            case GenealogyType.Ancestors:
-                rootNode = this.initializeChildrenNodesForAncestors(rootPerson, personViewsMap, 0);
-                break;
-            case GenealogyType.Descendants:
-                rootNode = this.initializeChildrenNodesForDescendants(rootPerson, personViewsMap, 0);
-                break;   
-            default:
-                break;
-        }
-        
+        const rootNode: WalkerNode = this.initializeNodes(rootPerson, personViewsMap, 0, genealogyType);     
         this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;
 
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);
 
-        this.jsPlumbInst.repaintEverything(); // not the best solution probably
+        this.jsPlumbInst.repaintEverything();
     }
 
-    private initializeChildrenNodesForDescendants(person: Person, personViewMap: Map<string, PersonView>, level: number): WalkerNode {
-        let personNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
-        let children: Person[] = person.getChildren();
+    private initializeNodes(person: Person, personViewMap: Map<string, PersonView>, level: number, genealogyType: GenealogyType): WalkerNode {
+        const personNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
+        personNode.thread = null;
+        personNode.ancestor = personNode;
 
         if (person.getDatesOfBirth()[0] != null) {
             if (this.birthYearsOfLevel[level] == null) this.birthYearsOfLevel[level] = [];
@@ -52,77 +41,66 @@ export class WalkerTreeDrawer implements TreeDrawer {
             this.deathYearsOfLevel[level].push(person.getDatesOfDeath()[0].getFullYear());
         }
 
-        personNode.thread = null;
-        personNode.ancestor = personNode;
+        switch (genealogyType) {
+            case GenealogyType.Ancestors:
+                if (personNode.person.getFather() != null) {
+                    let fatherNode: WalkerNode = this.initializeNodes(personNode.person.getFather(), personViewMap, level + 1, genealogyType);
+                    fatherNode.parent = personNode;
+                    personNode.children.push(fatherNode);
+                }
 
-        for (let i = 0; i < children.length; i++) {
-            const child = children[i];
-            let childNode: WalkerNode = this.initializeChildrenNodesForDescendants(child, personViewMap, level + 1);
-            childNode.childrenIndex = i;
-            childNode.parent = personNode;
-            personNode.children.push(childNode);
+                if (personNode.person.getMother() != null) {
+                    let motherNode: WalkerNode = this.initializeNodes(personNode.person.getMother(), personViewMap, level + 1, genealogyType);
+                    motherNode.parent = personNode;
+                    personNode.children.push(motherNode);
+                }
+        
+                if (personNode.children.length == 2) { // There exists both father and mother. They are siblingnodes.
+                    personNode.children[0].rightSibling = personNode.children[1];
+                    personNode.children[1].leftSibling = personNode.children[0];
+                }
+        
+                for (let index = 0; index < personNode.children.length; index++) {
+                    const child = personNode.children[index];
+                    child.childrenIndex = index;
+                }
 
-            if (i > 0) {
-                childNode.leftSibling = personNode.children[i - 1];
-                personNode.children[i - 1].rightSibling = childNode;
-            }
+                break;
+            case GenealogyType.Descendants:
+                const children: Person[] = person.getChildren();
+
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
+                    const childNode: WalkerNode = this.initializeNodes(child, personViewMap, level + 1, genealogyType);
+                    childNode.childrenIndex = i;
+                    childNode.parent = personNode;
+                    personNode.children.push(childNode);
+        
+                    if (i > 0) {
+                        childNode.leftSibling = personNode.children[i - 1];
+                        personNode.children[i - 1].rightSibling = childNode;
+                    }
+                }
+
+                break;
         }
 
         return personNode;
     }
 
-    private initializeChildrenNodesForAncestors(person: Person, personViewMap: Map<string, PersonView>, level: number): WalkerNode {
-        let walkerNode: WalkerNode = new WalkerNode(person, personViewMap.get(person.getId()));
-        walkerNode.thread = null;
-        walkerNode.ancestor = walkerNode;
-
-        if (person.getDatesOfBirth()[0] != null) {
-            if (this.birthYearsOfLevel[level] == null) this.birthYearsOfLevel[level] = [];
-            this.birthYearsOfLevel[level].push(person.getDatesOfBirth()[0].getFullYear());
-        }
-        if (person.getDatesOfDeath()[0] != null) {
-            if (this.deathYearsOfLevel[level] == null) this.deathYearsOfLevel[level] = [];
-            this.deathYearsOfLevel[level].push(person.getDatesOfDeath()[0].getFullYear());
-        }
-
-        if (walkerNode.person.getFather() != null) {
-            let fatherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getFather(), personViewMap, level + 1);
-            fatherNode.parent = walkerNode;
-            walkerNode.children.push(fatherNode);
-        }
-        if (walkerNode.person.getMother() != null) {
-            let motherNode: WalkerNode = this.initializeChildrenNodesForAncestors(walkerNode.person.getMother(), personViewMap, level + 1);
-            motherNode.parent = walkerNode;
-            walkerNode.children.push(motherNode);
-        }
-
-        if (walkerNode.children.length == 2) { // children have siblings
-            walkerNode.children[0].rightSibling = walkerNode.children[1];
-            walkerNode.children[1].leftSibling = walkerNode.children[0];
-        }
-
-        // maybe put this into the firstWalk method
-        for (let index = 0; index < walkerNode.children.length; index++) {
-            const child = walkerNode.children[index];
-            child.childrenIndex = index;
-        }
-
-        return walkerNode;
-    }
-
     private firstWalk(node: WalkerNode): void {
         if (node.isLeaf()) {
-            // In the algorithm described by Buchheimer et al. the preliminary x position of every leaf is just 0, 
-            // which does not make sense, since the right sibling needs to have a distance to its left sibling.
-            // 
-            // Original algorithm:
-            // v.prelim = 0;
-
             if (node.leftSibling == null) {
                 node.preliminaryXPosition = 0;
             } else {
-                // Keep in mind, that the preliminary x position is the left upper corner of a node.
+                // Keep in mind, that the preliminary x position is the left upper corner of a drawn node.
+                // This is why the distance between nodes should be at least the width of a node.
+                // Otherwise nodes could overlap.
                 node.preliminaryXPosition = node.leftSibling.preliminaryXPosition + this.distanceBetweenNodes;
+                // New Code:
+                if (node.parent.children.length % 2 != 0 && Math.floor(node.parent.children.length / 2) == node.childrenIndex) {
+                    node.preliminaryXPosition += this.distanceBetweenNodes;
+                }
             }
         } else {
             let defaultAncestor: WalkerNode = node.getLeftMostChild();
@@ -135,8 +113,13 @@ export class WalkerTreeDrawer implements TreeDrawer {
             this.executeShifts(node);
 
             let midpointBetweenChildren: number = 0.5 * (node.getLeftMostChild().preliminaryXPosition + node.getRightMostChild().preliminaryXPosition);
+            
+            // New Code
+            if (node.children.length == 1) {
+                midpointBetweenChildren += this.distanceBetweenNodes / 2;
+            }
 
-            let leftSibling: WalkerNode = node.leftSibling;
+            const leftSibling: WalkerNode = node.leftSibling;
             if (leftSibling != null) {
                 // This happens, when the node has a left sibling and is not a leaf.
                 node.preliminaryXPosition = leftSibling.preliminaryXPosition + this.distanceBetweenNodes;
@@ -153,8 +136,8 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private secondWalk(node: WalkerNode, offset: number, level: number) {
         // The offset takes care of placing the root node at x position 0 and placing all other nodes accordingly.
         node.personView.setOffsetLeftInPx(node.preliminaryXPosition + offset);
-        node.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
-        this.positionNodeVertically(node, level); // not part of the original algorithm
+        // node.personView.setOffsetTopInPx(level * this.distanceBetweenNodes);
+        this.positionNodeVertically(node, level);
 
         for (const child of node.children) {
             this.connect(this.jsPlumbInst, node.person, child.person); // not part of the original algorithm
@@ -163,7 +146,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private apportion(node: WalkerNode, defaultAncestor: WalkerNode): WalkerNode {
-        let leftSibling: WalkerNode = node.leftSibling;
+        const leftSibling: WalkerNode = node.leftSibling;
         
         if (leftSibling != null) {
 
@@ -187,7 +170,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
                 // This calculates the necessary shift between the subtress so that the nodes on a level are placed 
                 // next to each other.
-                let shift: number = (contourNodeInsideLeftTree.preliminaryXPosition + modsumInsideLeftTree) - (contourNodeInsideRightTree.preliminaryXPosition + modsumInsideRightTree) + this.distanceBetweenNodes;
+                const shift: number = (contourNodeInsideLeftTree.preliminaryXPosition + modsumInsideLeftTree) - (contourNodeInsideRightTree.preliminaryXPosition + modsumInsideRightTree) + this.distanceBetweenNodes;
 
                 if (shift > 0) {
                     this.moveSubtree(this.ancestor(contourNodeInsideLeftTree, node, defaultAncestor), node, shift);
@@ -238,7 +221,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private moveSubtree(wLeft: WalkerNode, wRight: WalkerNode, shift: number): void {
-        let subtrees: number = wRight.childrenIndex - wLeft.childrenIndex;
+        const subtrees: number = wRight.childrenIndex - wLeft.childrenIndex;
 
         wRight.change -= shift / subtrees;
         wRight.shift += shift;
@@ -251,12 +234,12 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
     // not part of the original algorithm
     private positionNodeVertically(node: WalkerNode, level: number): void {
+        const averageBirthYearOfLevel: number = Math.round(this.birthYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.birthYearsOfLevel[level].length);
+        const averageDeathYearOfLevel: number = Math.round(this.deathYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.deathYearsOfLevel[level].length);
+        const middleYear = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2
+        
         let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
         let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
-
-        let averageBirthYearOfLevel: number = Math.round(this.birthYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.birthYearsOfLevel[level].length);
-        let averageDeathYearOfLevel: number = Math.round(this.deathYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.deathYearsOfLevel[level].length);
-        let middleYear = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2
 
         if (yearOfBirth == null) {
             yearOfBirth = middleYear - (node.personView.getLifelineBoxHeightInPx() / 2) / this.pixelPerYear;
@@ -276,52 +259,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
         this.checkLifelineBoxHeight(lifelineHeight, yearsFromBirthToMiddleInPx, node);
     }
-
-    // // not part of the original algorithm
-    // private positionNodeVertically(node: WalkerNode, level: number): void {
-    //     let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
-    //     let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
-
-    //     // refactor, only collect the min death year and max birth year for level!
-    //     let minDeathYearOfLevel: number = Math.a(...this.deathYearsOfLevel[level]);
-    //     let maxBirthYearOfLevel: number = Math.max(...this.birthYearsOfLevel[level]);
-
-    //     if (this.drawAncestors) {
-    //         if (yearOfBirth == null) {
-    //             yearOfBirth = minDeathYearOfLevel - node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
-    //         }
-    //         if (yearOfDeath == null) {
-    //             yearOfDeath = minDeathYearOfLevel;
-    //         }
-
-    //         this.positionLifeline(yearOfBirth, yearOfDeath, node);
-
-    //         let birthYearMinDeathYearDifference: number = minDeathYearOfLevel - yearOfBirth;
-    //         let yearDifferenceInPx: number = birthYearMinDeathYearDifference * this.pixelPerYear;
-    //         let relativeYPositionOfLifelineBox: number = yearDifferenceInPx  - node.personView.getLifelineBoxHeightInPx();
-
-    //         this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
-    //         let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
-    //         this.checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node);
-    //     } else {
-    //         if (yearOfBirth == null) {
-    //             yearOfBirth = maxBirthYearOfLevel;
-    //         }
-    //         if (yearOfDeath == null) {
-    //             yearOfDeath = maxBirthYearOfLevel + node.personView.getLifelineBoxHeightInPx() / this.pixelPerYear;
-    //         }
-
-    //         this.positionLifeline(yearOfBirth, yearOfDeath, node);
-
-    //         let birthYearMaxBirthYearDifference: number = maxBirthYearOfLevel - yearOfBirth;
-    //         let yearDifferenceInPx: number = birthYearMaxBirthYearDifference * this.pixelPerYear;
-    //         let relativeYPositionOfLifelineBox: number = yearDifferenceInPx;
-
-    //         this.positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox, node);
-    //         let lifelineHeight: number = (yearOfDeath - yearOfBirth) * this.pixelPerYear;
-    //         this.checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node);
-    //     }
-    // }
 
     private positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox: number, node: WalkerNode): void {
         node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
@@ -355,7 +292,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private connect(jsPlumbInst: jsPlumbInstance, source: Person, target: Person): void {
-        let connectionParameters: ConnectParams = {
+        const connectionParameters: ConnectParams = {
             anchor: ["Bottom", "Top"],
             connector: [ "Flowchart", {}],
             endpoint: "Dot",
@@ -366,9 +303,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 stroke: "black", 
                 strokeWidth: 5 
             },
-            // hoverPaintStyle: {
-            //     stroke: "gray",
-            // },
             endpointStyles: [
                 { fill:"black"},
                 { fill:"black" }

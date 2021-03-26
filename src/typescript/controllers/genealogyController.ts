@@ -29,13 +29,13 @@ export class GenealogyController {
         
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
 
-        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
-        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors, duplicates);
+        // let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        // this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        // this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors, duplicates);
         
-        // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
-        // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
-        // this.genealogyView.displayDescendants(rootPerson, personViews);
+        let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
+        this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
+        this.genealogyView.drawGenealogyTree(rootPerson, personViews, GenealogyType.Descendants, duplicates);
     }
 
     public setRootPerson(person: Person): void {

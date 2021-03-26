@@ -61,6 +61,7 @@ button {
     overflow: hidden;
     cursor: move;
     background-color: white;
+    user-select: none;
 }
 
 #jsplumb-container {
@@ -246,6 +247,21 @@ button {
     a:hover {
         text-decoration: underline;
     }
+}
+
+#timeline-container-wrapper {
+    left: 0px;
+    top: 0px;
+    height: 100%;
+    position: absolute;
+    width: 50px;
+    transform-origin: left top;
+}
+
+#timeline-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
 .draw-tree-button {
@@ -533,21 +549,6 @@ button.delete-button {
     margin-top: 0.9rem;
     display: flex;
     justify-content: center;
-}
-
-#timeline-container-wrapper {
-    left: 0px;
-    top: 0px;
-    height: 100%;
-    position: absolute;
-    width: 50px;
-    transform-origin: left top;
-}
-
-#timeline-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
 }
 
 .timeline-line-container {
