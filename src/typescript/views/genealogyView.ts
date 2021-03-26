@@ -13,7 +13,7 @@ export class GenealogyView extends View {
     private containerElementWrapper: HTMLElement;
     private jsPlumbInst: jsPlumbInstance;
     private numberOfGenerationsInput: HTMLInputElement;
-    private directionInput: HTMLSelectElement;
+    private genealogyTypeInput: HTMLSelectElement;
     private zoomInButton: HTMLElement;
     private zoomOutButton: HTMLElement;
     private drawNewTreeButton: HTMLElement;
@@ -68,23 +68,23 @@ export class GenealogyView extends View {
         const displayOptionsContainer: HTMLElement = this.createHTMLElement("div", [], "display-options-container");
         optionsBar.appendChild(displayOptionsContainer);
 
-        const directionContainer: HTMLElement = this.createHTMLElement("div", [], "direction-container");
-        displayOptionsContainer.appendChild(directionContainer);
+        const genealogyTypeContainer: HTMLElement = this.createHTMLElement("div", [], "direction-container");
+        displayOptionsContainer.appendChild(genealogyTypeContainer);
 
-        const directionLabel = this.createHTMLElement("label");
-        directionLabel.innerHTML = languageData["genealogyTypeLabel"];
+        const genealogyTypeLabel = this.createHTMLElement("label");
+        genealogyTypeLabel.innerHTML = languageData["genealogyTypeLabel"];
         // directionLabel.setAttribute("for", "depth-input");
-        directionContainer.appendChild(directionLabel);
+        genealogyTypeContainer.appendChild(genealogyTypeLabel);
 
-        this.directionInput = document.createElement("select");
+        this.genealogyTypeInput = document.createElement("select");
         const options: string[] = [languageData["ancestors"], languageData["descendants"]];
         for (const option of options) {
             const optionElement: HTMLOptionElement = document.createElement("option");
             optionElement.value = option;
             optionElement.text = option;
-            this.directionInput.appendChild(optionElement);
+            this.genealogyTypeInput.appendChild(optionElement);
         }
-        directionContainer.appendChild(this.directionInput);
+        genealogyTypeContainer.appendChild(this.genealogyTypeInput);
 
         const numberOfGenerationsContainer: HTMLElement = this.createHTMLElement("div", [], "number-of-generations-container");
         displayOptionsContainer.appendChild(numberOfGenerationsContainer);
@@ -108,14 +108,19 @@ export class GenealogyView extends View {
 
         this.drawNewTreeButton = this.createHTMLElement("button", ["draw-tree-button"], "draw-new-tree-button");
         this.drawNewTreeButton.innerText = languageData["drawNewTree"];
+        this.setIsActiveOfDrawNewButton(false);
         drawTreeButtonContainer.appendChild(this.drawNewTreeButton);
 
         this.redrawTreeButton = this.createHTMLElement("button", ["draw-tree-button"], "redraw-tree-button");
         this.redrawTreeButton.innerText = languageData["redrawTree"];
+        this.setIsActiveOfRedrawButton(false);
         drawTreeButtonContainer.appendChild(this.redrawTreeButton);
 
+        this.containerElementWrapper = this.createHTMLElement("div", [], "jsplumb-container-wrapper");
+        parentElement.appendChild(this.containerElementWrapper);
+
         const zoomButtonsContainer: HTMLElement = this.createHTMLElement("div", [], "zoom-button-container");
-        optionsBar.appendChild(zoomButtonsContainer);
+        this.containerElementWrapper.appendChild(zoomButtonsContainer);
 
         this.zoomInButton = this.createHTMLElement("button", [], "zoom-in-button");
         this.zoomInButton.innerHTML = languageData["zoomInButtonText"];
@@ -124,9 +129,6 @@ export class GenealogyView extends View {
         this.zoomOutButton = this.createHTMLElement("button", [], "zoom-out-button");
         this.zoomOutButton.innerHTML = languageData["zoomOutButtonText"];
         zoomButtonsContainer.appendChild(this.zoomOutButton);
-
-        this.containerElementWrapper = this.createHTMLElement("div", [], "jsplumb-container-wrapper");
-        parentElement.appendChild(this.containerElementWrapper);
 
         this.loaderElement = this.createHTMLElement("div", ["loader", "hidden"]);
         this.containerElementWrapper.appendChild(this.loaderElement);
@@ -277,9 +279,17 @@ export class GenealogyView extends View {
 
     public setIsActiveOfRedrawButton(isActive: boolean): void {
         if (isActive) {
-            this.redrawTreeButton.classList.add("active");
+            this.redrawTreeButton.classList.remove("inactive");
         } else {
-            this.redrawTreeButton.classList.remove("active");
+            this.redrawTreeButton.classList.add("inactive");
+        }
+    }
+
+    public setIsActiveOfDrawNewButton(isActive: boolean): void {
+        if (isActive) {
+            this.drawNewTreeButton.classList.remove("inactive");
+        } else {
+            this.drawNewTreeButton.classList.add("inactive");
         }
     }
 
@@ -381,11 +391,15 @@ export class GenealogyView extends View {
             let isDraggingThisPersonView: boolean = false;
 
             dragAndDropButton.addEventListener("mousedown", (mouseEvent: MouseEvent) => {
+                mouseEvent.preventDefault();
+
                 this.isDraggingAPersonNode = true;
                 isDraggingThisPersonView = true;
             });
 
             this.containerElementWrapper.addEventListener("mousemove", (mouseEvent: MouseEvent) => {
+                mouseEvent.preventDefault();
+
                 if (isDraggingThisPersonView) {
                     personView.setOffsetLeftInPx(personView.getOffsetLeftInPx() + mouseEvent.movementX / this.scale);
                     this.jsPlumbInst.revalidate(id);
@@ -393,6 +407,8 @@ export class GenealogyView extends View {
             });
 
             this.containerElementWrapper.addEventListener("mouseup", (mouseEvent: MouseEvent) => {
+                mouseEvent.preventDefault();
+
                 isDraggingThisPersonView = false;
                 this.isDraggingAPersonNode = false;
             });
@@ -405,18 +421,24 @@ export class GenealogyView extends View {
     }
 
     private addPanningEventListeners() {
-        this.containerElementWrapper.addEventListener("mousedown", (event: MouseEvent) => {
+        this.containerElementWrapper.addEventListener("mousedown", (mouseEvent: MouseEvent) => {
+            mouseEvent.preventDefault();
+
             this.isPaning = true;
         });
 
-        this.containerElementWrapper.addEventListener("mouseup", (event: MouseEvent) => {
+        this.containerElementWrapper.addEventListener("mouseup", (mouseEvent: MouseEvent) => {
+            mouseEvent.preventDefault();
+
             this.isPaning = false;
         });
 
-        this.containerElementWrapper.addEventListener("mousemove", (event: MouseEvent) => {
+        this.containerElementWrapper.addEventListener("mousemove", (mouseEvent: MouseEvent) => {
+            mouseEvent.preventDefault();
+
             if (this.isPaning && !this.isDraggingAPersonNode) {
-                this.transformX += event.movementX;
-                this.transformY += event.movementY;
+                this.transformX += mouseEvent.movementX;
+                this.transformY += mouseEvent.movementY;
 
                 this.translateAndScaleContainerAndTimeline(this.transformX, this.transformY, this.scale);
             }
@@ -432,7 +454,7 @@ export class GenealogyView extends View {
     }
 
     public getGenealogyTypeSelectElement(): HTMLSelectElement {
-        return this.directionInput;
+        return this.genealogyTypeInput;
     }
 
     public getContainer(): HTMLElement {

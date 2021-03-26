@@ -41,6 +41,7 @@ export class GenealogyController {
     public setRootPerson(person: Person): void {
         this.genealogy.setRootPerson(person);
         this.genealogyView.setCurrentRootPerson(person);
+        this.genealogyView.setIsActiveOfDrawNewButton(true);
         this.genealogyView.setIsActiveOfRedrawButton(false);
     }
 
