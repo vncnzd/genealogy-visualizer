@@ -391,15 +391,11 @@ export class GenealogyView extends View {
             let isDraggingThisPersonView: boolean = false;
 
             dragAndDropButton.addEventListener("mousedown", (mouseEvent: MouseEvent) => {
-                mouseEvent.preventDefault();
-
                 this.isDraggingAPersonNode = true;
                 isDraggingThisPersonView = true;
             });
 
             this.containerElementWrapper.addEventListener("mousemove", (mouseEvent: MouseEvent) => {
-                mouseEvent.preventDefault();
-
                 if (isDraggingThisPersonView) {
                     personView.setOffsetLeftInPx(personView.getOffsetLeftInPx() + mouseEvent.movementX / this.scale);
                     this.jsPlumbInst.revalidate(id);
@@ -407,8 +403,6 @@ export class GenealogyView extends View {
             });
 
             this.containerElementWrapper.addEventListener("mouseup", (mouseEvent: MouseEvent) => {
-                mouseEvent.preventDefault();
-
                 isDraggingThisPersonView = false;
                 this.isDraggingAPersonNode = false;
             });
@@ -422,20 +416,14 @@ export class GenealogyView extends View {
 
     private addPanningEventListeners() {
         this.containerElementWrapper.addEventListener("mousedown", (mouseEvent: MouseEvent) => {
-            mouseEvent.preventDefault();
-
             this.isPaning = true;
         });
 
         this.containerElementWrapper.addEventListener("mouseup", (mouseEvent: MouseEvent) => {
-            mouseEvent.preventDefault();
-
             this.isPaning = false;
         });
 
         this.containerElementWrapper.addEventListener("mousemove", (mouseEvent: MouseEvent) => {
-            mouseEvent.preventDefault();
-
             if (this.isPaning && !this.isDraggingAPersonNode) {
                 this.transformX += mouseEvent.movementX;
                 this.transformY += mouseEvent.movementY;
