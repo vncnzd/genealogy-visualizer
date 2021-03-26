@@ -324,7 +324,7 @@ button.delete-button {
     top: -5px;
     left: 100%;
     background-color: inherit;
-    width: 400px;
+    width: max-content;
     padding: 1rem;
     border-style: solid;
     border-radius: 10px;
@@ -332,6 +332,15 @@ button.delete-button {
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.5s ease;
+}
+
+.additional-info-heading {
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+.dates-list {
+    margin: 0px;
 }
 
 .opacity-100 {

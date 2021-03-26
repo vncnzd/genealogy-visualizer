@@ -14,7 +14,11 @@
         "nameOfThePerson": "Name of the person",
         "germanButton": "German",
         "englishButton": "English",
-        "duplicates": "Show duplicates"
+        "duplicates": "Show duplicates",
+        "alternativeBirthdates": "Alternative birth dates",
+        "alternativeDeathdates": "Alternative death dates",
+        "description": "Description",
+        "dataSource": "Data source"
     },
     "de": {
         "title": "Genealogie",
@@ -31,6 +35,10 @@
         "nameOfThePerson": "Name der Person",
         "germanButton": "Deutsch",
         "englishButton": "Englisch",
-        "duplicates": "Duplikate"
+        "duplicates": "Duplikate",
+        "alternativeBirthdates": "Alternative Geburtsdaten",
+        "alternativeDeathdates": "Alternative Todesdaten",
+        "description": "Beschreibung",
+        "dataSource": "Datenquelle"
     }
 }

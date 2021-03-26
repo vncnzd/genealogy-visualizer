@@ -59,6 +59,8 @@ export class PersonView extends View {
     }
 
     private initializeHTMLElements(person: Person, rootElement: HTMLElement): void {
+        const languageData: Object = LanguageManager.getInstance().getCurrentLanguageData();
+
         this.containerElement = this.createHTMLElement("div", ["person-container"]);
         this.containerElement.style.width = this.lifelineBoxWidthInPx + "px";
         rootElement.appendChild(this.containerElement);
@@ -123,11 +125,54 @@ export class PersonView extends View {
         this.additionalInfoContainerElement = this.createHTMLElement("div", ["additional-info-container"]);
         this.boxElement.appendChild(this.additionalInfoContainerElement);
 
-        let descriptionParagraph: HTMLElement = this.createHTMLElement("p");
-        descriptionParagraph.appendChild(document.createTextNode(person.getDescription()));
-        this.additionalInfoContainerElement.appendChild(descriptionParagraph);
+        if (person.getDescription() != null) {
+            const descriptionHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
+            descriptionHeading.appendChild(document.createTextNode(languageData["description"]));
+            this.additionalInfoContainerElement.appendChild(descriptionHeading);
+    
+            const descriptionParagraph: HTMLElement = this.createHTMLElement("p");
+            descriptionParagraph.appendChild(document.createTextNode(person.getDescription()));
+            this.additionalInfoContainerElement.appendChild(descriptionParagraph);
+        }
 
-        let wikidataLink: HTMLElement = this.createHTMLElement("a");
+        if (person.getDatesOfBirth().length > 1) {
+            const alternativeBirthDatesHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
+            alternativeBirthDatesHeading.appendChild(document.createTextNode(languageData["alternativeBirthdates"]));
+            this.additionalInfoContainerElement.appendChild(alternativeBirthDatesHeading);
+
+
+            const birthDatesListElement: HTMLElement = this.createHTMLElement("ul", ["dates-list"]);
+            this.additionalInfoContainerElement.appendChild(birthDatesListElement);
+
+            for (let i = 1; i < person.getDatesOfBirth().length; i++) {
+                const birthDate = person.getDatesOfBirth()[i];
+                const listElement: HTMLElement = this.createHTMLElement("li");
+                listElement.innerText = birthDate.toLocaleDateString();
+                birthDatesListElement.appendChild(listElement);
+            }
+        }
+
+        if (person.getDatesOfDeath().length > 1) {
+            const alternativeDeathDatesHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
+            alternativeDeathDatesHeading.appendChild(document.createTextNode(languageData["alternativeDeathdates"]));
+            this.additionalInfoContainerElement.appendChild(alternativeDeathDatesHeading);
+
+            const deathDatesListElement: HTMLElement = this.createHTMLElement("ul");
+            this.additionalInfoContainerElement.appendChild(deathDatesListElement);
+
+            for (let i = 1; i < person.getDatesOfDeath().length; i++) {
+                const deathDate = person.getDatesOfDeath()[i];
+                const listElement: HTMLElement = this.createHTMLElement("li");
+                listElement.innerText = deathDate.toLocaleDateString();
+                deathDatesListElement.appendChild(listElement);
+            }
+        }
+
+        const dataSourceHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
+        dataSourceHeading.appendChild(document.createTextNode(languageData["dataSource"]));
+        this.additionalInfoContainerElement.appendChild(dataSourceHeading);
+
+        const wikidataLink: HTMLElement = this.createHTMLElement("a");
         wikidataLink.innerText = "https://www.wikidata.org/wiki/" + person.getBaseId();
         wikidataLink.setAttribute("href", "https://www.wikidata.org/wiki/" + person.getBaseId());
         wikidataLink.setAttribute("target", "_blank");
