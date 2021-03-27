@@ -11,20 +11,32 @@ export class WalkerTreeDrawer implements TreeDrawer {
     private jsPlumbInst: jsPlumbInstance;
     private deathYearsOfLevel: number[][];
     private birthYearsOfLevel: number[][];
+    private averageDeathYearsOfLevel: number[];
+    private averageBirthYearsOfLevel: number[];
+    private genealogyType: GenealogyType;
 
     run(rootPerson: Person, personViewsMap: Map<string, PersonView>, pixelPerYear: number, jsPlumbInst: jsPlumbInstance, genealogyType: GenealogyType): void {
         this.pixelPerYear = pixelPerYear;
         this.jsPlumbInst = jsPlumbInst;
         this.deathYearsOfLevel = [];
         this.birthYearsOfLevel = [];
+        this.genealogyType = genealogyType;
         
         const rootNode: WalkerNode = this.initializeNodes(rootPerson, personViewsMap, 0, genealogyType);     
+        this.averageBirthYearsOfLevel = this.calculateAverageYearOfLevel(this.birthYearsOfLevel);
+        this.averageDeathYearsOfLevel = this.calculateAverageYearOfLevel(this.deathYearsOfLevel)
         this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;
 
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);
 
         this.jsPlumbInst.repaintEverything();
+    }
+
+    private calculateAverageYearOfLevel(yearsOfLevel): number[] {
+        return yearsOfLevel.map((years: number[]): number => {
+            return years.reduce((a: number, b: number): number => { return a + b; }) / years.length;
+        });
     }
 
     private initializeNodes(person: Person, personViewMap: Map<string, PersonView>, level: number, genealogyType: GenealogyType): WalkerNode {
@@ -234,8 +246,45 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
     // not part of the original algorithm
     private positionNodeVertically(node: WalkerNode, level: number): void {
-        const averageBirthYearOfLevel: number = Math.round(this.birthYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.birthYearsOfLevel[level].length);
-        const averageDeathYearOfLevel: number = Math.round(this.deathYearsOfLevel[level].reduce((a: number, b: number) => { return a + b }) / this.deathYearsOfLevel[level].length);
+        let averageBirthYearOfLevel: number = this.averageBirthYearsOfLevel[level];
+        let averageDeathYearOfLevel: number = this.averageDeathYearsOfLevel[level];
+
+        if (averageBirthYearOfLevel == null) {
+            if (this.averageBirthYearsOfLevel[level - 1] != null) {
+                switch (this.genealogyType) {
+                    case GenealogyType.Ancestors:
+                        this.averageBirthYearsOfLevel[level] = this.averageBirthYearsOfLevel[level -1] - 30;
+                        break;
+                    case GenealogyType.Descendants:
+                        this.averageBirthYearsOfLevel[level] = this.averageBirthYearsOfLevel[level -1] + 30;
+                        break;
+                }
+            } else {
+                // Root person has no birth date.
+                this.averageBirthYearsOfLevel[level] = 0;
+            }
+
+            averageBirthYearOfLevel = this.averageBirthYearsOfLevel[level];
+        }
+
+        if (averageDeathYearOfLevel == null) {
+            if (this.averageDeathYearsOfLevel[level - 1] != null) {
+                switch (this.genealogyType) {
+                    case GenealogyType.Ancestors:
+                        this.averageDeathYearsOfLevel[level] = this.averageDeathYearsOfLevel[level -1] - 30;
+                        break;
+                    case GenealogyType.Descendants:
+                        this.averageDeathYearsOfLevel[level] = this.averageDeathYearsOfLevel[level -1] + 30;
+                        break;
+                }
+            } else {
+                // Root person has no death date.
+                this.averageDeathYearsOfLevel[level] = this.averageBirthYearsOfLevel[level] + 50;
+            }
+
+            averageDeathYearOfLevel = this.averageDeathYearsOfLevel[level];
+        }
+
         const middleYear = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2
         
         let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();

@@ -325,7 +325,9 @@ button.delete-button {
     left: 100%;
     background-color: inherit;
     width: max-content;
-    padding: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
     border-style: solid;
     border-radius: 10px;
     border-width: 5px;
@@ -335,7 +337,7 @@ button.delete-button {
 }
 
 .additional-info-heading {
-    margin-top: 1em;
+    margin-top: 1rem;
     font-weight: bold;
 }
 

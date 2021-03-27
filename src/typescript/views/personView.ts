@@ -157,7 +157,7 @@ export class PersonView extends View {
             alternativeDeathDatesHeading.appendChild(document.createTextNode(languageData["alternativeDeathdates"]));
             this.additionalInfoContainerElement.appendChild(alternativeDeathDatesHeading);
 
-            const deathDatesListElement: HTMLElement = this.createHTMLElement("ul");
+            const deathDatesListElement: HTMLElement = this.createHTMLElement("ul", ["dates-list"]);
             this.additionalInfoContainerElement.appendChild(deathDatesListElement);
 
             for (let i = 1; i < person.getDatesOfDeath().length; i++) {
