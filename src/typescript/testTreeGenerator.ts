@@ -6,63 +6,57 @@ export class TestTreeGenerator {
     public static getAncestorsExampleTree(): Person {
         let root: Person = new Person("root, the longest name you have ever seen");
         root.setName(root.getId());
-        root.getDatesOfBirth().push(new Date("0100-01-01"));
-        root.getDatesOfDeath().push(new Date("0150-01-01"));
+        // root.getDatesOfBirth().push(new Date("0100-01-01"));
+        // root.getDatesOfDeath().push(new Date("0150-01-01"));
         root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
 
         let mother: Person = new Person("mother");
         mother.setName(mother.getId());
-        mother.getDatesOfBirth().push(new Date("0075-01-01"));
-        mother.getDatesOfDeath().push(new Date("0125-01-01"));
+        // mother.getDatesOfBirth().push(new Date("0075-01-01"));
+        // mother.getDatesOfDeath().push(new Date("0125-01-01"));
         mother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
-
-        let father: Person = new Person("father");
-        father.setName(father.getId());
-        father.getDatesOfBirth().push(new Date("0060-01-01"));
-        father.getDatesOfDeath().push(new Date("0110-01-01"));
-        father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
-
-        let grandFather: Person = new Person("grandfather0");
-        grandFather.setName(grandFather.getId());
-        grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
-        grandFather.getDatesOfDeath().push(new Date("0090-01-01"));
-        grandFather.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
-
-        let grandMother: Person = new Person("grandmother0");
-        grandMother.setName(grandMother.getId());
-        grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
-        // grandMother.getDatesOfDeath().push(new Date("0080-01-01"));
-        grandMother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
-
-        let grandFatherTwo: Person = new Person("grandfather1");
-        grandFatherTwo.setName(grandFatherTwo.getId());
-        grandFatherTwo.getDatesOfBirth().push(new Date("0060-01-01"));
-        grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
-        grandFatherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
-
-        let grandMotherTwo: Person = new Person("grandmother1");
-        grandMotherTwo.setName(grandMotherTwo.getId());
-        grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
-        grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
-        grandMotherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
-
         root.setMother(mother);
-        root.setFather(father);
-
         mother.getChildren().push(root);
-        father.getChildren().push(root);
 
-        father.setFather(grandFather);
-        father.setMother(grandMother);
+        // let father: Person = new Person("father");
+        // father.setName(father.getId());
+        // father.getDatesOfBirth().push(new Date("0060-01-01"));
+        // father.getDatesOfDeath().push(new Date("0110-01-01"));
+        // father.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        // root.setFather(father);
+        // father.getChildren().push(root);
 
-        grandMother.getChildren().push(mother);
-        grandFather.getChildren().push(mother);
+        // let grandFather: Person = new Person("grandfather0");
+        // grandFather.setName(grandFather.getId());
+        // grandFather.getDatesOfBirth().push(new Date("0030-01-01"));
+        // grandFather.getDatesOfDeath().push(new Date("0090-01-01"));
+        // grandFather.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        // father.setFather(grandFather);
+        // grandFather.getChildren().push(mother);
 
-        mother.setFather(grandFatherTwo);
-        mother.setMother(grandMotherTwo);
-        
-        grandFatherTwo.getChildren().push(father);
-        grandMotherTwo.getChildren().push(father);
+        // let grandMother: Person = new Person("grandmother0");
+        // grandMother.setName(grandMother.getId());
+        // grandMother.getDatesOfBirth().push(new Date("0040-01-01"));
+        // // grandMother.getDatesOfDeath().push(new Date("0080-01-01"));
+        // grandMother.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        // father.setMother(grandMother);
+        // grandMother.getChildren().push(mother);
+
+        // let grandFatherTwo: Person = new Person("grandfather1");
+        // grandFatherTwo.setName(grandFatherTwo.getId());
+        // grandFatherTwo.getDatesOfBirth().push(new Date("0060-01-01"));
+        // grandFatherTwo.getDatesOfDeath().push(new Date("0080-01-01"));
+        // grandFatherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
+        // mother.setFather(grandFatherTwo);
+        // grandFatherTwo.getChildren().push(father);
+
+        // let grandMotherTwo: Person = new Person("grandmother1");
+        // grandMotherTwo.setName(grandMotherTwo.getId());
+        // grandMotherTwo.getDatesOfBirth().push(new Date("0040-01-01"));
+        // grandMotherTwo.getDatesOfDeath().push(new Date("0070-01-01"));
+        // grandMotherTwo.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        // mother.setMother(grandMotherTwo);
+        // grandMotherTwo.getChildren().push(father);
 
         return root;
     }
@@ -73,23 +67,23 @@ export class TestTreeGenerator {
         root.setSexOrGender(new SexOrGender(SexOrGenderId.male, "male"));
         root.setDescription("Testdescription of root person");
         // root.getDatesOfBirth().push(new Date("0160-01-01"));
-        // root.getDatesOfBirth().push(new Date("0150-01-01"));
-        // root.getDatesOfDeath().push(new Date("0220-01-01"));
+        root.getDatesOfBirth().push(new Date("0150-01-01"));
+        root.getDatesOfDeath().push(new Date("0220-01-01"));
         // root.getDatesOfDeath().push(new Date("0230-01-01"));
 
         let child0: Person = new Person("child 0");
         child0.setName(child0.getId());
         child0.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
         // child0.getDatesOfBirth().push(new Date("0180-01-01"));
-        // child0.getDatesOfDeath().push(new Date("0250-01-01"));
+        child0.getDatesOfDeath().push(new Date("0260-01-01"));
         root.getChildren().push(child0);
 
-        let child00: Person = new Person("child 00");
-        child00.setName(child00.getId());
-        child00.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        // let child00: Person = new Person("child 00");
+        // child00.setName(child00.getId());
+        // child00.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
         // child00.getDatesOfBirth().push(new Date("0200-01-01"));
         // child00.getDatesOfDeath().push(new Date("0290-01-01"));
-        child0.getChildren().push(child00);
+        // child0.getChildren().push(child00);
 
         // let child01: Person = new Person("child 01");
         // child01.setName(child01.getId());
@@ -105,12 +99,12 @@ export class TestTreeGenerator {
         // child010.getDatesOfDeath().push(new Date("0290-01-01"));
         // child01.getChildren().push(child010);
 
-        // let child1: Person = new Person("child 1");
-        // child1.setName(child1.getId());
-        // child1.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
-        // child1.getDatesOfBirth().push(new Date("0190-01-01"));
-        // child1.getDatesOfDeath().push(new Date("0220-01-01"));
-        // root.getChildren().push(child1);
+        let child1: Person = new Person("child 1");
+        child1.setName(child1.getId());
+        child1.setSexOrGender(new SexOrGender(SexOrGenderId.female, "female"));
+        child1.getDatesOfBirth().push(new Date("0190-01-01"));
+        child1.getDatesOfDeath().push(new Date("0230-01-01"));
+        root.getChildren().push(child1);
 
         // let child10: Person = new Person("child 10");
         // child10.setName(child10.getId());
