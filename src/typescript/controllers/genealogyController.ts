@@ -16,9 +16,7 @@ export class GenealogyController {
 
         this.addEventListenersToInteractiveElements();
         this.genealogy.setNumberOfGenerations(parseInt(genealogyView.getNumberOfGenerations().value));
-
-        
-        
+      
         // test code
         const personViews: Map<string, PersonView> = new Map<string, PersonView>();
         const duplicates: Map<string, Person[]> = new Map<string, Person[]>();
@@ -29,9 +27,9 @@ export class GenealogyController {
         
         // this.genealogyView.displayAncestors(TestTreeGenerator.generateRandomAncestorsTree(2, "root", 50));
 
-        let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
-        this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
-        this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors, duplicates);
+        // let rootPerson: Person = TestTreeGenerator.getAncestorsExampleTree();
+        // this.instantiateViewsAndControllersForAncestorsAndAddItToMap(rootPerson, personViews);
+        // this.genealogyView.drawGenealogyTree(TestTreeGenerator.getAncestorsExampleTree(), personViews, GenealogyType.Ancestors, duplicates);
         
         // let rootPerson: Person = TestTreeGenerator.getExampleDescendantsTree();
         // this.instantiateViewsAndControllersForDescendantsAndAddItToMap(rootPerson, personViews);
@@ -47,9 +45,9 @@ export class GenealogyController {
 
     private addEventListenersToInteractiveElements(): void {
         this.genealogyView.getNumberOfGenerations().addEventListener("change", this.setNumberOfGenerations.bind(this));
+        this.genealogyView.getGenealogyTypeSelectElement().addEventListener("change", this.setGenealogyType.bind(this));
         this.genealogyView.getDrawNewTreeButton().addEventListener("click", this.getDataAndDrawTree.bind(this));
         this.genealogyView.getRedrawTreeButton().addEventListener("click", this.redrawTree.bind(this));
-        this.genealogyView.getGenealogyTypeSelectElement().addEventListener("change", this.setGenealogyType.bind(this));
     }
 
     private getDataAndDrawTree(event: MouseEvent): void {
@@ -94,6 +92,8 @@ export class GenealogyController {
                 this.genealogy.setGenealogyType(GenealogyType.Descendants);
                 break;
         }
+
+        this.genealogyView.setIsActiveOfRedrawButton(false);
     }
 
     private instantiateViewsAndControllersForAncestorsAndAddItToMap(person: Person, personViews: Map<string, PersonView>) {
@@ -135,5 +135,6 @@ export class GenealogyController {
     private setNumberOfGenerations(event: Event): void {
         const depth: number = parseInt((<HTMLInputElement> event.target).value);
         this.genealogy.setNumberOfGenerations(depth);
+        this.genealogyView.setIsActiveOfRedrawButton(false);
     }
 }
