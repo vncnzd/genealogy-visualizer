@@ -163,7 +163,11 @@ export class GenealogyView extends View {
         this.jsPlumbInst.reset();
 
         const timelineBounds: [number, number] = this.getTimespanForGenealogy(rootPerson);
-        this.rebuildTimelineAndScale(timelineBounds[0] - 500, timelineBounds[1] + 500);
+        if (timelineBounds[0] == null || timelineBounds[1] == null) {
+            this.removeAllChildElements(this.timelineContainer);
+        } else {
+            this.rebuildTimelineAndScale(timelineBounds[0] - 200, timelineBounds[1] + 200);
+        }
 
         const drawer: TreeDrawer = new WalkerTreeDrawer();
         drawer.run(rootPerson, personViews, this.pixelPerYear, this.jsPlumbInst, genealogyType);
@@ -241,8 +245,8 @@ export class GenealogyView extends View {
         getMaxYear(rootPerson);
 
         if (minYear == Number.MAX_VALUE && maxYear == Number.MIN_VALUE) {
-            minYear = 0;
-            maxYear = 0;
+            minYear = null;
+            maxYear = null;
         }
 
         return [minYear, maxYear];

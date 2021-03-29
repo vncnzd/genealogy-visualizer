@@ -190,7 +190,7 @@ export class PersonView extends View {
         numberInputElement.type = "number";
         
         for (const cssClass of cssClasses) {
-            numberInputElement.classList.add("birth-and-death-input");
+            numberInputElement.classList.add(cssClass);
         }
 
         return numberInputElement;
