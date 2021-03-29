@@ -350,12 +350,12 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
         // Position container (lifeline).
         node.personView.setOffsetTopInPx(personContainerOffsetTopInPx);
-        node.personView.setHeightInPx(personContainerOffsetBottomInPx - personContainerOffsetTopInPx);
+        node.personView.setHeightInPx(containerHeightInPx);
 
         // Position the person box in the center.
         const distanceToCenter: number = centerOfLevelInPx - personContainerOffsetTopInPx;
         const offsetTopOfPersonBox: number = distanceToCenter - node.personView.getBoxHeight() / 2;
-        const offsetTopOfLifelineBox: number = offsetTopOfPersonBox - node.personView.getLifelineBoxBorderHeightInPx();
+        let offsetTopOfLifelineBox: number = offsetTopOfPersonBox - node.personView.getLifelineBoxBorderHeightInPx();
 
         node.personView.setOffsetTopOfPersonBox(offsetTopOfPersonBox);
         node.personView.setOffsetTopOfLifelineBox(offsetTopOfLifelineBox);
@@ -363,21 +363,22 @@ export class WalkerTreeDrawer implements TreeDrawer {
         if (yearOfBirth != null && yearOfDeath != null) {
             // Check if the lifeline box has to be cut off. This only needs to be done, when there is both a birth and death
             // date, since if one of the dates or both is missing, the lifelinebox gets placed at the center of the level.
+            if (offsetTopOfLifelineBox < 0) {
+                // Lifeline box is inside the upper bound
+                const difference: number = offsetTopOfLifelineBox;
+                offsetTopOfLifelineBox = 0;
+
+                let newHeightOfLifelineBox: number = node.personView.getLifelineBoxHeightInPx() + difference;
+                if (newHeightOfLifelineBox < 0) newHeightOfLifelineBox = 0;
+                node.personView.setOffsetTopOfLifelineBox(offsetTopOfLifelineBox);
+                node.personView.setLifelineBoxHeightInPx(newHeightOfLifelineBox);
+            }
             if (offsetTopOfLifelineBox > containerHeightInPx - node.personView.getLifelineBoxHeightInPx()) {
                 // Lifeline box is inside the lower bound
                 const difference: number = offsetTopOfLifelineBox - (containerHeightInPx - node.personView.getLifelineBoxHeightInPx());
                 const newLifelineBoxHeight: number = node.personView.getLifelineBoxHeightInPx() - difference;
                 node.personView.setLifelineBoxHeightInPx(newLifelineBoxHeight);
-            } else if (offsetTopOfLifelineBox < 0) {
-                // Lifeline box is inside the upper bound
-                const difference: number = offsetTopOfLifelineBox;
-                const newOffsetTopOfLifelineBox: number = 0;
-
-                let newHeightOfLifelineBox: number = node.personView.getLifelineBoxHeightInPx() + difference;
-                if (newHeightOfLifelineBox < 0) newHeightOfLifelineBox = 0;
-                node.personView.setOffsetTopOfLifelineBox(newOffsetTopOfLifelineBox);
-                node.personView.setLifelineBoxHeightInPx(newHeightOfLifelineBox);
-            }
+            } 
         }
     }
 

@@ -125,6 +125,10 @@ export class PersonView extends View {
         this.additionalInfoContainerElement = this.createHTMLElement("div", ["additional-info-container"]);
         this.boxElement.appendChild(this.additionalInfoContainerElement);
 
+        const fullNameElement: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
+        fullNameElement.appendChild(document.createTextNode(person.getName()));
+        this.additionalInfoContainerElement.appendChild(fullNameElement);
+
         if (person.getDescription() != null) {
             const descriptionHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
             descriptionHeading.appendChild(document.createTextNode(languageData["description"]));
@@ -244,13 +248,7 @@ export class PersonView extends View {
     }
 
     public setHeightInPx(height: number): void {
-        let minHeight: number = this.boxHeightInPx + 2 * this.lifeLineBoundHeightInPx;
-        
-        if (height >= minHeight) {
-            this.containerElement.style.height = height + "px";
-        } else {
-            this.containerElement.style.height = minHeight + "px";
-        }
+        this.containerElement.style.height = height + "px";
     }
 
     public getDuplicatesButtonElement(): HTMLElement {
