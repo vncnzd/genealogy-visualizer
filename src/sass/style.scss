@@ -425,7 +425,6 @@ button.delete-button {
 .lifeline-box {
     position: absolute;
     background: linear-gradient($lifeline-color, $lifeline-color);
-    // border-radius: 10px;
     border-width: 5px;
 }
 
@@ -492,8 +491,8 @@ button.delete-button {
     top: calc(50% - 75px);
     width: 150px;
     height: 150px;
-    border: 20px solid #c7c7c7; /* Light grey */
-    border-top: 20px solid $search-background; /* Blue */
+    border: 20px solid #c7c7c7;
+    border-top: 20px solid $search-background;
     border-radius: 50%;
     animation: spin 2s linear infinite;
 }
