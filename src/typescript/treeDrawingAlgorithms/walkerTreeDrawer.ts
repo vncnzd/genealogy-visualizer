@@ -317,20 +317,25 @@ export class WalkerTreeDrawer implements TreeDrawer {
         const averageBirthYearOfLevel: number = this.averageBirthYearsOfLevel[level];
         const averageDeathYearOfLevel: number = this.averageDeathYearsOfLevel[level];
         const centerAgeOfLevel: number = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2;
+        const centerOfLevelInPx: number = centerAgeOfLevel * this.pixelPerYear;
 
-        let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
-        let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+        const yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
+        const yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+ 
+        let personContainerOffsetTopInPx: number;
+        let personContainerOffsetBottomInPx: number;
 
         if (yearOfBirth == null) {
-            yearOfBirth = centerAgeOfLevel - node.personView.getLifelineBoxHeightInPx() / 2 / this.pixelPerYear;
+            personContainerOffsetTopInPx = centerOfLevelInPx - node.personView.getLifelineBoxHeightInPx() / 2;
+        } else {
+            personContainerOffsetTopInPx = yearOfBirth * this.pixelPerYear;
         }
         if (yearOfDeath == null) {
-            yearOfDeath = centerAgeOfLevel + node.personView.getLifelineBoxHeightInPx() / 2 / this.pixelPerYear;;
+            personContainerOffsetBottomInPx = centerOfLevelInPx + node.personView.getLifelineBoxHeightInPx() / 2;
+        } else {
+            personContainerOffsetBottomInPx = yearOfDeath * this.pixelPerYear;
         }
 
-        const centerOfLevelInPx: number = centerAgeOfLevel * this.pixelPerYear;
-        const personContainerOffsetTopInPx: number = yearOfBirth * this.pixelPerYear;
-        const personContainerOffsetBottomInPx: number = yearOfDeath * this.pixelPerYear;
         const containerHeightInPx: number = personContainerOffsetBottomInPx - personContainerOffsetTopInPx;
 
         // Position container (lifeline).
@@ -345,21 +350,24 @@ export class WalkerTreeDrawer implements TreeDrawer {
         node.personView.setOffsetTopOfPersonBox(offsetTopOfPersonBox);
         node.personView.setOffsetTopOfLifelineBox(offsetTopOfLifelineBox);
 
-        // Check if the lifeline box has to be cut off.
-        if (offsetTopOfLifelineBox > containerHeightInPx - node.personView.getLifelineBoxHeightInPx()) {
-            // Lifeline box is inside the lower bound
-            const difference: number = offsetTopOfLifelineBox - (containerHeightInPx - node.personView.getLifelineBoxHeightInPx());
-            const newLifelineBoxHeight: number = node.personView.getLifelineBoxHeightInPx() - difference;
-            node.personView.setLifelineBoxHeightInPx(newLifelineBoxHeight);
-        } else if (offsetTopOfLifelineBox < 0) {
-            // Lifeline box is inside the upper bound
-            const difference: number = offsetTopOfLifelineBox;
-            const newOffsetTopOfLifelineBox: number = 0;
+        if (yearOfBirth != null && yearOfDeath != null) {
+            // Check if the lifeline box has to be cut off. This only needs to be done, when there is both a birth and death
+            // date, since if one of the dates or both is missing, the lifelinebox gets placed at the center of the level.
+            if (offsetTopOfLifelineBox > containerHeightInPx - node.personView.getLifelineBoxHeightInPx()) {
+                // Lifeline box is inside the lower bound
+                const difference: number = offsetTopOfLifelineBox - (containerHeightInPx - node.personView.getLifelineBoxHeightInPx());
+                const newLifelineBoxHeight: number = node.personView.getLifelineBoxHeightInPx() - difference;
+                node.personView.setLifelineBoxHeightInPx(newLifelineBoxHeight);
+            } else if (offsetTopOfLifelineBox < 0) {
+                // Lifeline box is inside the upper bound
+                const difference: number = offsetTopOfLifelineBox;
+                const newOffsetTopOfLifelineBox: number = 0;
 
-            let newHeightOfLifelineBox: number = node.personView.getLifelineBoxHeightInPx() + difference;
-            if (newHeightOfLifelineBox < 0) newHeightOfLifelineBox = 0;
-            node.personView.setOffsetTopOfLifelineBox(newOffsetTopOfLifelineBox);
-            node.personView.setLifelineBoxHeightInPx(newHeightOfLifelineBox);
+                let newHeightOfLifelineBox: number = node.personView.getLifelineBoxHeightInPx() + difference;
+                if (newHeightOfLifelineBox < 0) newHeightOfLifelineBox = 0;
+                node.personView.setOffsetTopOfLifelineBox(newOffsetTopOfLifelineBox);
+                node.personView.setLifelineBoxHeightInPx(newHeightOfLifelineBox);
+            }
         }
     }
 
