@@ -15,8 +15,8 @@
         "germanButton": "German",
         "englishButton": "English",
         "duplicates": "Show duplicates",
-        "alternativeBirthdates": "Alternative birth dates",
-        "alternativeDeathdates": "Alternative death dates",
+        "alternativeBirthdates": "Birthdates",
+        "alternativeDeathdates": "Deathdates",
         "description": "Description",
         "dataSource": "Data source"
     },
@@ -36,8 +36,8 @@
         "germanButton": "Deutsch",
         "englishButton": "Englisch",
         "duplicates": "Duplikate",
-        "alternativeBirthdates": "Alternative Geburtsdaten",
-        "alternativeDeathdates": "Alternative Todesdaten",
+        "alternativeBirthdates": "Geburtsdaten",
+        "alternativeDeathdates": "Todesdaten",
         "description": "Beschreibung",
         "dataSource": "Datenquelle"
     }

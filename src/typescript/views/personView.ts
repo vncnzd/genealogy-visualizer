@@ -135,7 +135,7 @@ export class PersonView extends View {
             this.additionalInfoContainerElement.appendChild(descriptionParagraph);
         }
 
-        if (person.getDatesOfBirth().length > 1) {
+        if (person.getDatesOfBirth().length > 0) {
             const alternativeBirthDatesHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
             alternativeBirthDatesHeading.appendChild(document.createTextNode(languageData["alternativeBirthdates"]));
             this.additionalInfoContainerElement.appendChild(alternativeBirthDatesHeading);
@@ -144,7 +144,7 @@ export class PersonView extends View {
             const birthDatesListElement: HTMLElement = this.createHTMLElement("ul", ["dates-list"]);
             this.additionalInfoContainerElement.appendChild(birthDatesListElement);
 
-            for (let i = 1; i < person.getDatesOfBirth().length; i++) {
+            for (let i = 0; i < person.getDatesOfBirth().length; i++) {
                 const birthDate = person.getDatesOfBirth()[i];
                 const listElement: HTMLElement = this.createHTMLElement("li");
                 listElement.innerText = birthDate.toLocaleDateString();
@@ -152,7 +152,7 @@ export class PersonView extends View {
             }
         }
 
-        if (person.getDatesOfDeath().length > 1) {
+        if (person.getDatesOfDeath().length > 0) {
             const alternativeDeathDatesHeading: HTMLElement = this.createHTMLElement("div", ["additional-info-heading"]);
             alternativeDeathDatesHeading.appendChild(document.createTextNode(languageData["alternativeDeathdates"]));
             this.additionalInfoContainerElement.appendChild(alternativeDeathDatesHeading);
@@ -160,7 +160,7 @@ export class PersonView extends View {
             const deathDatesListElement: HTMLElement = this.createHTMLElement("ul", ["dates-list"]);
             this.additionalInfoContainerElement.appendChild(deathDatesListElement);
 
-            for (let i = 1; i < person.getDatesOfDeath().length; i++) {
+            for (let i = 0; i < person.getDatesOfDeath().length; i++) {
                 const deathDate = person.getDatesOfDeath()[i];
                 const listElement: HTMLElement = this.createHTMLElement("li");
                 listElement.innerText = deathDate.toLocaleDateString();
