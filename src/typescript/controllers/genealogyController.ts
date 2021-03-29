@@ -52,6 +52,7 @@ export class GenealogyController {
 
     private getDataAndDrawTree(event: MouseEvent): void {
         this.genealogyView.setLoaderIsVisible(true);
+        this.genealogy.getRootPerson().removeChildrenAndParents();
 
         this.genealogy.getGenealogyOfCurrentPersonFromDatabase().then((people: Map<string, Person>): void => {
             this.drawTree(this.genealogy.getRootPerson(), this.genealogy.getGenealogyType());
@@ -66,7 +67,7 @@ export class GenealogyController {
     }
 
     private drawTree(rootPerson: Person, genealogyType: GenealogyType): void {
-        this.genealogyView.clearContainer(); // Put this into the view
+        this.genealogyView.clearContainer();
         const personViews: Map<string, PersonView> = new Map<string, PersonView>();
         
         switch (genealogyType) {

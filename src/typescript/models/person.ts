@@ -39,6 +39,11 @@ export class Person {
         }
     }
 
+    public removeChildrenAndParents(): void {
+        this.children.length = 0;
+        this.father = null;
+        this.mother = null;
+    }
 
     public setId(id: string, duplicateAddition: string = null): void {
         if (duplicateAddition != null) {
