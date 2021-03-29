@@ -25,6 +25,26 @@ export class WalkerTreeDrawer implements TreeDrawer {
         const rootNode: WalkerNode = this.initializeNodes(rootPerson, personViewsMap, 0, genealogyType);     
         this.averageBirthYearsOfLevel = this.calculateAverageYearOfLevel(this.birthYearsOfLevel);
         this.averageDeathYearsOfLevel = this.calculateAverageYearOfLevel(this.deathYearsOfLevel)
+
+        let birthOrDeathGenerationDifference: number = 25;
+        switch (this.genealogyType) {
+            case GenealogyType.Ancestors:
+                birthOrDeathGenerationDifference *= -1;
+                break;
+            case GenealogyType.Descendants:
+                birthOrDeathGenerationDifference *= 1;
+                break;
+        }
+
+        this.calculateMissingAverageYears(this.averageBirthYearsOfLevel, birthOrDeathGenerationDifference);
+        this.calculateMissingAverageYears(this.averageDeathYearsOfLevel, birthOrDeathGenerationDifference);
+
+        // const testValues: number[] = [null, null, -60, null, null, -30, null, null];
+        // // const testValues: number[] = [10, null, null];
+        // this.calculateMissingAverageYears(testValues, 10);
+        // console.log(testValues);
+        // this.calculateMissingAverageYears(this.averageDeathYearsOfLevel);
+        
         this.distanceBetweenNodes = rootNode.personView.getWidthInPx() * 2;
 
         this.firstWalk(rootNode);
@@ -41,6 +61,56 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 return years.reduce((a: number, b: number): number => { return a + b; }) / years.length;
             }
         });
+    }
+
+    private calculateMissingAverageYears(averageYearsOfLevel: number[], age:  number): void {
+        let lastAverageYear: number;
+        let indexOfLastAverageYear: number = -1;
+        let firstLevelHasNoAverageDate: boolean = false;
+
+        for (let i = 0; i < averageYearsOfLevel.length; i++) {
+            let averageYearOfCurrentLevel = averageYearsOfLevel[i];
+            const numberOfLevelsBetweenlastAndCurrent: number = i - indexOfLastAverageYear - 1;
+            
+            if (averageYearOfCurrentLevel != null) {
+                if (numberOfLevelsBetweenlastAndCurrent > 0) {
+                    if (firstLevelHasNoAverageDate) {
+                        lastAverageYear = averageYearOfCurrentLevel - (numberOfLevelsBetweenlastAndCurrent + 1) * age;
+                        firstLevelHasNoAverageDate = false;
+                    }
+                    
+                    const timespan: number = averageYearOfCurrentLevel - lastAverageYear;
+                    const factor: number = timespan / (numberOfLevelsBetweenlastAndCurrent + 1);
+                    
+                    for (let x = 0; x < numberOfLevelsBetweenlastAndCurrent; x++) {
+                        const level: number = indexOfLastAverageYear + 1 + x;
+                        const birthyear: number = lastAverageYear + factor * (x + 1);
+                        averageYearsOfLevel[level] = birthyear;
+                    }
+                }
+
+                lastAverageYear = averageYearOfCurrentLevel;
+                indexOfLastAverageYear = i;
+            } else {
+                if (i == 0) {
+                    firstLevelHasNoAverageDate = true;
+                }
+                
+                if (i == averageYearsOfLevel.length - 1) {
+                    const numberOfLevelsWithoutAverageYear: number = i - indexOfLastAverageYear;
+
+                    if (firstLevelHasNoAverageDate) {
+                        // There exist no number values in the array.
+                        lastAverageYear = 0;
+                    } 
+
+                    for (let x = 0; x < numberOfLevelsWithoutAverageYear; x++) {
+                        const level: number = indexOfLastAverageYear + 1 + x;
+                        averageYearsOfLevel[level] = lastAverageYear + age * (x + 1);
+                    }
+                }
+            }
+        }
     }
 
     private initializeNodes(person: Person, personViewMap: Map<string, PersonView>, level: number, genealogyType: GenealogyType): WalkerNode {
@@ -253,9 +323,21 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private positionNodeVertically(node: WalkerNode, level: number): void {
-        const yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
-        const yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+        const averageBirthYearOfLevel: number = this.averageBirthYearsOfLevel[level];
+        const averageDeathYearOfLevel: number = this.averageDeathYearsOfLevel[level];
+        const centerAgeOfLevel: number = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2;
 
+        let yearOfBirth: number = node.person.getDatesOfBirth()[0]?.getFullYear();
+        let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
+
+        if (yearOfBirth == null) {
+            yearOfBirth = centerAgeOfLevel;
+        }
+        if (yearOfDeath == null) {
+            yearOfDeath = centerAgeOfLevel;
+        }
+
+        const centerOfLevelInPx: number = centerAgeOfLevel * this.pixelPerYear;
         const personContainerOffsetTopInPx: number = yearOfBirth * this.pixelPerYear;
         const personContainerOffsetBottomInPx: number = yearOfDeath * this.pixelPerYear;
         const containerHeightInPx: number = personContainerOffsetBottomInPx - personContainerOffsetTopInPx;
@@ -265,9 +347,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
         node.personView.setHeightInPx(personContainerOffsetBottomInPx - personContainerOffsetTopInPx);
 
         // Position the person box in the center
-        const averageBirthYearOfLevel: number = this.averageBirthYearsOfLevel[level];
-        const averageDeathYearOfLevel: number = this.averageDeathYearsOfLevel[level];
-        const centerOfLevelInPx: number = (averageBirthYearOfLevel + averageDeathYearOfLevel) / 2 * this.pixelPerYear;
         const distanceToCenter: number = centerOfLevelInPx - personContainerOffsetTopInPx;
         const offsetTopOfPersonBox: number = distanceToCenter - node.personView.getBoxHeight() / 2;
         const offsetTopOfLifelineBox: number = offsetTopOfPersonBox - node.personView.getLifelineBoxBorderHeightInPx();
@@ -292,95 +371,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
             node.personView.setOffsetTopOfLifelineBox(newOffsetTopOfLifelineBox);
             node.personView.setLifelineBoxHeightInPx(newHeightOfLifelineBox);
         }
-    }
-
-    private testTwo(averageDatesOfBirth: number[], averageDatesOfDeath: number[], level, genealogyType: GenealogyType): [number, number] {
-        const years: number = 30;
-        let averageBirthYear: number;
-        let averageDeathYear: number
-        // const numberOfTraversibleNodes: number = 
-        let nearestBirthdateLevel: number = Number.MAX_VALUE;
-        let nearestDeathdateLevel: number = Number.MAX_VALUE;
-        
-        let genealogyTypeFactor: number;
-        switch (genealogyType) {
-            case GenealogyType.Ancestors:
-                genealogyTypeFactor = -1;
-                break;
-            case GenealogyType.Descendants:
-                genealogyTypeFactor = 1;
-                break;
-        }
-
-        for (let i = 0; i < averageDatesOfBirth.length; i++) {
-            const previousIndex: number = level - i;
-            const nextIndex: number = level + i;
-
-            const nextAverageBirthdate: number = averageDatesOfBirth[nextIndex];
-            const nextAverageDeathdate: number = averageDatesOfDeath[nextIndex];
-            const previousAverageBirthdate: number = averageDatesOfBirth[previousIndex];
-            const previousAverageDeathdate: number = averageDatesOfDeath[previousIndex];
-
-            if (nextAverageBirthdate != null && nearestBirthdateLevel == Number.MAX_VALUE) {
-                nearestBirthdateLevel = nextIndex;
-            }
-            if (previousAverageBirthdate != null && nearestBirthdateLevel == Number.MAX_VALUE) {
-                nearestBirthdateLevel = previousIndex;
-            }
-            if (nextAverageDeathdate != null && nearestDeathdateLevel == Number.MAX_VALUE) {
-                nearestDeathdateLevel = nextIndex;
-            }
-            if (previousAverageDeathdate != null && nearestDeathdateLevel == Number.MAX_VALUE) {
-                nearestDeathdateLevel = previousIndex;
-            }
-        }
-
-        const birthdateLevelDifference: number = Math.abs(level - nearestBirthdateLevel);
-        const deathdateLevelDifference: number = Math.abs(level - nearestDeathdateLevel);
-
-        if (birthdateLevelDifference < deathdateLevelDifference) {
-            averageBirthYear = averageDatesOfBirth[nearestBirthdateLevel] + birthdateLevelDifference * years * genealogyTypeFactor;
-            averageDeathYear = averageBirthYear + years * 2;
-        } else if (deathdateLevelDifference < birthdateLevelDifference) {
-            averageDeathYear = averageDatesOfDeath[nearestDeathdateLevel] + deathdateLevelDifference * years * genealogyTypeFactor;
-            averageBirthYear = averageDeathYear - years * 2;
-        } else {
-            averageBirthYear = averageDatesOfBirth[nearestBirthdateLevel] + birthdateLevelDifference * years * genealogyTypeFactor;
-            averageDeathYear = averageDatesOfDeath[nearestDeathdateLevel] + deathdateLevelDifference * years * genealogyTypeFactor;
-        }
-
-        return [averageBirthYear, averageDeathYear];
-    }
-
-    private positionLifelineBoxAndPersonBox(relativeYPositionOfLifelineBox: number, node: WalkerNode): void {
-        node.personView.setOffsetTopOfLifelineBox(relativeYPositionOfLifelineBox);
-        node.personView.setOffsetTopOfPersonBox(relativeYPositionOfLifelineBox + node.personView.getLifelineBoxBorderHeightInPx());
-    }
-
-    private positionLifelineAccordingToYears(yearOfBirth: number, yearOfDeath: number, node: WalkerNode): void {
-            // Set the birth date as the start of the life line.
-            node.personView.setOffsetTopInPx(yearOfBirth * this.pixelPerYear);
-            // Set the height of the lifeline according to the years lived.
-            node.personView.setHeightInPx((yearOfDeath - yearOfBirth) * this.pixelPerYear);
-    }
-
-    private checkLifelineBoxHeight(lifelineHeight, relativeYPositionOfLifelineBox, node: WalkerNode): void {
-        if (relativeYPositionOfLifelineBox < -node.personView.getLifelineBoxHeightInPx()) {
-            // The lifeline box is above the lifeline.
-            node.personView.hideLifelineBox();
-        } else if (relativeYPositionOfLifelineBox < 0) {
-            // The upper lifeline bound is inside the lifeline box. 
-            node.personView.setLifelineBoxHeightInPx(node.personView.getLifelineBoxHeightInPx() + relativeYPositionOfLifelineBox);
-            node.personView.setOffsetTopOfLifelineBox(0)
-        } else if (relativeYPositionOfLifelineBox > lifelineHeight) {
-            // The lower lifeline bound is inside the lifeline box.
-              node.personView.hideLifelineBox();         
-        } else if (relativeYPositionOfLifelineBox > lifelineHeight - node.personView.getLifelineBoxHeightInPx()) {
-            // The lifeline box is below the lifeline.
-            let lifelineBoxHeightInPx: number = node.personView.getLifelineBoxHeightInPx();
-            let difference: number = relativeYPositionOfLifelineBox + lifelineBoxHeightInPx - lifelineHeight;
-            node.personView.setLifelineBoxHeightInPx(lifelineBoxHeightInPx - difference);
-        } 
     }
 
     private connect(jsPlumbInst: jsPlumbInstance, source: Person, target: Person): void {
