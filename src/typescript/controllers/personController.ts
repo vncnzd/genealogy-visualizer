@@ -14,8 +14,8 @@ export class PersonController {
     private addEventListeners(): void {
         this.personView.getDuplicatesButtonElement().addEventListener("click", this.toggleDuplicatesConection.bind(this));
         this.personView.getDeleteButtonElement().addEventListener("click", this.removePersonAndView.bind(this));
-        this.personView.getBirthInputElement().addEventListener("click", this.setBirthYear.bind(this));
-        this.personView.getDeathInputElement().addEventListener("click", this.setDeathYear.bind(this));
+        this.personView.getBirthInputElement().addEventListener("change", this.setBirthYear.bind(this));
+        this.personView.getDeathInputElement().addEventListener("change", this.setDeathYear.bind(this));
     }
 
     private toggleDuplicatesConection(): void {
