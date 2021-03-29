@@ -27,8 +27,8 @@ export class WalkerTreeDrawer implements TreeDrawer {
         this.averageDeathYearsOfLevel = this.calculateAverageYearOfLevel(this.deathYearsOfLevel);
 
         const birthOrDeathdateGenerationDifference: number = this.getBirthOrDeathdateGenerationDifference(30, genealogyType);
-        this.calculateMissingAverageYears(this.averageBirthYearsOfLevel, birthOrDeathdateGenerationDifference);
-        this.calculateMissingAverageYears(this.averageDeathYearsOfLevel, birthOrDeathdateGenerationDifference);
+        this.calculateMissingAverageYears(this.averageBirthYearsOfLevel, this.averageDeathYearsOfLevel, birthOrDeathdateGenerationDifference);
+        // this.calculateMissingAverageYears(this.averageDeathYearsOfLevel, birthOrDeathdateGenerationDifference);
 
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);
@@ -54,48 +54,58 @@ export class WalkerTreeDrawer implements TreeDrawer {
         });
     }
 
-    private calculateMissingAverageYears(averageYearsOfLevel: number[], age:  number): void {
-        let lastAverageYear: number;
+    private calculateMissingAverageYears(averageBirthYearsOfLevel: number[], averageDeathYearsOfLevel, age:  number): void {
+        let lastAverageBirthYear: number;
         let indexOfLastAverageYear: number = -1;
         let firstLevelHasNoAverageDate: boolean = false;
 
-        for (let i = 0; i < averageYearsOfLevel.length; i++) {
+        for (let i = 0; i < averageBirthYearsOfLevel.length; i++) {
             const numberOfLevelsBetweenlastAndCurrent: number = i - indexOfLastAverageYear - 1;
-            let averageYearOfCurrentLevel = averageYearsOfLevel[i];
+            let averageBirthYearOfCurrentLevel = averageBirthYearsOfLevel[i];
+            let averageDeathYearOfCurrentLevel = averageDeathYearsOfLevel[i];
+
+            if (averageBirthYearOfCurrentLevel == null && averageDeathYearOfCurrentLevel != null) {
+                averageBirthYearsOfLevel[i] = averageDeathYearOfCurrentLevel - Math.abs(age) * 2;
+            }
+            if (averageDeathYearOfCurrentLevel == null && averageBirthYearOfCurrentLevel != null) {
+                averageDeathYearsOfLevel[i] = averageBirthYearOfCurrentLevel + Math.abs(age) * 2;
+            }
             
-            if (averageYearOfCurrentLevel != null) {
+            if (averageBirthYearOfCurrentLevel != null) {
                 if (numberOfLevelsBetweenlastAndCurrent > 0) {
                     if (firstLevelHasNoAverageDate) {
-                        lastAverageYear = averageYearOfCurrentLevel - (numberOfLevelsBetweenlastAndCurrent + 1) * age;
+                        lastAverageBirthYear = averageBirthYearOfCurrentLevel - (numberOfLevelsBetweenlastAndCurrent + 1) * age;
                         firstLevelHasNoAverageDate = false;
                     }
                     
-                    const timespan: number = averageYearOfCurrentLevel - lastAverageYear;
+                    const timespan: number = averageBirthYearOfCurrentLevel - lastAverageBirthYear;
                     const factor: number = timespan / (numberOfLevelsBetweenlastAndCurrent + 1);
                     
                     for (let x = 0; x < numberOfLevelsBetweenlastAndCurrent; x++) {
                         const level: number = indexOfLastAverageYear + 1 + x;
-                        const birthyear: number = lastAverageYear + factor * (x + 1);
-                        averageYearsOfLevel[level] = birthyear;
+                        const birthyear: number = lastAverageBirthYear + factor * (x + 1);
+                        averageBirthYearsOfLevel[level] = birthyear;
+                        averageDeathYearsOfLevel[level] = birthyear + Math.abs(age) * 2;
                     }
                 }
 
-                lastAverageYear = averageYearOfCurrentLevel;
+                lastAverageBirthYear = averageBirthYearOfCurrentLevel;
                 indexOfLastAverageYear = i;
             } else {
                 if (i == 0) {
                     firstLevelHasNoAverageDate = true;
                 }
                 
-                if (i == averageYearsOfLevel.length - 1) {
+                if (i == averageBirthYearsOfLevel.length - 1) {
                     if (firstLevelHasNoAverageDate) {
                         // There exist no average years in the array.
-                        lastAverageYear = 0;
+                        lastAverageBirthYear = 0;
                     } 
 
                     for (let x = 0; x < numberOfLevelsBetweenlastAndCurrent + 1; x++) {
                         const level: number = indexOfLastAverageYear + 1 + x;
-                        averageYearsOfLevel[level] = lastAverageYear + age * (x + 1);
+                        averageBirthYearsOfLevel[level] = lastAverageBirthYear + age * (x + 1);
+                        averageDeathYearsOfLevel[level] = averageBirthYearsOfLevel[level] + Math.abs(age) * 2;
                     }
                 }
             }
