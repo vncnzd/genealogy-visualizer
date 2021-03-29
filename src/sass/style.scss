@@ -1,8 +1,8 @@
 $male-color: #77bc65;
 $female-color: #729fcf;
 $unknown-gender-color: #808080;
-$lifeline-color: #e3ecf6;
-$darker-lifeline-color: #c0c9d2;
+$lifeline-color: #d3dde7;
+$darker-lifeline-color: darken($lifeline-color, 10%);
 $alert-color: #dc3545;
 $search-background: #212529;
 $options-background: #6c757d;
