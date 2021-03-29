@@ -30,10 +30,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
         this.calculateMissingAverageYears(this.averageBirthYearsOfLevel, birthOrDeathdateGenerationDifference);
         this.calculateMissingAverageYears(this.averageDeathYearsOfLevel, birthOrDeathdateGenerationDifference);
 
-        const testArray: number[] = [null, null, 10, null, 30, 40, null, null];
-        this.calculateMissingAverageYears(testArray, 10);
-        console.log(testArray);
-
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);
     }
@@ -326,10 +322,10 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let yearOfDeath: number = node.person.getDatesOfDeath()[0]?.getFullYear();
 
         if (yearOfBirth == null) {
-            yearOfBirth = centerAgeOfLevel;
+            yearOfBirth = centerAgeOfLevel - node.personView.getLifelineBoxHeightInPx() / 2 / this.pixelPerYear;
         }
         if (yearOfDeath == null) {
-            yearOfDeath = centerAgeOfLevel;
+            yearOfDeath = centerAgeOfLevel + node.personView.getLifelineBoxHeightInPx() / 2 / this.pixelPerYear;;
         }
 
         const centerOfLevelInPx: number = centerAgeOfLevel * this.pixelPerYear;
