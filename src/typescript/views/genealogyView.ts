@@ -255,6 +255,13 @@ export class GenealogyView extends View {
                 }
             }
 
+            if (person.getDatesOfDeath().length > 0) {
+                const yearOfDeath: number = person.getDatesOfDeath()[0].getFullYear();
+                if (yearOfDeath < minYear) {
+                    minYear = yearOfDeath;
+                }
+            }
+
             if (person.getFather() != null) {
                 getMinYear(person.getFather());
             }
@@ -268,6 +275,13 @@ export class GenealogyView extends View {
                 const yearOfDeath: number = person.getDatesOfDeath()[0].getFullYear();
                 if (yearOfDeath > maxYear) {
                     maxYear = yearOfDeath;
+                }
+            }
+
+            if (person.getDatesOfBirth().length > 0) {
+                const yearOfBirth: number = person.getDatesOfBirth()[0].getFullYear();
+                if (yearOfBirth > maxYear) {
+                    maxYear = yearOfBirth;
                 }
             }
 
