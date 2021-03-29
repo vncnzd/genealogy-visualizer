@@ -16,6 +16,7 @@ export class SearchListController {
         this.genealogyController = genealogyController;
         this.personDatabase = personDatabase;
         this.searchListView.getSearchInputElement().addEventListener("input", this.startSearchForPerson.bind(this));
+        this.searchListView.getSearchInputElement().addEventListener("focus", this.startSearchForPerson.bind(this));
     }
 
     private startSearchForPerson(event: Event): void {
