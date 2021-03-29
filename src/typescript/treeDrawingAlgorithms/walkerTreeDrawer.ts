@@ -324,8 +324,9 @@ export class WalkerTreeDrawer implements TreeDrawer {
     }
 
     private positionNodeVertically(node: WalkerNode, level: number): void {
-        const lifelineBoxHeight: number = node.personView.getLifelineBoxHeightInPx();
-        const lifelineBorderWidth: number = node.personView.getLifelineBoxBorderHeightInPx();
+        const lifelineBoxHeightInPx: number = node.personView.getLifelineBoxHeightInPx();
+        const personBoxHeightInPx: number = node.personView.getBoxHeight();
+        const lifelineBorderWidthInPx: number = node.personView.getLifelineBoxBorderHeightInPx();
 
         const averageBirthYearOfLevel: number = this.averageBirthYearsOfLevel[level];
         const averageDeathYearOfLevel: number = this.averageDeathYearsOfLevel[level];
@@ -339,12 +340,12 @@ export class WalkerTreeDrawer implements TreeDrawer {
         let personContainerOffsetBottomInPx: number;
 
         if (yearOfBirth == null) {
-            personContainerOffsetTopInPx = centerOfLevelInPx - lifelineBoxHeight / 2;
+            personContainerOffsetTopInPx = centerOfLevelInPx - lifelineBoxHeightInPx / 2;
         } else {
             personContainerOffsetTopInPx = yearOfBirth * this.pixelPerYear;
         }
         if (yearOfDeath == null) {
-            personContainerOffsetBottomInPx = centerOfLevelInPx + lifelineBoxHeight / 2;
+            personContainerOffsetBottomInPx = centerOfLevelInPx + lifelineBoxHeightInPx / 2;
         } else {
             personContainerOffsetBottomInPx = yearOfDeath * this.pixelPerYear;
         }
@@ -357,7 +358,7 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
         // Position the person box in the center.
         const distanceToCenter: number = centerOfLevelInPx - personContainerOffsetTopInPx;
-        const offsetTopOfPersonBox: number = distanceToCenter - lifelineBoxHeight / 2;
+        const offsetTopOfPersonBox: number = distanceToCenter - personBoxHeightInPx / 2;
         let offsetTopOfLifelineBox: number = offsetTopOfPersonBox - node.personView.getLifelineBoxBorderHeightInPx();
 
         node.personView.setOffsetTopOfPersonBox(offsetTopOfPersonBox);
@@ -371,18 +372,18 @@ export class WalkerTreeDrawer implements TreeDrawer {
                 const difference: number = offsetTopOfLifelineBox;
                 offsetTopOfLifelineBox = 0;
 
-                let newHeightOfLifelineBox: number = lifelineBoxHeight + difference;
-                if (newHeightOfLifelineBox < lifelineBorderWidth) newHeightOfLifelineBox = 0;
+                let newHeightOfLifelineBox: number = lifelineBoxHeightInPx + difference;
+                if (newHeightOfLifelineBox < lifelineBorderWidthInPx) newHeightOfLifelineBox = 0;
 
                 node.personView.setOffsetTopOfLifelineBox(offsetTopOfLifelineBox);
                 node.personView.setLifelineBoxHeightInPx(newHeightOfLifelineBox);
-            } else if (offsetTopOfLifelineBox > containerHeightInPx - lifelineBoxHeight) {
+            } else if (offsetTopOfLifelineBox > containerHeightInPx - lifelineBoxHeightInPx) {
                 // Lifeline box is inside the lower bound
-                if (offsetTopOfLifelineBox > containerHeightInPx - lifelineBorderWidth) {
+                if (offsetTopOfLifelineBox > containerHeightInPx - lifelineBorderWidthInPx) {
                     node.personView.setLifelineBoxHeightInPx(0);
                 } else {
-                    const difference: number = offsetTopOfLifelineBox - (containerHeightInPx - lifelineBoxHeight);
-                    const newLifelineBoxHeight: number = lifelineBoxHeight - difference;
+                    const difference: number = offsetTopOfLifelineBox - (containerHeightInPx - lifelineBoxHeightInPx);
+                    const newLifelineBoxHeight: number = lifelineBoxHeightInPx - difference;
                     node.personView.setLifelineBoxHeightInPx(newLifelineBoxHeight);
                 }
             } 
