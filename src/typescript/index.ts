@@ -8,7 +8,7 @@ import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
 import { PersonDatabase } from './personDatabase';
-import { WikidataPersonDatabase } from './wikiDataPersonDatabase';
+import { WikidataPersonDatabase } from './wikidataPersonDatabase';
 import { LanguageManager } from './LanguageManager';
 
 const languageManager: LanguageManager = LanguageManager.getInstance();
