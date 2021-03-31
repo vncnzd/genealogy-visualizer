@@ -15,7 +15,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getFatherOfPersonById(id: string): Promise<Person> {
-        const query = this.queryHelper.getFatherQuery(id);
+        const query = this.queryHelper.generateGetFatherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -26,7 +26,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getMotherOfPersonById(id: string): Promise<Person> {
-        const query = this.queryHelper.getMotherQuery(id);
+        const query = this.queryHelper.generateGetMotherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -37,7 +37,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getParentsOfPersonById(id: string): Promise<Array<Person>> {
-        const query: string = this.queryHelper.getParentsQuery(id);
+        const query: string = this.queryHelper.generateGetParentsQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -46,7 +46,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getChildrenOfPersonById(id: string): Promise<Person[]> {
-        const query = this.queryHelper.getChildrenQuery(id);
+        const query = this.queryHelper.generateGetChildrenQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -55,7 +55,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public findPersonByLabel(label: string, resultLimit: number): Promise<Person[]> {
-        const query = this.queryHelper.getEntitySearchQuery(label, resultLimit);
+        const query = this.queryHelper.generateEntitySearchQuery(label, resultLimit);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);

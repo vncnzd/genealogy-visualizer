@@ -26,7 +26,7 @@ export class QueryHelper {
             this.dateOfDeathVariable];
     }
 
-    public getChildrenQuery(fatherId: string): string {
+    public generateGetChildrenQuery(fatherId: string): string {
         let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `wd:${fatherId} wdt:P40 ?${this.itemVariable}.`;
         query +=        this.generateTriples();
@@ -36,7 +36,7 @@ export class QueryHelper {
         return query;
     }
 
-    public getFatherQuery(personId: string): string {
+    public generateGetFatherQuery(personId: string): string {
         let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `wd:${personId} wdt:P22 ?${this.itemVariable}.`;
         query +=        this.generateTriples();
@@ -46,7 +46,7 @@ export class QueryHelper {
         return query;
     }
 
-    public getMotherQuery(personId: string): string {
+    public generateGetMotherQuery(personId: string): string {
         let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `wd:${personId} wdt:P25 ?${this.itemVariable}.`;
         query +=        this.generateTriples();
@@ -56,7 +56,7 @@ export class QueryHelper {
         return query;
     }
 
-    public getParentsQuery(personId: string): string {
+    public generateGetParentsQuery(personId: string): string {
         let query: string = `${this.getSelectVariables()} WHERE {`;
         query +=        `?${this.itemVariable} wdt:P40 wd:${personId}.`;
         query +=        this.generateTriples();
@@ -66,7 +66,7 @@ export class QueryHelper {
         return query;
     }
 
-    public getEntitySearchQuery(searchValue: string, limit: number = 20): string {
+    public generateEntitySearchQuery(searchValue: string, limit: number = 20): string {
         let query: string = `${this.getSelectVariables()} WHERE { `;
         query +=        this.generateTriples();
         query +=        `SERVICE wikibase:mwapi {`;
