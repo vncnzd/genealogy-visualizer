@@ -35,7 +35,7 @@ export class Genealogy {
         people.set(currentPerson.getId(), currentPerson);
         
         if (depth > 0) {
-            const parents: Person[] = await this.personDatabase.getParentsOfPersonWithId(currentPerson.getBaseId());
+            const parents: Person[] = await this.personDatabase.getParentsOfPersonById(currentPerson.getBaseId());
             const promises: Promise<Map<string, Person>>[] = [];
 
             for (const parent of parents) {
@@ -56,7 +56,7 @@ export class Genealogy {
         people.set(currentPerson.getId(), currentPerson);
         
         if (depth > 0) {
-            const children: Person[] = await this.personDatabase.getChildrenOfPersonWithId(currentPerson.getBaseId());
+            const children: Person[] = await this.personDatabase.getChildrenOfPersonById(currentPerson.getBaseId());
             const promises: Promise<Map<string, Person>>[] = [];
 
             for (const child of children) {

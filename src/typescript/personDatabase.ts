@@ -1,9 +1,9 @@
 import { Person } from "./models/person";
 
 export interface PersonDatabase {
-    getMotherOfPersonWithId(id: string): Promise<Person>
-    getFatherOfPersonWithId(id: string): Promise<Person>
-    getParentsOfPersonWithId(id: string): Promise<Person[]>
-    getChildrenOfPersonWithId(id: string): Promise<Person[]>
+    getMotherOfPersonById(id: string): Promise<Person>
+    getFatherOfPersonById(id: string): Promise<Person>
+    getParentsOfPersonById(id: string): Promise<Person[]>
+    getChildrenOfPersonById(id: string): Promise<Person[]>
     findPersonByLabel(label: string, resultLimit: number): Promise<Person[]>
 }

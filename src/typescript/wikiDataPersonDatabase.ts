@@ -14,7 +14,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         this.sparqlQueryDispatcher = sparqlQueryDispatcher;
     }
 
-    public getFatherOfPersonWithId(id: string): Promise<Person> {
+    public getFatherOfPersonById(id: string): Promise<Person> {
         const query = this.queryHelper.getFatherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
@@ -25,7 +25,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public getMotherOfPersonWithId(id: string): Promise<Person> {
+    public getMotherOfPersonById(id: string): Promise<Person> {
         const query = this.queryHelper.getMotherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
@@ -36,7 +36,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public getParentsOfPersonWithId(id: string): Promise<Array<Person>> {
+    public getParentsOfPersonById(id: string): Promise<Array<Person>> {
         const query: string = this.queryHelper.getParentsQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
@@ -45,7 +45,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
         });
     }
 
-    public getChildrenOfPersonWithId(id: string): Promise<Person[]> {
+    public getChildrenOfPersonById(id: string): Promise<Person[]> {
         const query = this.queryHelper.getChildrenQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
