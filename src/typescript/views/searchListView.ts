@@ -37,7 +37,7 @@ export class SearchListView extends View {
         languageButtonContainer.appendChild(this.germanLinkElement);
     }
 
-    public setSuggestionList(searchPeople: Array<Person>) {
+    public setSuggestionList(searchPeople: Person[]): void {
         this.emptySearchResultsTable();
 
         for (const person of searchPeople) {
