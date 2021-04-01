@@ -2,11 +2,11 @@ import { SexOrGenderId } from "./sexOrGenderId";
 
 export class SexOrGender {   
     private sexOrGenderId: SexOrGenderId;
-    private sexOrGenderLabel: string;
+    private label: string;
 
     constructor(sexOrGenderId: SexOrGenderId, sexOrGenderLabel: string) {
         this.sexOrGenderId = sexOrGenderId;
-        this.sexOrGenderLabel = sexOrGenderLabel;
+        this.label = sexOrGenderLabel;
     }
 
     public getSexOrGenderId(): SexOrGenderId {
@@ -14,6 +14,6 @@ export class SexOrGender {
     }
 
     public getSexOrGenderLabel(): string {
-        return this.sexOrGenderLabel;
+        return this.label;
     }
 }
