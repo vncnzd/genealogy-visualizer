@@ -45,9 +45,9 @@ export class Person {
         this.mother = null;
     }
 
-    public setId(id: string, duplicateAddition: string = null): void {
-        if (duplicateAddition != null) {
-            this.id = id + "-" + duplicateAddition;
+    public setId(id: string, suffix: string = null): void {
+        if (suffix != null) {
+            this.id = id + "-" + suffix;
         } else {
             this.id = id;
         }
