@@ -32,6 +32,6 @@ const genealogy: Genealogy = new Genealogy(personDatabase);
 const genealogyView: GenealogyView = new GenealogyView(genealogyContainer);
 const genealogyController: GenealogyController = new GenealogyController(genealogy, genealogyView);
 
-const searchList: SearchList = new SearchList();
+const searchList: SearchList = new SearchList(personDatabase);
 const searchListView: SearchListView = new SearchListView(searchListWrapper);
-const searchListController = new SearchListController(searchList, searchListView, genealogyController, personDatabase);
+const searchListController = new SearchListController(searchList, searchListView, genealogyController);

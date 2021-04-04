@@ -8,13 +8,11 @@ export class SearchListController {
     private searchList: SearchList;
     private searchListView: SearchListView;
     private genealogyController: GenealogyController;
-    private personDatabase: PersonDatabase;
 
-    constructor(searchList: SearchList, searchListView: SearchListView, genealogyController: GenealogyController, personDatabase: PersonDatabase) {
+    constructor(searchList: SearchList, searchListView: SearchListView, genealogyController: GenealogyController) {
         this.searchList = searchList;
         this.searchListView = searchListView;
         this.genealogyController = genealogyController;
-        this.personDatabase = personDatabase;
         this.searchListView.getSearchInputElement().addEventListener("input", this.startSearchForPerson.bind(this));
         this.searchListView.getSearchInputElement().addEventListener("focus", this.startSearchForPerson.bind(this));
     }
@@ -22,11 +20,9 @@ export class SearchListController {
     private startSearchForPerson(event: Event): void {
         const input: HTMLInputElement = <HTMLInputElement> event.target;
         const inputValue: string = input.value;
+        this.searchList.findPersonByLabel(inputValue, 20);
 
-        this.personDatabase.findPersonByLabel(inputValue, 20).then((foundPeople: Person[]): void => {
-            this.searchList.clearSearchResultPeople();
-            this.searchList.getSearchResultPeople().push(...foundPeople);
-
+        this.searchList.findPersonByLabel(inputValue, 20).then((foundPeople: Person[]): void => {
             this.searchListView.setSuggestionList(foundPeople);
             this.addEventListenersToResultTableRows();
         });

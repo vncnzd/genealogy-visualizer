@@ -1,14 +1,17 @@
+import { PersonDatabase } from "../personDatabase";
 import { Person } from "./person";
 
 export class SearchList {
     private searchResultPeople: Person[];
     private selectedPerson: Person;
+    private personDatabase: PersonDatabase;
 
-    constructor() {
+    constructor(personDatabase: PersonDatabase) {
         this.searchResultPeople = [];
+        this.personDatabase = personDatabase;
     }
 
-    public clearSearchResultPeople(): void {
+    private clearSearchResultPeople(): void {
         this.searchResultPeople.length = 0;
     }
 
@@ -16,6 +19,17 @@ export class SearchList {
         return this.searchResultPeople.find((element: Person): boolean => {
             return element.getId() === id;
         });
+    }
+
+    public findPersonByLabel(inputValue: string, limit: number = 20): Promise<Person[]> {
+        const databasePromise: Promise<Person[]> = this.personDatabase.findPersonByLabel(inputValue, 20);
+        
+        databasePromise.then((foundPeople: Person[]): void => {
+            this.clearSearchResultPeople();
+            this.searchResultPeople.push(...foundPeople);
+        });
+        
+        return databasePromise;
     }
 
     // getters and setters
