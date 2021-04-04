@@ -3,5 +3,6 @@ export enum SexOrGenderId {
     female,
     intersex,
     transgenderFemale,
-    transgenderMale
+    transgenderMale,
+    nonBinary
 }

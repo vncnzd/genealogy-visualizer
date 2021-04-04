@@ -176,6 +176,8 @@ export class WikidataPersonDatabase implements PersonDatabase {
                 return  SexOrGenderId.transgenderFemale;
             case "Q2449503":
                 return SexOrGenderId.transgenderMale;
+            case "Q48270":
+                return SexOrGenderId.nonBinary;
             default:
                 return null;
         }
