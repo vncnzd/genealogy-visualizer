@@ -1,6 +1,6 @@
 import { LanguageIdentifier } from "./languageIdentifier";
 
-export class QueryHelper {
+export class QueryGenerator {
     private selectVariables: string[];
     private languageIdentifier: LanguageIdentifier;
 

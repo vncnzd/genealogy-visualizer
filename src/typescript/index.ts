@@ -3,7 +3,7 @@ import { GenealogyController } from './controllers/genealogyController';
 import { SearchListController } from './controllers/searchListController';
 import { Genealogy } from './models/genealogy';
 import { SearchList } from './models/searchList';
-import { QueryHelper } from './queryHelper';
+import { QueryGenerator } from './queryGenerator';
 import { SPARQLQueryDispatcher } from './sparqlQueryDispatcher';
 import { GenealogyView } from './views/genealogyView';
 import { SearchListView } from './views/searchListView';
@@ -20,7 +20,7 @@ const endpointUrl: string = 'https://query.wikidata.org/sparql';
 const maxNumberOfConcurrentRequests: number = 5;
 const sleepTimeForConcurrentRequestsInMilliseconds: number = 10;
 const sparqlQueryDispatcher: SPARQLQueryDispatcher = new SPARQLQueryDispatcher(endpointUrl, maxNumberOfConcurrentRequests, sleepTimeForConcurrentRequestsInMilliseconds);
-const queryHelper: QueryHelper = new QueryHelper(languageManager.getCurrentLanguageId());
+const queryHelper: QueryGenerator = new QueryGenerator(languageManager.getCurrentLanguageId());
 const personDatabase: PersonDatabase = new WikidataPersonDatabase(queryHelper, sparqlQueryDispatcher);
 
 // html elements
