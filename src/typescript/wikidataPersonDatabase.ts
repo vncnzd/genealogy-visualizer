@@ -1,21 +1,21 @@
 import { Person } from "./models/person";
 import { PersonDatabase } from "./personDatabase";
-import { QueryHelper } from "./queryHelper";
+import { QueryGenerator } from "./queryGenerator";
 import { SexOrGender } from "./sexOrGender";
 import { SexOrGenderId } from "./sexOrGenderId";
 import { SPARQLQueryDispatcher } from "./sparqlQueryDispatcher";
 
 export class WikidataPersonDatabase implements PersonDatabase {
-    private queryHelper: QueryHelper;
+    private queryGenerator: QueryGenerator;
     private sparqlQueryDispatcher: SPARQLQueryDispatcher;
     
-    constructor(queryHelper: QueryHelper, sparqlQueryDispatcher: SPARQLQueryDispatcher) {
-        this.queryHelper = queryHelper;
+    constructor(queryHelper: QueryGenerator, sparqlQueryDispatcher: SPARQLQueryDispatcher) {
+        this.queryGenerator = queryHelper;
         this.sparqlQueryDispatcher = sparqlQueryDispatcher;
     }
 
     public getFatherOfPersonById(id: string): Promise<Person> {
-        const query = this.queryHelper.generateGetFatherQuery(id);
+        const query = this.queryGenerator.generateGetFatherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -26,7 +26,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getMotherOfPersonById(id: string): Promise<Person> {
-        const query = this.queryHelper.generateGetMotherQuery(id);
+        const query = this.queryGenerator.generateGetMotherQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -37,7 +37,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getParentsOfPersonById(id: string): Promise<Array<Person>> {
-        const query: string = this.queryHelper.generateGetParentsQuery(id);
+        const query: string = this.queryGenerator.generateGetParentsQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -46,7 +46,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public getChildrenOfPersonById(id: string): Promise<Person[]> {
-        const query = this.queryHelper.generateGetChildrenQuery(id);
+        const query = this.queryGenerator.generateGetChildrenQuery(id);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -55,7 +55,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     public findPersonByLabel(label: string, resultLimit: number): Promise<Person[]> {
-        const query = this.queryHelper.generateEntitySearchQuery(label, resultLimit);
+        const query = this.queryGenerator.generateEntitySearchQuery(label, resultLimit);
 
         return this.sparqlQueryDispatcher.query(query).then((response: Object) => {
             const listOfPeople = this.getListOfPeopleFromResponse(response);
@@ -74,7 +74,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     private getListOfPeopleFromResponse(responseObject: Object): Person[] {
         const results: Object = responseObject["results"]["bindings"];
         const people: Person[] = [];
-        const itemVariable = this.queryHelper.getItemVariable();
+        const itemVariable = this.queryGenerator.getItemVariable();
 
         for (const result of Object.values(results)) {
             if (result.hasOwnProperty(itemVariable)) {
@@ -112,7 +112,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getIdFromResponse(response: object): string {
-        const itemVariable: string = this.queryHelper.getItemVariable();
+        const itemVariable: string = this.queryGenerator.getItemVariable();
         let id: string;
 
         if (response.hasOwnProperty(itemVariable)) {
@@ -127,7 +127,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getNameFromResponse(response: object): string {
-        let itemLabelVariable: string = this.queryHelper.getItemLabelVariable();
+        let itemLabelVariable: string = this.queryGenerator.getItemLabelVariable();
 
         if (response.hasOwnProperty(itemLabelVariable)) {
             return response[itemLabelVariable]["value"];
@@ -137,7 +137,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getDescriptionFromResponse(response: object): string {
-        let itemDescriptionVariable: string = this.queryHelper.getItemDescriptionVariable();
+        let itemDescriptionVariable: string = this.queryGenerator.getItemDescriptionVariable();
 
         if (response.hasOwnProperty(itemDescriptionVariable)) {
             return response[itemDescriptionVariable]["value"]
@@ -148,8 +148,8 @@ export class WikidataPersonDatabase implements PersonDatabase {
 
     private getSexOrGenderFromResponse(responseEntry: object): SexOrGender {
         if (responseEntry.hasOwnProperty("sexOrGender")) {
-            const sexOrGenderWikidataId: string = responseEntry[this.queryHelper.getSexOrGenderVariable()]["value"].split("/").pop();
-            const sexOrGenderLabel: string = responseEntry[this.queryHelper.getSexOrGenderLabelVariable()]["value"];
+            const sexOrGenderWikidataId: string = responseEntry[this.queryGenerator.getSexOrGenderVariable()]["value"].split("/").pop();
+            const sexOrGenderLabel: string = responseEntry[this.queryGenerator.getSexOrGenderLabelVariable()]["value"];
             const sexOrGenderId: SexOrGenderId = this.getSexOrGenderIdForWikidataId(sexOrGenderWikidataId);
             
             if (sexOrGenderId != null) {
@@ -184,7 +184,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getDateOfBirthFromResponseEntry(responseEntry: object): Date {
-        const dateOfBirthVariable: string = this.queryHelper.getDateOfBirthVariable();
+        const dateOfBirthVariable: string = this.queryGenerator.getDateOfBirthVariable();
 
         if (responseEntry.hasOwnProperty(dateOfBirthVariable)) {
             const dateOfBirth: string = responseEntry[dateOfBirthVariable]["value"];
@@ -195,7 +195,7 @@ export class WikidataPersonDatabase implements PersonDatabase {
     }
 
     private getDateOfDeathFromResponseEntry(responseEntry: object): Date {
-        const dateOfDeathVariable: string = this.queryHelper.getDateOfDeathVariable();
+        const dateOfDeathVariable: string = this.queryGenerator.getDateOfDeathVariable();
 
         if (responseEntry.hasOwnProperty(dateOfDeathVariable)) {
             const dateOfDeath: string = responseEntry[dateOfDeathVariable]["value"];

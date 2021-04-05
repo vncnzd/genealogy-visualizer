@@ -28,7 +28,6 @@ export class WalkerTreeDrawer implements TreeDrawer {
 
         const birthOrDeathdateGenerationDifference: number = this.getBirthOrDeathdateGenerationDifference(30, genealogyType);
         this.calculateMissingAverageYears(this.averageBirthYearsOfLevel, this.averageDeathYearsOfLevel, birthOrDeathdateGenerationDifference);
-        // this.calculateMissingAverageYears(this.averageDeathYearsOfLevel, birthOrDeathdateGenerationDifference);
 
         this.firstWalk(rootNode);
         this.secondWalk(rootNode, -rootNode.preliminaryXPosition, 0);

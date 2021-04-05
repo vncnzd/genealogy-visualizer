@@ -163,7 +163,7 @@ export class GenealogyView extends View {
         this.jsPlumbInst.reset();
 
         const timelineBounds: [number, number] = this.getTimespanForGenealogy(rootPerson);
-        if (timelineBounds[0] == null || timelineBounds[1] == null) {
+        if (timelineBounds[0] == null && timelineBounds[1] == null) {
             this.removeAllChildElements(this.timelineContainer);
         } else {
             this.rebuildTimelineAndScale(timelineBounds[0] - 200, timelineBounds[1] + 200);
@@ -241,21 +241,25 @@ export class GenealogyView extends View {
         let minYear: number = Number.MAX_VALUE;
         let maxYear: number = Number.MIN_VALUE;
 
-        getMinYear(rootPerson);
-        getMaxYear(rootPerson);
+        getMinAndMaxYear(rootPerson);
 
-        if (minYear == Number.MAX_VALUE && maxYear == Number.MIN_VALUE) {
+        if (minYear == Number.MAX_VALUE) {
             minYear = null;
+        }
+        if (maxYear == Number.MIN_VALUE) {
             maxYear = null;
         }
 
         return [minYear, maxYear];
 
-        function getMinYear(person: Person): void {
+        function getMinAndMaxYear(person: Person): void {
             if (person.getDatesOfBirth().length > 0) {
                 const yearOfBirth: number = person.getDatesOfBirth()[0].getFullYear();
                 if (yearOfBirth < minYear) {
                     minYear = yearOfBirth;
+                }
+                if (yearOfBirth > maxYear) {
+                    maxYear = yearOfBirth;
                 }
             }
 
@@ -264,33 +268,19 @@ export class GenealogyView extends View {
                 if (yearOfDeath < minYear) {
                     minYear = yearOfDeath;
                 }
-            }
-
-            if (person.getFather() != null) {
-                getMinYear(person.getFather());
-            }
-            if (person.getMother() != null) {
-                getMinYear(person.getMother());
-            }
-        }
-
-        function getMaxYear(person: Person): void {
-            if (person.getDatesOfDeath().length > 0) {
-                const yearOfDeath: number = person.getDatesOfDeath()[0].getFullYear();
                 if (yearOfDeath > maxYear) {
                     maxYear = yearOfDeath;
                 }
             }
 
-            if (person.getDatesOfBirth().length > 0) {
-                const yearOfBirth: number = person.getDatesOfBirth()[0].getFullYear();
-                if (yearOfBirth > maxYear) {
-                    maxYear = yearOfBirth;
-                }
+            if (person.getFather() != null) {
+                getMinAndMaxYear(person.getFather());
             }
-
+            if (person.getMother() != null) {
+                getMinAndMaxYear(person.getMother());
+            }
             for (const child of person.getChildren()) {
-                getMaxYear(child);
+                getMinAndMaxYear(child);
             }
         }
     }
@@ -386,10 +376,8 @@ export class GenealogyView extends View {
         this.timelineContainerWrapper.style.width = (this.timelineWidthInPx / scale) + "px";
         this.timelineContainerWrapper.style.fontSize = (1 / scale) + "rem";
 
-        this.timelineLineContainers.forEach((element: Element, index: number) => {
-            const timelineLineContainer: HTMLElement = (element as HTMLElement);
+        this.timelineLineContainers.forEach((timelineLineContainer: HTMLElement, index: number) => {
             const lineElement: HTMLElement = <HTMLElement>timelineLineContainer.children[0];
-
             lineElement.style.height = (1 / scale) + "px";
 
             if (index % 5 !== 0) {
@@ -399,7 +387,6 @@ export class GenealogyView extends View {
                     timelineLineContainer.style.visibility = "visible";
                 }
             }
-
         });
     }
 
