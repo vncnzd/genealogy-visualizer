@@ -241,7 +241,9 @@ export class GenealogyView extends View {
         let minYear: number = Number.MAX_VALUE;
         let maxYear: number = Number.MIN_VALUE;
 
-        getMinAndMaxYear(rootPerson);
+        getMinAndMaxYearOfAncestors(rootPerson);
+        getMinAndMaxYearOfDescendants(rootPerson);
+
 
         if (minYear == Number.MAX_VALUE) {
             minYear = null;
@@ -252,7 +254,26 @@ export class GenealogyView extends View {
 
         return [minYear, maxYear];
 
-        function getMinAndMaxYear(person: Person): void {
+        function getMinAndMaxYearOfAncestors(person: Person): void {
+            checkMinAndMaxDates(person);
+
+            if (person.getFather() != null) {
+                getMinAndMaxYearOfAncestors(person.getFather());
+            }
+            if (person.getMother() != null) {
+                getMinAndMaxYearOfAncestors(person.getMother());
+            }
+        }
+
+        function getMinAndMaxYearOfDescendants(person: Person): void {
+            checkMinAndMaxDates(person);
+
+            for (const child of person.getChildren()) {
+                getMinAndMaxYearOfDescendants(child);
+            }
+        }
+
+        function checkMinAndMaxDates(person: Person): void {
             if (person.getDatesOfBirth().length > 0) {
                 const yearOfBirth: number = person.getDatesOfBirth()[0].getFullYear();
                 if (yearOfBirth < minYear) {
@@ -271,16 +292,6 @@ export class GenealogyView extends View {
                 if (yearOfDeath > maxYear) {
                     maxYear = yearOfDeath;
                 }
-            }
-
-            if (person.getFather() != null) {
-                getMinAndMaxYear(person.getFather());
-            }
-            if (person.getMother() != null) {
-                getMinAndMaxYear(person.getMother());
-            }
-            for (const child of person.getChildren()) {
-                getMinAndMaxYear(child);
             }
         }
     }
