@@ -31,6 +31,12 @@ export class WalkerNode {
         this.children = [];
     }
 
+    public isCenterChild(): boolean {
+        return (this.parent != null && 
+                this.parent.children.length % 2 != 0 && 
+                Math.floor(this.parent.children.length / 2) == this.childrenIndex);
+    }
+
     public isLeaf(): boolean {
         return this.children.length == 0;
     }

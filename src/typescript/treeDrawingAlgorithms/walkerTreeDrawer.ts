@@ -180,15 +180,10 @@ export class WalkerTreeDrawer implements TreeDrawer {
             if (node.leftSibling == null) {
                 node.preliminaryXPosition = 0;
             } else {
-                // Keep in mind, that the preliminary x position is the left upper corner of a drawn node.
+                // The preliminary x position is the left upper corner of a drawn node.
                 // This is why the distance between nodes should be at least the width of a node.
-                // Otherwise nodes could overlap.
+                // Otherwise nodes would overlap.
                 node.preliminaryXPosition = node.leftSibling.preliminaryXPosition + this.distanceBetweenNodeOrigins;
-                // In case one child is right below the parent child the lifelines would probably overlap.
-                // This moves the child below the parent one unit to the right to prevent this.
-                if (node.parent.children.length % 2 != 0 && Math.floor(node.parent.children.length / 2) == node.childrenIndex) {
-                    node.preliminaryXPosition += this.distanceBetweenNodeOrigins;
-                }
             }
         } else {
             let defaultAncestor: WalkerNode = node.getLeftMostChild();
@@ -201,8 +196,8 @@ export class WalkerTreeDrawer implements TreeDrawer {
             this.executeShifts(node);
 
             let midpointBetweenChildren: number = 0.5 * (node.getLeftMostChild().preliminaryXPosition + node.getRightMostChild().preliminaryXPosition);
-            
-            // This positions the parent node one unit to the left if there is only one child to prevent conflicting lifelines.
+
+            // This positions the parent node one unit to the right if there is only one child to prevent conflicting lifelines.
             if (node.children.length == 1) {
                 midpointBetweenChildren += this.distanceBetweenNodeOrigins / 2;
             }
@@ -217,7 +212,13 @@ export class WalkerTreeDrawer implements TreeDrawer {
             } else {
                 node.preliminaryXPosition = midpointBetweenChildren;
             }
+        }
 
+        // In case one child is right below the parent child, the lifelines of these nodes would probably overlap.
+        // This moves the child and its subtree below the parent one unit to the right to prevent this.
+        if (node.isCenterChild()) {
+            node.preliminaryXPosition += this.distanceBetweenNodeOrigins;
+            node.modifier += this.distanceBetweenNodeOrigins;
         }
     }
 
