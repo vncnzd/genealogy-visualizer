@@ -27,7 +27,7 @@ export class SearchListView extends View {
         parentElement.appendChild(languageButtonContainer);
 
         this.englishLinkElement = this.createHTMLElement("a");
-        this.englishLinkElement.setAttribute("href", window.location.origin + window.location.pathname);
+        this.englishLinkElement.setAttribute("href", window.location.origin + window.location.href);
         this.englishLinkElement.innerText = languageManager.getCurrentLanguageData()["englishButton"];
         languageButtonContainer.appendChild(this.englishLinkElement);
 
